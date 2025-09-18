@@ -17,7 +17,7 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   
-  const { signIn, user } = useAuth();
+  const { signIn, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -137,6 +137,16 @@ const SignIn = () => {
               <Button 
                 variant="outline" 
                 className="w-full border-border hover:bg-muted/50"
+                onClick={async () => {
+                  const { error } = await signInWithGoogle();
+                  if (error) {
+                    toast({
+                      title: "Google sign in failed",
+                      description: error.message,
+                      variant: "destructive",
+                    });
+                  }
+                }}
               >
                 Continue with Google
               </Button>

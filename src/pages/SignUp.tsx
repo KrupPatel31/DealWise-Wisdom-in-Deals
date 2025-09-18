@@ -23,8 +23,8 @@ const SignUp = () => {
     confirmPassword: "",
     agreeToTerms: false
   });
-
-  const { signUp, user } = useAuth();
+  
+  const { signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -212,6 +212,16 @@ const SignUp = () => {
               <Button 
                 variant="outline" 
                 className="w-full border-border hover:bg-muted/50"
+                onClick={async () => {
+                  const { error } = await signInWithGoogle();
+                  if (error) {
+                    toast({
+                      title: "Google sign up failed",
+                      description: error.message,
+                      variant: "destructive",
+                    });
+                  }
+                }}
               >
                 Continue with Google
               </Button>
