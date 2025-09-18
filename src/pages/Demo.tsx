@@ -10,49 +10,49 @@ import { Link } from "react-router-dom";
 
 const demoDeals = [
   {
-    image: "https://static.wixstatic.com/media/c3da52_74e7d6a15eb34e1a8e94453561a1b02e~mv2.png/v1/fill/w_602,h_602,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/c3da52_74e7d6a15eb34e1a8e94453561a1b02e~mv2.png",
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop&auto=format",
     title: "Sony WH-1000XM5 Noise Cancelling Headphones",
-    currentPrice: "₹24,883",
-    originalPrice: "₹29,224",
-    discount: "15% OFF",
-    store: "Amazon",
-    description: "Industry-leading noise canceling with Dual Noise Sensor technology. Perfect for travel and work from home.",
+    currentPrice: "₹24,990",
+    originalPrice: "₹29,990",
+    discount: "17% OFF",
+    store: "Amazon India",
+    description: "Perfect for blocking Mumbai traffic noise and Bangalore metro sounds. Recommended by Rohan from Gurgaon.",
     rating: 4.8,
     reviewCount: 2847,
     features: ["Noise Cancelling", "30Hr Battery", "Quick Charge"],
-    shipping: "Free 2-day shipping",
+    shipping: "Free delivery across India",
     warranty: "2 year warranty",
-    availability: "In stock"
+    availability: "In stock - Delhi warehouse"
   },
   {
-    image: "https://static.wixstatic.com/media/c3da52_03fefc6d3d3e4bd5a61675ae4158ca3b~mv2.png/v1/fill/w_602,h_602,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/c3da52_03fefc6d3d3e4bd5a61675ae4158ca3b~mv2.png",
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=600&fit=crop&auto=format",
     title: "Apple MacBook Air M2 (2022)",
-    currentPrice: "₹83,417",
-    originalPrice: "₹1,00,117",
-    discount: "17% OFF",
-    store: "Best Buy",
-    description: "Supercharged by M2 chip. Ultra-thin design with stunning 13.6-inch Liquid Retina display.",
+    currentPrice: "₹1,04,900",
+    originalPrice: "₹1,19,900",
+    discount: "13% OFF",
+    store: "Croma",
+    description: "Ideal for IT professionals in Hyderabad tech parks. Loved by Sneha from Pune for her design work.",
     rating: 4.9,
     reviewCount: 5234,
     features: ["M2 Chip", "13.6\" Display", "8GB RAM"],
-    shipping: "Free shipping",
+    shipping: "Free delivery + setup",
     warranty: "1 year Apple warranty",
-    availability: "In stock"
+    availability: "Available in Mumbai store"
   },
   {
-    image: "https://static.wixstatic.com/media/c3da52_63a7ad9e8f93492bbf58a26cdce2ae7c~mv2.png/v1/fill/w_602,h_602,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/c3da52_63a7ad9e8f93492bbf58a26cdce2ae7c~mv2.png",
-    title: "Nintendo Switch OLED Model",
-    currentPrice: "₹26,637",
-    originalPrice: "₹29,142",
-    discount: "9% OFF",
-    store: "Walmart",
-    description: "Enhanced gaming with vibrant 7-inch OLED screen and improved audio for tabletop gaming.",
+    image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&h=600&fit=crop&auto=format",
+    title: "OnePlus 12R 5G Smartphone",
+    currentPrice: "₹39,999",
+    originalPrice: "₹45,999",
+    discount: "13% OFF",
+    store: "Flipkart",
+    description: "Latest OnePlus flagship popular among college students in Delhi University and IIT campuses.",
     rating: 4.7,
     reviewCount: 3421,
-    features: ["OLED Screen", "64GB Storage", "Enhanced Audio"],
-    shipping: "Free shipping",
-    warranty: "1 year Nintendo warranty",
-    availability: "In stock"
+    features: ["5G Ready", "120Hz Display", "100W Charging"],
+    shipping: "Same day delivery in metros",
+    warranty: "1 year OnePlus warranty",
+    availability: "Limited stock - Mumbai"
   }
 ];
 
@@ -106,7 +106,7 @@ const Demo = () => {
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
                 <Input 
-                  placeholder="Search for products... (e.g., iPhone 15 Pro, AirPods Pro, Gaming Laptop)"
+                  placeholder="Search for products... (e.g., iPhone 15 Pro, OnePlus 12, MI Smart TV)"
                   className="pl-12 h-14 bg-background/50 border-border text-lg backdrop-blur-sm"
                 />
               </div>
@@ -117,7 +117,7 @@ const Demo = () => {
             
             <div className="flex gap-3 flex-wrap justify-center">
               {[
-                "Electronics", "Gaming", "Home & Kitchen", "Fashion", "Books", "Sports", "Beauty", "Automotive"
+                "Electronics", "Mobile Phones", "Home & Kitchen", "Fashion", "Books", "Fitness", "Beauty", "Two Wheelers"
               ].map((category) => (
                 <Badge 
                   key={category}
@@ -196,22 +196,22 @@ const Demo = () => {
                         <span className="text-white text-xs font-bold">A</span>
                       </div>
                       <div>
-                        <div className="font-semibold">Amazon</div>
+                        <div className="font-semibold">Amazon India</div>
                         <div className="text-xs text-muted-foreground">Prime eligible</div>
                       </div>
                     </div>
                   </td>
                   <td className="py-5 px-4">
                     <div className="space-y-1">
-                      <div className="text-2xl font-bold text-accent">₹24,883</div>
-                      <div className="text-sm text-muted-foreground line-through">₹29,224</div>
+                      <div className="text-2xl font-bold text-accent">₹24,990</div>
+                      <div className="text-sm text-muted-foreground line-through">₹29,990</div>
                     </div>
                   </td>
                   <td className="py-5 px-4">
                     <Badge className="bg-accent/20 text-accent border-accent/30">Free</Badge>
                   </td>
                   <td className="py-5 px-4">
-                    <div className="text-xl font-bold text-accent">₹24,883</div>
+                    <div className="text-xl font-bold text-accent">₹24,990</div>
                   </td>
                   <td className="py-5 px-4">
                     <div className="flex items-center gap-2">
@@ -245,7 +245,7 @@ const Demo = () => {
                         <span className="text-white text-xs font-bold">B</span>
                       </div>
                       <div>
-                        <div className="font-semibold">Best Buy</div>
+                        <div className="font-semibold">Croma</div>
                         <div className="text-xs text-muted-foreground">Student discount</div>
                       </div>
                     </div>
@@ -289,7 +289,7 @@ const Demo = () => {
                         <span className="text-white text-xs font-bold">W</span>
                       </div>
                       <div>
-                        <div className="font-semibold">Walmart</div>
+                        <div className="font-semibold">Flipkart</div>
                         <div className="text-xs text-muted-foreground">Pickup available</div>
                       </div>
                     </div>
@@ -337,8 +337,8 @@ const Demo = () => {
               <div>
                 <h4 className="font-semibold text-accent mb-1">Smart Recommendation</h4>
                 <p className="text-sm text-muted-foreground">
-                  Amazon offers the best value with free Prime shipping and highest rating. 
-                  You'll save ₹2,067 compared to Walmart and get faster delivery.
+                  Amazon India offers the best value with free Prime shipping and highest rating. 
+                  You'll save ₹2,210 compared to Flipkart and get faster delivery across India.
                 </p>
               </div>
             </div>
