@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { DealCard } from "@/components/DealCard";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -391,6 +392,8 @@ const Demo = () => {
           </div>
         </Card>
       </main>
+      
+      <Footer />
     </div>
   );
 };
