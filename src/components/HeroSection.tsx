@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 export const HeroSection = () => {
   return (
-    <section className="container mx-auto px-6 py-20 grid lg:grid-cols-2 gap-16 items-center min-h-[80vh]">
+    <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20 grid lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-[80vh]">
       {/* Left Column - Text Content */}
       <div className="space-y-8 animate-fade-up">
         {/* Trust Badge */}
@@ -21,16 +21,16 @@ export const HeroSection = () => {
           <span className="text-sm text-muted-foreground">Trusted by 50K+ shoppers</span>
         </div>
         
-        <div className="space-y-6">
-          <h1 className="text-7xl font-bold font-display leading-tight">
+        <div className="space-y-4 sm:space-y-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-display leading-tight">
             <span className="text-primary animate-glow-pulse">SMART</span>
             <br />
             <span className="gradient-text animate-float">DEALS</span>
           </h1>
-          <h2 className="text-4xl font-bold text-primary font-display">DEALWISE</h2>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary font-display">DEALWISE</h2>
         </div>
         
-        <p className="text-xl text-muted-foreground leading-relaxed max-w-lg font-medium">
+        <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-lg font-medium">
           Compare prices across{" "}
           <span className="text-primary font-bold">multiple platforms</span>, track promotions, and discover the best deals with{" "}
           <span className="text-accent font-bold">intelligent analysis</span> and{" "}
@@ -38,7 +38,7 @@ export const HeroSection = () => {
         </p>
         
         {/* Stats */}
-        <div className="flex gap-6 text-sm">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 text-sm">
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-5 w-5 text-accent" />
             <span className="text-muted-foreground">1M+ Products</span>
@@ -50,21 +50,21 @@ export const HeroSection = () => {
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4">
-          <Link to="/sign-up">
-            <Button size="lg" className="bg-gradient-to-r from-accent to-primary text-white hover:from-accent/90 hover:to-primary/90 shadow-glow font-medium px-8 py-4 text-lg animate-scale-in">
-              <Zap className="mr-2 h-5 w-5" />
+          <Link to="/sign-up" className="w-full sm:w-auto">
+            <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-accent to-primary text-white hover:from-accent/90 hover:to-primary/90 shadow-glow font-medium px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg animate-scale-in">
+              <Zap className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Start Comparing Now
             </Button>
           </Link>
-          <Link to="/demo">
-            <Button size="lg" variant="outline" className="border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground backdrop-blur-sm font-medium px-8 py-4 text-lg">
+          <Link to="/demo" className="w-full sm:w-auto">
+            <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground backdrop-blur-sm font-medium px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg">
               View Live Demo →
             </Button>
           </Link>
         </div>
 
         {/* Social Proof */}
-        <div className="flex items-center gap-4 pt-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pt-4">
           <span className="text-sm text-muted-foreground">Used by teams at:</span>
           <div className="flex items-center gap-3 opacity-60">
             <div className="w-8 h-8 bg-muted rounded-md flex items-center justify-center">
@@ -98,7 +98,7 @@ export const HeroSection = () => {
           </div>
         </div>
         
-        <Card className="p-8 bg-gradient-to-br from-card via-card to-muted/50 border-deal-border relative overflow-hidden backdrop-blur-sm hover-lift">
+        <Card className="p-6 sm:p-8 bg-gradient-to-br from-card via-card to-muted/50 border-deal-border relative overflow-hidden backdrop-blur-sm hover-lift">
           {/* Background pattern */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5"></div>
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-accent/20 to-transparent rounded-full blur-2xl"></div>
@@ -108,17 +108,17 @@ export const HeroSection = () => {
               <div className="w-4 h-4 bg-accent rounded-full animate-glow-pulse"></div>
             </div>
             
-            <div className="text-center space-y-8">
-              <div className="w-28 h-28 mx-auto bg-gradient-to-br from-primary via-accent to-primary rounded-full flex items-center justify-center shadow-glow-lg animate-glow-pulse">
-                <TrendingUp className="h-14 w-14 text-white" />
+            <div className="text-center space-y-6 sm:space-y-8">
+              <div className="w-20 h-20 sm:w-28 sm:h-28 mx-auto bg-gradient-to-br from-primary via-accent to-primary rounded-full flex items-center justify-center shadow-glow-lg animate-glow-pulse">
+                <TrendingUp className="h-10 w-10 sm:h-14 sm:w-14 text-white" />
               </div>
               
               <div className="space-y-3">
-                <h3 className="text-3xl font-bold font-display">
+                <h3 className="text-2xl sm:text-3xl font-bold font-display">
                   <span className="text-primary">WISDOM</span>{" "}
                   <span className="text-accent">IN DEALS</span>
                 </h3>
-                <p className="text-muted-foreground text-lg">AI-powered comparison engine</p>
+                <p className="text-muted-foreground text-base sm:text-lg">AI-powered comparison engine</p>
                 
                 {/* Feature list */}
                 <div className="space-y-2 pt-4">

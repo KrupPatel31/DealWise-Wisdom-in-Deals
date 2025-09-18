@@ -68,7 +68,7 @@ const Cart = () => {
     return (
       <div className="min-h-screen dark">
         <Header />
-        <main className="container mx-auto px-6 py-12">
+        <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="text-center">
             <ShoppingBag className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h1 className="text-2xl font-bold text-foreground mb-2">Sign in to view your cart</h1>
@@ -89,7 +89,7 @@ const Cart = () => {
     <div className="min-h-screen dark">
       <Header />
       
-      <main className="container mx-auto px-6 py-12">
+      <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Shopping Cart</h1>
           <p className="text-muted-foreground">
@@ -109,22 +109,22 @@ const Cart = () => {
             </Link>
           </div>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
                 <Card key={item.id} className="border-border bg-card/50 backdrop-blur-sm">
-                  <CardContent className="p-6">
-                    <div className="flex gap-4">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-20 h-20 object-cover rounded-lg"
+                        className="w-full sm:w-20 h-32 sm:h-20 object-cover rounded-lg"
                       />
                       
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-semibold text-foreground">{item.name}</h3>
+                      <div className="flex-1 space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                          <h3 className="font-semibold text-foreground text-sm sm:text-base">{item.name}</h3>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -135,17 +135,17 @@ const Cart = () => {
                           </Button>
                         </div>
                         
-                        <div className="flex items-center gap-2 mb-3">
-                          <Badge variant="secondary">{item.store}</Badge>
-                          <Badge variant="destructive">{item.discount}% OFF</Badge>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="secondary" className="text-xs">{item.store}</Badge>
+                          <Badge variant="destructive" className="text-xs">{item.discount}% OFF</Badge>
                         </div>
                         
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                           <div className="flex items-center gap-2">
-                            <span className="text-lg font-bold text-foreground">
+                            <span className="text-base sm:text-lg font-bold text-foreground">
                               ₹{item.price.toLocaleString()}
                             </span>
-                            <span className="text-sm text-muted-foreground line-through">
+                            <span className="text-xs sm:text-sm text-muted-foreground line-through">
                               ₹{item.originalPrice.toLocaleString()}
                             </span>
                           </div>

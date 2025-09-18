@@ -53,15 +53,15 @@ const SignIn = () => {
     <div className="min-h-screen dark">
       <Header />
       
-      <main className="flex items-center justify-center px-6 py-12">
+      <main className="flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
+          <div className="text-center mb-6 sm:mb-8">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <TrendingUp className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-primary">DEALWISE</span>
+              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              <span className="text-xl sm:text-2xl font-bold text-primary">DEALWISE</span>
             </div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
-            <p className="text-muted-foreground">Sign in to your account to continue comparing deals</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Sign in to your account to continue comparing deals</p>
           </div>
 
           <Card className="border-border bg-card/50 backdrop-blur-sm">
