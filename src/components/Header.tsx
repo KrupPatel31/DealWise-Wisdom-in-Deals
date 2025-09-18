@@ -15,6 +15,7 @@ export const Header = () => {
         <Link to="/features" className="text-foreground hover:text-accent transition-colors">Features</Link>
         <Link to="/how-it-works" className="text-foreground hover:text-accent transition-colors">How It Works</Link>
         <Link to="/demo" className="text-foreground hover:text-accent transition-colors">Demo</Link>
+        <Link to="/competitor-analysis" className="text-foreground hover:text-accent transition-colors">Scraper</Link>
         <Link to="/about" className="text-foreground hover:text-accent transition-colors">About</Link>
         <Link to="/contact" className="text-foreground hover:text-accent transition-colors">Contact</Link>
       </nav>
