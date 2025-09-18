@@ -1,16 +1,13 @@
 import { Button } from "@/components/ui/button";
+import { TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
-import dealwiseLogo from "@/assets/dealwise-logo.jpg";
 
 export const Header = () => {
   return (
     <header className="w-full py-4 px-6 flex items-center justify-between">
-      <Link to="/" className="flex items-center">
-        <img 
-          src={dealwiseLogo} 
-          alt="DealWise - Shop smart, save more" 
-          className="h-12 w-auto"
-        />
+      <Link to="/" className="flex items-center gap-2">
+        <TrendingUp className="h-6 w-6 text-primary" />
+        <span className="text-xl font-bold text-primary">DEALWISE</span>
       </Link>
       
       <nav className="hidden md:flex items-center gap-6">
