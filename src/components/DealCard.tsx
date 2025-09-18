@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface DealCardProps {
   image: string;
@@ -54,6 +56,12 @@ export const DealCard = ({
         <p className="text-sm text-muted-foreground">
           {description}
         </p>
+        
+        <Link to="/demo" className="block">
+          <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+            Compare Prices
+          </Button>
+        </Link>
       </div>
     </Card>
   );

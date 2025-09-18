@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, Star } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const demoDeals = [
   {
@@ -204,9 +205,11 @@ const Demo = () => {
           <p className="text-xl text-muted-foreground mb-8">
             Join thousands of smart shoppers who save money with DealWise every day
           </p>
-          <Button className="bg-accent text-accent-foreground px-8 py-3 text-lg hover:bg-accent/90">
-            Create Free Account
-          </Button>
+          <Link to="/sign-up">
+            <Button className="bg-accent text-accent-foreground px-8 py-3 text-lg hover:bg-accent/90">
+              Create Free Account
+            </Button>
+          </Link>
         </Card>
       </main>
     </div>

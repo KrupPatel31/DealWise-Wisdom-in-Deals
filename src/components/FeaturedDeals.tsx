@@ -1,4 +1,5 @@
 import { DealCard } from "./DealCard";
+import { Link } from "react-router-dom";
 
 const deals = [
   {
@@ -82,12 +83,12 @@ export const FeaturedDeals = () => {
       </div>
       
       <div className="text-center mt-12">
-        <a 
-          href="#" 
+        <Link 
+          to="/demo" 
           className="inline-flex items-center text-lg text-primary hover:text-accent transition-colors font-medium"
         >
           View All Deals →
-        </a>
+        </Link>
       </div>
     </section>
   );

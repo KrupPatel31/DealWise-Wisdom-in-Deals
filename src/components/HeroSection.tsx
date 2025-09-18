@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const HeroSection = () => {
   return (
@@ -24,13 +25,17 @@ export const HeroSection = () => {
         </p>
         
         <div className="flex gap-4">
-          <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
-            <Zap className="mr-2 h-5 w-5" />
-            Start Comparing Now
-          </Button>
-          <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-            View Demo →
-          </Button>
+          <Link to="/sign-up">
+            <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+              <Zap className="mr-2 h-5 w-5" />
+              Start Comparing Now
+            </Button>
+          </Link>
+          <Link to="/demo">
+            <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+              View Demo →
+            </Button>
+          </Link>
         </div>
       </div>
       
@@ -60,9 +65,11 @@ export const HeroSection = () => {
               <p className="text-muted-foreground">Multi-platform comparison engine</p>
             </div>
             
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-              Best Price
-            </Button>
+            <Link to="/demo">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                Best Price
+              </Button>
+            </Link>
           </div>
         </Card>
       </div>
