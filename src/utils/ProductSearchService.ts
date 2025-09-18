@@ -13,119 +13,7 @@ export interface ProductData {
 }
 
 export class ProductSearchService {
-  private static API_KEY_STORAGE_KEY = 'firecrawl_api_key';
-
-  static saveApiKey(apiKey: string): void {
-    localStorage.setItem(this.API_KEY_STORAGE_KEY, apiKey);
-    console.log('API key saved successfully');
-  }
-
-  static getApiKey(): string | null {
-    return localStorage.getItem(this.API_KEY_STORAGE_KEY);
-  }
-
-  static async scrapeWebsite(url: string): Promise<{ success: boolean; error?: string; products?: ProductData[] }> {
-    const apiKey = this.getApiKey();
-    if (!apiKey) {
-      return { success: false, error: 'API key not found' };
-    }
-
-    try {
-      console.log('Scraping website:', url);
-      
-      const response = await fetch('https://api.firecrawl.dev/v0/scrape', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          url: url,
-          formats: ['markdown', 'html'],
-          onlyMainContent: true,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (!data.success) {
-        return { 
-          success: false, 
-          error: data.error || 'Failed to scrape website' 
-        };
-      }
-
-      // Extract product data from scraped content
-      const products = this.extractProductData(data.data.markdown || '');
-      
-      console.log('Scraping successful, extracted products:', products.length);
-      return { 
-        success: true,
-        products
-      };
-    } catch (error) {
-      console.error('Error during scraping:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to scrape website' 
-      };
-    }
-  }
-
-  private static extractProductData(markdown: string): ProductData[] {
-    const products: ProductData[] = [];
-    const lines = markdown.split('\n');
-    let currentProduct: Partial<ProductData> = {};
-    let productCount = 0;
-    
-    lines.forEach((line: string) => {
-      // Look for product titles (usually in headings)
-      if (line.match(/^#+\s+/)) {
-        if (currentProduct.title) {
-          currentProduct.id = `product_${productCount++}`;
-          products.push(currentProduct as ProductData);
-          currentProduct = {};
-        }
-        currentProduct.title = line.replace(/^#+\s+/, '').trim();
-      }
-      
-      // Look for prices (₹ symbol or price patterns)
-      const priceMatch = line.match(/₹[\d,]+|INR\s*[\d,]+|\$[\d,]+|USD\s*[\d,]+|Rs\.?\s*[\d,]+/i);
-      if (priceMatch && !currentProduct.price) {
-        currentProduct.price = priceMatch[0];
-      }
-      
-      // Look for discounts
-      const discountMatch = line.match(/(\d+)%\s*off|save\s*(\d+)%|\d+%\s*discount/i);
-      if (discountMatch) {
-        currentProduct.discount = discountMatch[0];
-      }
-      
-      // Look for ratings
-      const ratingMatch = line.match(/(\d+\.?\d*)\s*\/\s*5|(\d+\.?\d*)\s*stars?/i);
-      if (ratingMatch) {
-        currentProduct.rating = ratingMatch[1] || ratingMatch[2];
-      }
-
-      // Look for stores/brands
-      const storeMatch = line.match(/Available on\s+([A-Za-z]+)|Sold by\s+([A-Za-z]+)|Brand:\s*([A-Za-z]+)/i);
-      if (storeMatch) {
-        currentProduct.store = storeMatch[1] || storeMatch[2] || storeMatch[3];
-      }
-    });
-    
-    // Add the last product if exists
-    if (currentProduct.title) {
-      currentProduct.id = `product_${productCount++}`;
-      products.push(currentProduct as ProductData);
-    }
-    
-    return products.filter(p => p.title && p.price);
-  }
+  // Mock data service - no external dependencies
 
   static searchProducts(products: ProductData[], query: string): ProductData[] {
     if (!query.trim()) return products;
@@ -139,7 +27,7 @@ export class ProductSearchService {
     );
   }
 
-  // Mock product data for demo purposes
+  // Get mock products for demo
   static getMockProducts(): ProductData[] {
     return [
       {
