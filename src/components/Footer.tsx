@@ -40,25 +40,6 @@ export const Footer = () => {
               best deals across multiple stores. Save time, save money, shop
               smart.
             </p>
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm">
-                <Mail className="h-4 w-4 text-accent" />
-                <span className="text-muted-foreground">
-                  support@dealwise.com
-                </span>
-              </div>
-              <div className="flex items-center gap-3 text-sm">
-                <Phone className="h-4 w-4 text-accent" />
-                <span className="text-muted-foreground">+1 (555) 123-4567</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm">
-                <MapPin className="h-4 w-4 text-accent" />
-                <span className="text-muted-foreground">
-                  San Francisco, CA 94103
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Quick Links */}
@@ -184,7 +165,7 @@ export const Footer = () => {
         {/* Copyright */}
         <div className="text-center pt-8 mt-8 border-t border-border/30">
           <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-            © 2024 DealWise. Made with
+            © 2025 DealWise. Made with
             <Heart className="h-4 w-4 text-red-500 fill-current" />
             by the DealWise team. All rights reserved.
           </p>
