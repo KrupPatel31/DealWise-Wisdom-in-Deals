@@ -1,18 +1,27 @@
-import { useState, useEffect } from 'react';
-import { Search, Filter, SortAsc, Star, ShoppingCart, Tag } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Search, Filter, SortAsc, Star, ShoppingCart, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ProductSearchService, ProductData } from '@/utils/ProductSearchService';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  ProductSearchService,
+  ProductData,
+} from "@/utils/ProductSearchService";
 
 export const ProductSearchBar = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState<ProductData[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<ProductData[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('relevance');
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("relevance");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -28,41 +37,46 @@ export const ProductSearchBar = () => {
 
   const handleSearch = () => {
     setIsLoading(true);
-    
+
     let filtered = ProductSearchService.searchProducts(products, searchQuery);
-    
+
     // Filter by category
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(product => 
-        product.category?.toLowerCase() === selectedCategory.toLowerCase()
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter(
+        (product) =>
+          product.category?.toLowerCase() === selectedCategory.toLowerCase()
       );
     }
-    
+
     // Sort products
     switch (sortBy) {
-      case 'price-low':
+      case "price-low":
         filtered.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
         break;
-      case 'price-high':
+      case "price-high":
         filtered.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
         break;
-      case 'rating':
-        filtered.sort((a, b) => parseFloat(b.rating || '0') - parseFloat(a.rating || '0'));
+      case "rating":
+        filtered.sort(
+          (a, b) => parseFloat(b.rating || "0") - parseFloat(a.rating || "0")
+        );
         break;
-      case 'discount':
-        filtered.sort((a, b) => parseDiscount(b.discount) - parseDiscount(a.discount));
+      case "discount":
+        filtered.sort(
+          (a, b) => parseDiscount(b.discount) - parseDiscount(a.discount)
+        );
         break;
       default:
         // relevance - keep original order
         break;
     }
-    
+
     setFilteredProducts(filtered);
     setIsLoading(false);
   };
 
   const parsePrice = (priceStr: string): number => {
-    const numStr = priceStr.replace(/[₹,]/g, '');
+    const numStr = priceStr.replace(/[₹,]/g, "");
     return parseFloat(numStr) || 0;
   };
 
@@ -73,7 +87,9 @@ export const ProductSearchBar = () => {
   };
 
   const getCategories = () => {
-    const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+    const categories = [
+      ...new Set(products.map((p) => p.category).filter(Boolean)),
+    ];
     return categories;
   };
 
@@ -82,7 +98,9 @@ export const ProductSearchBar = () => {
       {/* Search Header */}
       <div className="text-center space-y-4">
         <h1 className="text-3xl font-bold text-foreground">Find Best Deals</h1>
-        <p className="text-muted-foreground">Compare prices across multiple stores and find the best deals</p>
+        <p className="text-muted-foreground">
+          Compare prices across multiple stores and find the best deals
+        </p>
       </div>
 
       {/* Search Bar */}
@@ -102,14 +120,20 @@ export const ProductSearchBar = () => {
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
-                  {getCategories().map(category => (
-                    <SelectItem key={category} value={category?.toLowerCase() || ''}>
+                  {getCategories().map((category) => (
+                    <SelectItem
+                      key={category}
+                      value={category?.toLowerCase() || ""}
+                    >
                       {category}
                     </SelectItem>
                   ))}
@@ -139,12 +163,14 @@ export const ProductSearchBar = () => {
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <p className="text-muted-foreground">
-          {isLoading ? 'Searching...' : `Showing ${filteredProducts.length} products`}
+          {isLoading
+            ? "Searching..."
+            : `Showing ${filteredProducts.length} products`}
         </p>
         {searchQuery && (
-          <Button 
-            variant="ghost" 
-            onClick={() => setSearchQuery('')}
+          <Button
+            variant="ghost"
+            onClick={() => setSearchQuery("")}
             className="text-sm"
           >
             Clear search
@@ -155,14 +181,17 @@ export const ProductSearchBar = () => {
       {/* Product Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredProducts.map((product) => (
-          <Card key={product.id} className="hover:shadow-lg transition-all duration-300 group">
+          <Card
+            key={product.id}
+            className="hover:shadow-lg transition-all duration-300 group"
+          >
             <CardContent className="p-4">
               <div className="space-y-3">
                 {/* Product Image */}
                 {product.image && (
                   <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-                    <img 
-                      src={product.image} 
+                    <img
+                      src={product.image}
                       alt={product.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -174,7 +203,7 @@ export const ProductSearchBar = () => {
                   <h3 className="font-semibold line-clamp-2 text-sm leading-tight">
                     {product.title}
                   </h3>
-                  
+
                   {/* Price */}
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-lg font-bold text-primary">
@@ -189,7 +218,10 @@ export const ProductSearchBar = () => {
 
                   {/* Discount Badge */}
                   {product.discount && (
-                    <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                    <Badge
+                      variant="secondary"
+                      className="text-xs bg-green-100 text-green-700"
+                    >
                       <Tag className="h-3 w-3 mr-1" />
                       {product.discount}
                     </Badge>
@@ -199,7 +231,9 @@ export const ProductSearchBar = () => {
                   {product.rating && (
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">{product.rating}</span>
+                      <span className="text-sm font-medium">
+                        {product.rating}
+                      </span>
                       <span className="text-xs text-muted-foreground">/5</span>
                     </div>
                   )}
@@ -208,7 +242,9 @@ export const ProductSearchBar = () => {
                   {product.store && (
                     <div className="flex items-center gap-1">
                       <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">{product.store}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {product.store}
+                      </span>
                     </div>
                   )}
 

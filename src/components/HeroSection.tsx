@@ -40,15 +40,6 @@ export const HeroSection = () => {
               Start Comparing Now
             </Button>
           </Link>
-          <Link to="/demo" className="w-full sm:w-auto">
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full sm:w-auto border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground backdrop-blur-sm font-medium px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg"
-            >
-              View Live Demo →
-            </Button>
-          </Link>
         </div>
       </div>
 
@@ -57,16 +48,6 @@ export const HeroSection = () => {
         className="relative animate-slide-up"
         style={{ animationDelay: "200ms" }}
       >
-        {/* Floating elements */}
-        <div
-          className="absolute -top-4 -right-4 z-20 animate-float"
-          style={{ animationDelay: "1s" }}
-        >
-          <Badge className="bg-gradient-to-r from-accent to-primary text-white text-sm px-4 py-2 shadow-glow">
-            50% OFF
-          </Badge>
-        </div>
-
         <div
           className="absolute -bottom-8 -left-8 z-20 animate-float"
           style={{ animationDelay: "2s" }}
@@ -114,7 +95,7 @@ export const HeroSection = () => {
                 </div>
               </div>
 
-              <Link to="/demo">
+              <Link to="/search">
                 <Button className="bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 shadow-glow font-medium px-6 py-3">
                   Discover Best Prices
                 </Button>

@@ -52,7 +52,6 @@ export const Footer = () => {
                 { name: "Home", path: "/" },
                 { name: "Features", path: "/features" },
                 { name: "How It Works", path: "/how-it-works" },
-                { name: "Demo", path: "/demo" },
                 { name: "About", path: "/about" },
                 { name: "Contact", path: "/contact" },
               ].map((link) => (
@@ -85,7 +84,7 @@ export const Footer = () => {
               ].map((category) => (
                 <Link
                   key={category}
-                  to="/demo"
+                  to="/search"
                   className="block text-muted-foreground hover:text-accent transition-colors"
                 >
                   {category}

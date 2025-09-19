@@ -5,95 +5,107 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 const deals = [
   {
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop&auto=format",
+    image:
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop&auto=format",
     title: "Sony WH-1000XM5 Noise Cancelling Headphones",
     currentPrice: "₹24,990",
     originalPrice: "₹29,990",
     discount: "17% OFF",
     store: "Amazon India",
-    description: "Industry-leading noise canceling perfect for Mumbai commutes and Bangalore traffic. Trusted by Arjun from Delhi.",
+    description:
+      "Industry-leading noise canceling perfect for Mumbai commutes and Bangalore traffic. Trusted by Arjun from Delhi.",
     rating: 4.8,
     reviewCount: 2847,
     features: ["Noise Cancelling", "30Hr Battery", "Quick Charge"],
     shipping: "Free delivery across India",
     warranty: "2 year warranty",
-    availability: "In stock - Delhi warehouse"
+    availability: "In stock - Delhi warehouse",
   },
   {
-    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=600&fit=crop&auto=format",
+    image:
+      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=600&fit=crop&auto=format",
     title: "Apple MacBook Air M2 (2022)",
     currentPrice: "₹1,04,900",
     originalPrice: "₹1,19,900",
     discount: "13% OFF",
     store: "Croma",
-    description: "Perfect for IT professionals in Hyderabad and Chennai. Recommended by Priya from Pune for coding and design work.",
+    description:
+      "Perfect for IT professionals in Hyderabad and Chennai. Recommended by Priya from Pune for coding and design work.",
     rating: 4.9,
     reviewCount: 5234,
-    features: ["M2 Chip", "13.6\" Display", "8GB RAM"],
+    features: ["M2 Chip", '13.6" Display', "8GB RAM"],
     shipping: "Free delivery + setup",
     warranty: "1 year Apple warranty",
-    availability: "Available in Mumbai store"
+    availability: "Available in Mumbai store",
   },
   {
-    image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&h=600&fit=crop&auto=format",
+    image:
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&h=600&fit=crop&auto=format",
     title: "OnePlus 12R 5G Smartphone",
     currentPrice: "₹39,999",
     originalPrice: "₹45,999",
     discount: "13% OFF",
     store: "Flipkart",
-    description: "Latest flagship from OnePlus with 120Hz display. Popular choice among students in Delhi and Bangalore colleges.",
+    description:
+      "Latest flagship from OnePlus with 120Hz display. Popular choice among students in Delhi and Bangalore colleges.",
     rating: 4.7,
     reviewCount: 3421,
     features: ["5G Ready", "120Hz Display", "100W Charging"],
     shipping: "Same day delivery in metros",
     warranty: "1 year OnePlus warranty",
-    availability: "Limited stock - Mumbai"
+    availability: "Limited stock - Mumbai",
   },
   {
-    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=600&fit=crop&auto=format",
+    image:
+      "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=600&fit=crop&auto=format",
     title: "Mi 65-inch 4K Android TV",
     currentPrice: "₹54,999",
     originalPrice: "₹79,999",
     discount: "31% OFF",
     store: "Mi Store India",
-    description: "Smart TV with Dolby Vision, perfect for Indian families. Highly rated by Rajesh from Ahmedabad for cricket viewing.",
+    description:
+      "Smart TV with Dolby Vision, perfect for Indian families. Highly rated by Rajesh from Ahmedabad for cricket viewing.",
     rating: 4.6,
     reviewCount: 1876,
     features: ["4K HDR", "Android TV", "Dolby Audio"],
     shipping: "Free installation",
     warranty: "2 year comprehensive warranty",
-    availability: "Available nationwide"
+    availability: "Available nationwide",
   },
   {
-    image: "https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=600&h=600&fit=crop&auto=format",
+    image:
+      "https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=600&h=600&fit=crop&auto=format",
     title: "Prestige Svachh 5L Pressure Cooker",
     currentPrice: "₹2,499",
     originalPrice: "₹3,995",
     discount: "37% OFF",
     store: "Amazon India",
-    description: "Perfect for Indian cooking - dal, rice, and curries. Recommended by Kavitha from Chennai for large families.",
+    description:
+      "Perfect for Indian cooking - dal, rice, and curries. Recommended by Kavitha from Chennai for large families.",
     rating: 4.5,
     reviewCount: 12450,
     features: ["5 Liter", "Induction Base", "Safety Features"],
     shipping: "Free delivery",
     warranty: "5 year warranty",
-    availability: "In stock - Chennai warehouse"
+    availability: "In stock - Chennai warehouse",
   },
   {
-    image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&h=600&fit=crop&auto=format",
+    image:
+      "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&h=600&fit=crop&auto=format",
     title: "Logitech MX Master 3S Wireless Mouse",
     currentPrice: "₹7,995",
     originalPrice: "₹9,995",
     discount: "20% OFF",
     store: "Amazon India",
-    description: "Premium mouse for professionals. Popular among software engineers in Bangalore and designers in Mumbai.",
+    description:
+      "Premium mouse for professionals. Popular among software engineers in Bangalore and designers in Mumbai.",
     rating: 4.8,
     reviewCount: 3215,
     features: ["Wireless", "Precision Scroll", "Multi-Device"],
     shipping: "Next day delivery",
     warranty: "2 year warranty",
-    availability: "In stock"
-  }
+    availability: "In stock",
+  },
 ];
 
 export const FeaturedDeals = () => {
@@ -104,23 +116,25 @@ export const FeaturedDeals = () => {
           <Sparkles className="h-5 w-5 text-accent" />
           <span className="text-accent font-medium">Hot Deals</span>
         </div>
-        
+
         <h2 className="text-5xl font-bold font-display">
           <span className="text-muted-foreground">FEATURED</span>{" "}
           <span className="gradient-text">DEALS</span>
         </h2>
-        
+
         <div className="w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"></div>
-        
+
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
           Discover the{" "}
-          <span className="text-accent font-semibold">best deals</span>{" "}
-          across multiple platforms with{" "}
-          <span className="text-accent font-semibold">real-time price comparisons</span>{" "}
+          <span className="text-accent font-semibold">best deals</span> across
+          multiple platforms with{" "}
+          <span className="text-accent font-semibold">
+            real-time price comparisons
+          </span>{" "}
           and detailed product insights.
         </p>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
         {deals.map((deal, index) => (
           <div key={index} style={{ animationDelay: `${index * 100}ms` }}>
@@ -128,11 +142,11 @@ export const FeaturedDeals = () => {
           </div>
         ))}
       </div>
-      
+
       <div className="text-center">
-        <Link to="/demo">
-          <Button 
-            size="lg" 
+        <Link to="/search">
+          <Button
+            size="lg"
             className="bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 shadow-glow font-medium px-8 py-3"
           >
             View All Deals
