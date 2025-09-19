@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TrendingUp, Eye, EyeOff } from "lucide-react";
+import { TrendingUp, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +25,7 @@ const SignUp = () => {
     agreeToTerms: false
   });
   
-  const { signUp, signInWithGoogle, user } = useAuth();
+  const { signUp, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -46,10 +47,11 @@ const SignUp = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) {
       toast({
-        title: "Password too short",
-        description: "Password must be at least 6 characters long.",
+        title: "Invalid password",
+        description: passwordValidation.errors.join(', '),
         variant: "destructive",
       });
       return;
@@ -68,7 +70,7 @@ const SignUp = () => {
     } else {
       toast({
         title: "Account created!",
-        description: "Please check your email to verify your account.",
+        description: "Welcome to DealWise! You can now start comparing deals.",
       });
     }
     
@@ -130,27 +132,64 @@ const SignUp = () => {
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-foreground">Password</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Create a password"
-                      value={formData.password}
-                      onChange={(e) => handleInputChange("password", e.target.value)}
-                      className="bg-input border-border focus:border-primary pr-10"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                </div>
+                 <div className="space-y-2">
+                   <Label htmlFor="password" className="text-foreground">Password</Label>
+                   <div className="relative">
+                     <Input
+                       id="password"
+                       type={showPassword ? "text" : "password"}
+                       placeholder="Create a password"
+                       value={formData.password}
+                       onChange={(e) => handleInputChange("password", e.target.value)}
+                       className="bg-input border-border focus:border-primary pr-10"
+                       required
+                     />
+                     <button
+                       type="button"
+                       onClick={() => setShowPassword(!showPassword)}
+                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                     >
+                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                     </button>
+                   </div>
+                   {formData.password && (
+                     <div className="space-y-2">
+                       {(() => {
+                         const { strength, label, color } = getPasswordStrength(formData.password);
+                         return (
+                           <div className="flex items-center gap-2">
+                             <div className="flex-1 bg-muted rounded-full h-1.5">
+                               <div 
+                                 className={`h-full rounded-full transition-all duration-300 ${
+                                   strength <= 1 ? 'bg-red-500' :
+                                   strength === 2 ? 'bg-orange-500' :
+                                   strength === 3 ? 'bg-yellow-500' :
+                                   strength === 4 ? 'bg-blue-500' : 'bg-green-500'
+                                 }`}
+                                 style={{ width: `${(strength / 5) * 100}%` }}
+                               />
+                             </div>
+                             <span className={`text-xs font-medium ${color}`}>{label}</span>
+                           </div>
+                         );
+                       })()}
+                       <div className="space-y-1">
+                         {validatePassword(formData.password).errors.map((error, index) => (
+                           <div key={index} className="flex items-center gap-2 text-xs text-red-500">
+                             <AlertCircle className="h-3 w-3" />
+                             <span>{error}</span>
+                           </div>
+                         ))}
+                         {validatePassword(formData.password).isValid && (
+                           <div className="flex items-center gap-2 text-xs text-green-500">
+                             <CheckCircle className="h-3 w-3" />
+                             <span>Password meets all requirements</span>
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   )}
+                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
@@ -202,29 +241,6 @@ const SignUp = () => {
                 </Button>
               </form>
 
-              <div className="relative">
-                <Separator className="bg-border" />
-                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-                  OR
-                </span>
-              </div>
-
-              <Button 
-                variant="outline" 
-                className="w-full border-border hover:bg-muted/50"
-                onClick={async () => {
-                  const { error } = await signInWithGoogle();
-                  if (error) {
-                    toast({
-                      title: "Google sign up failed",
-                      description: error.message,
-                      variant: "destructive",
-                    });
-                  }
-                }}
-              >
-                Continue with Google
-              </Button>
 
               <div className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}

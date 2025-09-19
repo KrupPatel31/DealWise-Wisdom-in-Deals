@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { validatePassword } from "@/utils/passwordValidation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { TrendingUp, Eye, EyeOff } from "lucide-react";
 
 const SignIn = () => {
@@ -17,7 +17,7 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   
-  const { signIn, signInWithGoogle, user } = useAuth();
+  const { signIn, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -29,6 +29,17 @@ const SignIn = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      toast({
+        title: "Invalid password format",
+        description: "Please check your password meets the requirements.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setLoading(true);
     
     const { error } = await signIn(email, password);
@@ -127,29 +138,6 @@ const SignIn = () => {
                 </Button>
               </form>
 
-              <div className="relative">
-                <Separator className="bg-border" />
-                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-                  OR
-                </span>
-              </div>
-
-              <Button 
-                variant="outline" 
-                className="w-full border-border hover:bg-muted/50"
-                onClick={async () => {
-                  const { error } = await signInWithGoogle();
-                  if (error) {
-                    toast({
-                      title: "Google sign in failed",
-                      description: error.message,
-                      variant: "destructive",
-                    });
-                  }
-                }}
-              >
-                Continue with Google
-              </Button>
 
               <div className="text-center text-sm text-muted-foreground">
                 Don't have an account?{" "}
