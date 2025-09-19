@@ -1,45 +1,86 @@
 export interface PasswordValidation {
   isValid: boolean;
   errors: string[];
+  criteria: PasswordCriteria[];
+}
+
+export interface PasswordCriteria {
+  label: string;
+  met: boolean;
+  icon: 'check' | 'x';
 }
 
 export const validatePassword = (password: string): PasswordValidation => {
   const errors: string[] = [];
+  const criteria: PasswordCriteria[] = [];
 
   // Minimum length: 8 characters
-  if (password.length < 8) {
+  const hasMinLength = password.length >= 8;
+  criteria.push({
+    label: 'At least 8 characters',
+    met: hasMinLength,
+    icon: hasMinLength ? 'check' : 'x'
+  });
+  if (!hasMinLength) {
     errors.push('Password must be at least 8 characters long');
   }
 
   // Must include at least one lowercase letter
-  if (!/[a-z]/.test(password)) {
+  const hasLowercase = /[a-z]/.test(password);
+  criteria.push({
+    label: 'One lowercase letter (a-z)',
+    met: hasLowercase,
+    icon: hasLowercase ? 'check' : 'x'
+  });
+  if (!hasLowercase) {
     errors.push('Password must include at least one lowercase letter');
   }
 
   // Must include at least one uppercase letter
-  if (!/[A-Z]/.test(password)) {
+  const hasUppercase = /[A-Z]/.test(password);
+  criteria.push({
+    label: 'One uppercase letter (A-Z)',
+    met: hasUppercase,
+    icon: hasUppercase ? 'check' : 'x'
+  });
+  if (!hasUppercase) {
     errors.push('Password must include at least one uppercase letter');
   }
 
   // Must include at least one digit
-  if (!/\d/.test(password)) {
+  const hasDigit = /\d/.test(password);
+  criteria.push({
+    label: 'One number (0-9)',
+    met: hasDigit,
+    icon: hasDigit ? 'check' : 'x'
+  });
+  if (!hasDigit) {
     errors.push('Password must include at least one digit');
   }
 
   // Must include at least one special character
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+  criteria.push({
+    label: 'One special character (!@#$%^&*)',
+    met: hasSpecialChar,
+    icon: hasSpecialChar ? 'check' : 'x'
+  });
+  if (!hasSpecialChar) {
     errors.push('Password must include at least one special character (!@#$%^&* etc.)');
   }
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
+    criteria
   };
 };
 
 export const getPasswordStrength = (password: string): { strength: number; label: string; color: string } => {
+  if (!password) return { strength: 0, label: '', color: '' };
+  
   const validation = validatePassword(password);
-  const score = 5 - validation.errors.length;
+  const score = validation.criteria.filter(c => c.met).length;
 
   if (score <= 1) return { strength: score, label: 'Very Weak', color: 'text-red-500' };
   if (score === 2) return { strength: score, label: 'Weak', color: 'text-orange-500' };

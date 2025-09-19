@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TrendingUp, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
+import { TrendingUp, Eye, EyeOff, Check, X } from "lucide-react";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -153,41 +153,74 @@ const SignUp = () => {
                      </button>
                    </div>
                    {formData.password && (
-                     <div className="space-y-2">
+                     <div className="space-y-3">
                        {(() => {
                          const { strength, label, color } = getPasswordStrength(formData.password);
+                         const validation = validatePassword(formData.password);
                          return (
-                           <div className="flex items-center gap-2">
-                             <div className="flex-1 bg-muted rounded-full h-1.5">
-                               <div 
-                                 className={`h-full rounded-full transition-all duration-300 ${
-                                   strength <= 1 ? 'bg-red-500' :
-                                   strength === 2 ? 'bg-orange-500' :
-                                   strength === 3 ? 'bg-yellow-500' :
-                                   strength === 4 ? 'bg-blue-500' : 'bg-green-500'
-                                 }`}
-                                 style={{ width: `${(strength / 5) * 100}%` }}
-                               />
+                           <>
+                             <div className="flex items-center gap-2">
+                               <div className="flex-1 bg-muted rounded-full h-2">
+                                 <div 
+                                   className={`h-full rounded-full transition-all duration-300 ${
+                                     strength <= 1 ? 'bg-red-500' :
+                                     strength === 2 ? 'bg-orange-500' :
+                                     strength === 3 ? 'bg-yellow-500' :
+                                     strength === 4 ? 'bg-blue-500' : 'bg-green-500'
+                                   }`}
+                                   style={{ width: `${(strength / 5) * 100}%` }}
+                                 />
+                               </div>
+                               <span className={`text-sm font-medium ${color}`}>{label}</span>
                              </div>
-                             <span className={`text-xs font-medium ${color}`}>{label}</span>
-                           </div>
+                             <div className="bg-muted/30 rounded-lg p-3 space-y-2">
+                               <p className="text-sm font-medium text-foreground">Password Requirements:</p>
+                               <div className="grid grid-cols-1 gap-1">
+                                 {validation.criteria.map((criterion, index) => (
+                                   <div key={index} className="flex items-center gap-2 text-sm">
+                                     {criterion.icon === 'check' ? (
+                                       <Check className="h-4 w-4 text-green-500" />
+                                     ) : (
+                                       <X className="h-4 w-4 text-red-500" />
+                                     )}
+                                     <span className={criterion.met ? 'text-green-600' : 'text-muted-foreground'}>
+                                       {criterion.label}
+                                     </span>
+                                   </div>
+                                 ))}
+                               </div>
+                             </div>
+                           </>
                          );
                        })()}
-                       <div className="space-y-1">
-                         {validatePassword(formData.password).errors.map((error, index) => (
-                           <div key={index} className="flex items-center gap-2 text-xs text-red-500">
-                             <AlertCircle className="h-3 w-3" />
-                             <span>{error}</span>
-                           </div>
-                         ))}
-                         {validatePassword(formData.password).isValid && (
-                           <div className="flex items-center gap-2 text-xs text-green-500">
-                             <CheckCircle className="h-3 w-3" />
-                             <span>Password meets all requirements</span>
-                           </div>
-                         )}
+                   {!formData.password && (
+                     <div className="bg-muted/30 rounded-lg p-3 space-y-2">
+                       <p className="text-sm font-medium text-foreground">Password Requirements:</p>
+                       <div className="grid grid-cols-1 gap-1">
+                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                           <X className="h-4 w-4" />
+                           <span>At least 8 characters</span>
+                         </div>
+                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                           <X className="h-4 w-4" />
+                           <span>One lowercase letter (a-z)</span>
+                         </div>
+                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                           <X className="h-4 w-4" />
+                           <span>One uppercase letter (A-Z)</span>
+                         </div>
+                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                           <X className="h-4 w-4" />
+                           <span>One number (0-9)</span>
+                         </div>
+                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                           <X className="h-4 w-4" />
+                           <span>One special character (!@#$%^&*)</span>
+                         </div>
                        </div>
                      </div>
+                   )}
+                 </div>
                    )}
                  </div>
 
