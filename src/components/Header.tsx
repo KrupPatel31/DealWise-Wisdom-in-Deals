@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { TrendingUp, ShoppingCart, User, LogOut, Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -21,7 +21,6 @@ export const Header = () => {
     { name: "Search", href: "/search" },
     { name: "How It Works", href: "/how-it-works" },
     { name: "Demo", href: "/demo" },
-    { name: "Scraper", href: "/competitor-analysis" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
@@ -34,7 +33,7 @@ export const Header = () => {
             <TrendingUp className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold text-primary">DEALWISE</span>
           </Link>
-          
+
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-6">
             {navigation.map((item) => (
@@ -47,7 +46,7 @@ export const Header = () => {
               </Link>
             ))}
           </nav>
-          
+
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-3">
             {user ? (
@@ -58,7 +57,7 @@ export const Header = () => {
                     <span className="sr-only">Cart</span>
                   </Button>
                 </Link>
-                
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm">
@@ -66,7 +65,10 @@ export const Header = () => {
                       <span className="hidden sm:inline">Account</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-background border-border">
+                  <DropdownMenuContent
+                    align="end"
+                    className="bg-background border-border"
+                  >
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
@@ -82,7 +84,10 @@ export const Header = () => {
                   </Button>
                 </Link>
                 <Link to="/sign-up">
-                  <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Button
+                    size="sm"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
                     <span className="hidden sm:inline">Start Comparing</span>
                     <span className="sm:hidden">Sign Up</span>
                   </Button>
@@ -101,7 +106,7 @@ export const Header = () => {
                 </Button>
               </Link>
             )}
-            
+
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm" className="md:hidden">
@@ -113,9 +118,11 @@ export const Header = () => {
                 <div className="flex flex-col gap-4 mt-6">
                   <div className="flex items-center gap-2 mb-4">
                     <TrendingUp className="h-6 w-6 text-primary" />
-                    <span className="text-xl font-bold text-primary">DEALWISE</span>
+                    <span className="text-xl font-bold text-primary">
+                      DEALWISE
+                    </span>
                   </div>
-                  
+
                   <nav className="flex flex-col gap-3">
                     {navigation.map((item) => (
                       <Link
@@ -128,7 +135,7 @@ export const Header = () => {
                       </Link>
                     ))}
                   </nav>
-                  
+
                   <div className="mt-6 pt-6 border-t border-border">
                     {user ? (
                       <div className="space-y-3">
