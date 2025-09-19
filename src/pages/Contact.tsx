@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Zap } from "lucide-react";
 import { Mail, Phone, MapPin, Clock, MessageCircle, Users } from "lucide-react";
 
 const contactInfo = [
@@ -277,9 +279,17 @@ const Contact = () => {
             Join millions of smart shoppers who use DealWise to find the best
             deals
           </p>
-          <Button className="bg-accent text-accent-foreground px-8 py-3 text-lg hover:bg-accent/90">
-            Try DealWise Now
-          </Button>
+          <div className="flex justify-center gap-4">
+            <Link to="/sign-up" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto bg-gradient-to-r from-accent to-primary text-white hover:from-accent/90 hover:to-primary/90 shadow-glow font-medium px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg animate-scale-in"
+              >
+                <Zap className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                Try DealWise Now
+              </Button>
+            </Link>
+          </div>
         </Card>
       </main>
     </div>
