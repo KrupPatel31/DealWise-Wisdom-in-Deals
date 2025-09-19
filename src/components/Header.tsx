@@ -63,10 +63,16 @@ export const Header = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm">
                       <User className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">Account</span>
+                      <span className="hidden sm:inline">{user.full_name}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-background border-border">
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="flex items-center">
+                        <User className="h-4 w-4 mr-2" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
@@ -132,6 +138,15 @@ export const Header = () => {
                   <div className="mt-6 pt-6 border-t border-border">
                     {user ? (
                       <div className="space-y-3">
+                        <p className="text-sm text-muted-foreground px-3">
+                          Signed in as {user.full_name}
+                        </p>
+                        <Link to="/profile" onClick={() => setIsOpen(false)}>
+                          <Button variant="outline" className="w-full justify-start">
+                            <User className="h-4 w-4 mr-2" />
+                            Profile
+                          </Button>
+                        </Link>
                         <Button
                           variant="outline"
                           className="w-full justify-start"
