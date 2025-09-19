@@ -12,7 +12,6 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import Profile from "./pages/Profile";
 import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 import CompetitorAnalysis from "./pages/CompetitorAnalysis";
@@ -36,7 +35,6 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/profile" element={<Profile />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/competitor-analysis" element={<CompetitorAnalysis />} />
           <Route path="/search" element={<Search />} />
