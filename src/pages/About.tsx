@@ -15,25 +15,19 @@ const stats = [
 
 const team = [
   {
-    name: "Sarah Chen",
+    name: "Mayur Boricha",
     role: "CEO & Founder",
-    bio: "Former Amazon executive with 10+ years in e-commerce and data analytics",
-    image:
-      "https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=300&h=300&fit=crop&crop=face",
+    image: "/images/team/Mayur Boricha.jpg",
   },
   {
-    name: "Michael Rodriguez",
+    name: "Jainam Khadalia",
     role: "CTO",
-    bio: "Ex-Google engineer specializing in large-scale distributed systems and AI",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face",
+    image: "/images/team/Jainam Khadalia.jpg",
   },
   {
-    name: "Emily Watson",
+    name: "Krup Patel",
     role: "Head of Product",
-    bio: "Former Shopify product leader with expertise in consumer shopping behavior",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop&crop=face",
+    image: "/images/team/Krup Patel.jpg",
   },
 ];
 
@@ -158,7 +152,6 @@ const About = () => {
                   {member.name}
                 </h3>
                 <p className="text-accent font-medium mb-4">{member.role}</p>
-                <p className="text-sm text-muted-foreground">{member.bio}</p>
               </Card>
             ))}
           </div>
