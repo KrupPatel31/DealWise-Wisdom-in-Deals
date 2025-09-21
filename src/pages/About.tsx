@@ -1,17 +1,10 @@
 import { Header } from "@/components/Header";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Users, Target, Award } from "lucide-react";
+import { TrendingUp, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Zap } from "lucide-react";
-
-const stats = [
-  { number: "2M+", label: "Active Users", icon: Users },
-  { number: "50+", label: "Partner Stores", icon: TrendingUp },
-  { number: "$100M+", label: "Money Saved", icon: Target },
-  { number: "99.9%", label: "Uptime", icon: Award },
-];
 
 const team = [
   {
@@ -76,24 +69,6 @@ const About = () => {
               </div>
             </div>
           </Card>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
-          {stats.map((stat, index) => (
-            <Card
-              key={index}
-              className="p-6 bg-deal border-deal-border text-center hover:border-accent/50 transition-all duration-300"
-            >
-              <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                <stat.icon className="h-6 w-6 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-accent mb-2">
-                {stat.number}
-              </div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
-            </Card>
-          ))}
         </div>
 
         {/* Our Values */}
