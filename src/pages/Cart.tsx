@@ -141,7 +141,7 @@ const Cart = () => {
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-full sm:w-20 h-32 sm:h-20 object-cover rounded-lg"
+                        className="w-24 h-24 sm:w-20 sm:h-20 object-cover rounded-lg self-center"
                       />
 
                       <div className="flex-1 space-y-3">
