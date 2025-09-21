@@ -114,31 +114,6 @@ const HowItWorks = () => {
                 </div>
               </div>
             </Card>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="p-6 bg-deal border-deal-border text-center">
-                <div className="text-3xl font-bold text-accent mb-2">2M+</div>
-                <div className="text-sm text-muted-foreground">Happy Users</div>
-              </Card>
-              <Card className="p-6 bg-deal border-deal-border text-center">
-                <div className="text-3xl font-bold text-primary mb-2">50+</div>
-                <div className="text-sm text-muted-foreground">
-                  Partner Stores
-                </div>
-              </Card>
-              <Card className="p-6 bg-deal border-deal-border text-center">
-                <div className="text-3xl font-bold text-accent mb-2">1M+</div>
-                <div className="text-sm text-muted-foreground">
-                  Products Tracked
-                </div>
-              </Card>
-              <Card className="p-6 bg-deal border-deal-border text-center">
-                <div className="text-3xl font-bold text-primary mb-2">24/7</div>
-                <div className="text-sm text-muted-foreground">
-                  Price Updates
-                </div>
-              </Card>
-            </div>
           </div>
         </div>
 
