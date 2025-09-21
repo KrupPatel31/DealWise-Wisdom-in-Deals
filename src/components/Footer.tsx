@@ -51,6 +51,7 @@ export const Footer = () => {
               {[
                 { name: "Home", path: "/" },
                 { name: "Features", path: "/features" },
+                { name: "Search", path: "/search" },
                 { name: "How It Works", path: "/how-it-works" },
                 { name: "About", path: "/about" },
                 { name: "Contact", path: "/contact" },
