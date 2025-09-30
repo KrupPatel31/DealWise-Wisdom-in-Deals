@@ -6,7 +6,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 const deals = [
   {
     image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop&auto=format",
+      "https://media.tatacroma.com/Croma%20Assets/Entertainment/Headphones%20and%20Earphones/Images/262566_0_emihyi.png",
     title: "Sony WH-1000XM5 Noise Cancelling Headphones",
     currentPrice: "₹24,990",
     originalPrice: "₹29,990",
@@ -22,8 +22,7 @@ const deals = [
     availability: "In stock - Delhi warehouse",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=600&fit=crop&auto=format",
+    image: "https://m.media-amazon.com/images/I/71RDgtHsREL.jpg",
     title: "Apple MacBook Air M2 (2022)",
     currentPrice: "₹1,04,900",
     originalPrice: "₹1,19,900",
@@ -40,7 +39,7 @@ const deals = [
   },
   {
     image:
-      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&h=600&fit=crop&auto=format",
+      "https://rukminim2.flixcart.com/image/704/844/xif0q/mobile/r/w/j/12r-cph2585-oneplus-original-imah9zk6nddhcbsh.jpeg?q=90&crop=false",
     title: "OnePlus 12R 5G Smartphone",
     currentPrice: "₹39,999",
     originalPrice: "₹45,999",
@@ -57,7 +56,7 @@ const deals = [
   },
   {
     image:
-      "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=600&fit=crop&auto=format",
+      "https://i01.appmifile.com/webfile/globalimg/products/m/mi-tv-4x-65/app_01.jpg",
     title: "Mi 65-inch 4K Android TV",
     currentPrice: "₹54,999",
     originalPrice: "₹79,999",
@@ -73,8 +72,7 @@ const deals = [
     availability: "Available nationwide",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=600&h=600&fit=crop&auto=format",
+    image: "https://m.media-amazon.com/images/I/61BrDg5QSUL.jpg",
     title: "Prestige Svachh 5L Pressure Cooker",
     currentPrice: "₹2,499",
     originalPrice: "₹3,995",
@@ -90,8 +88,7 @@ const deals = [
     availability: "In stock - Chennai warehouse",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&h=600&fit=crop&auto=format",
+    image: "https://m.media-amazon.com/images/I/61ni3t1ryQL.jpg",
     title: "Logitech MX Master 3S Wireless Mouse",
     currentPrice: "₹7,995",
     originalPrice: "₹9,995",
