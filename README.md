@@ -45,7 +45,7 @@ DealWise is a modern **frontend web application** that provides a clean and intu
 git clone https://github.com/KrupPatel31/DealWise-Wisdom-in-Deals.git
 
 # Navigate to project
-cd dealwise
+cd DealWise-Wisdom-in-Deals
 
 # Install dependencies
 npm install
