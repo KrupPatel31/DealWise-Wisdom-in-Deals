@@ -42,7 +42,7 @@ DealWise is a modern **frontend web application** that provides a clean and intu
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/dealwise.git
+git clone https://github.com/KrupPatel31/DealWise-Wisdom-in-Deals.git
 
 # Navigate to project
 cd dealwise
