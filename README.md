@@ -1,35 +1,34 @@
-# DealWise - Smart Deal Finder
+# 🛒 DealWise – Smart Deal Finder
 
-A modern web application that helps users find the best deals across multiple e-commerce platforms.
+🔗 **Live Demo:** https://dealwisede.netlify.app/
 
-## Features
+DealWise is a modern **frontend web application** that provides a clean and intuitive interface for exploring, comparing, and managing online deals across different e-commerce platforms.
 
-- **Smart Search**: Search for products across Amazon, Flipkart, and other platforms
-- **Price Comparison**: Compare prices from multiple retailers
-- **Deal Alerts**: Get notified about price drops and special offers
-- **User Authentication**: Secure login and signup system
-- **Shopping Cart**: Save and manage your favorite deals
-- **Responsive Design**: Works seamlessly on desktop and mobile
+---
 
-## Tech Stack
+## ✨ Features
 
-### Frontend
-- **React 18** - UI library
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **Tailwind CSS** - Utility-first styling
-- **Shadcn/UI** - Component library
-- **React Router** - Client-side routing
-- **React Query** - Data fetching and caching
-- **React Hook Form** - Form handling
-- **Zod** - Schema validation
+- 🔍 **Smart Search UI** – User-friendly product search interface  
+- 💰 **Price Comparison UI** – Visually compare deals  
+- 🔔 **Deal Alerts UI** – Notification interface for offers  
+- 🔐 **Authentication Pages** – Sign In & Sign Up screens  
+- 🛍 **Shopping Cart UI** – Save and manage favorite deals  
+- 📱 **Responsive Design** – Optimized for desktop and mobile  
 
-### Backend
-- **Node.js** - Runtime environment
-- **Express** - Web framework
-- **PostgreSQL** - Database
-- **JWT** - Authentication tokens
-- **bcrypt** - Password hashing
+---
+
+## 🛠 Tech Stack
+
+### 🎨 Frontend
+- ⚛️ **React 18** – Component-based UI development  
+- 🟦 **TypeScript** – Type safety and scalability  
+- ⚡ **Vite** – Fast build tool and dev server  
+- 🎨 **Tailwind CSS** – Utility-first styling  
+- 🧩 **Shadcn/UI** – Reusable UI components  
+- 🧭 **React Router** – Client-side routing  
+- 📦 **React Query** – Data handling structure  
+- 📝 **React Hook Form** – Form management  
+- ✅ **Zod** – Schema-based validation  
 
 ## Getting Started
 
@@ -37,7 +36,7 @@ A modern web application that helps users find the best deals across multiple e-
 
 - Node.js 18+ 
 - npm or yarn
-- PostgreSQL (for backend)
+- PostgreSQL
 
 ### Frontend Setup
 
@@ -55,10 +54,6 @@ A modern web application that helps users find the best deals across multiple e-
    ```bash
    npm run build
    ```
-
-### Backend Setup
-
-See [backend/README.md](./backend/README.md) for detailed backend setup instructions.
 
 ## Project Structure
 
@@ -135,5 +130,3 @@ VITE_API_URL=http://localhost:5000/api
 This project is private and proprietary.
 
 ---
-
-Built with ❤️ using [Lovable](https://lovable.dev)
