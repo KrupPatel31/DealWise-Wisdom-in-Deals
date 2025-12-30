@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Search, Filter, SortAsc, Star, ShoppingCart, Tag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +16,8 @@ import {
   ProductSearchService,
   ProductData,
 } from "@/utils/ProductSearchService";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export const ProductSearchBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,6 +26,18 @@ export const ProductSearchBar = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [isLoading, setIsLoading] = useState(false);
+  
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleAddToCart = (product: ProductData) => {
+    if (!user) {
+      toast.error("Please sign in to add items to cart");
+      navigate("/signin");
+      return;
+    }
+    toast.success(`${product.title} added to cart!`);
+  };
 
   useEffect(() => {
     // Load mock products for demo
@@ -263,10 +278,21 @@ export const ProductSearchBar = () => {
                   )}
                 </div>
 
-                {/* Action Button */}
-                <Button className="w-full mt-4" size="sm">
-                  Compare Prices
-                </Button>
+                {/* Action Buttons */}
+                <div className="flex gap-2 mt-4">
+                  <Button className="flex-1" size="sm">
+                    Compare Prices
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add to Cart
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
