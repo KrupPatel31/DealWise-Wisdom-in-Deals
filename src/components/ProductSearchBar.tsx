@@ -213,13 +213,13 @@ export const ProductSearchBar = () => {
         {filteredProducts.map((product) => (
           <Card
             key={product.id}
-            className="hover:shadow-lg transition-all duration-300 group"
+            className="hover:shadow-lg transition-all duration-300 group h-full flex flex-col"
           >
-            <CardContent className="p-4 h-full">
-              <div className="flex flex-col h-full space-y-3">
+            <CardContent className="p-4 flex-1 flex flex-col">
+              <div className="flex flex-col h-full">
                 {/* Product Image */}
                 {product.image && (
-                  <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+                  <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3">
                     <img
                       src={product.image}
                       alt={product.title}
@@ -229,7 +229,7 @@ export const ProductSearchBar = () => {
                 )}
 
                 {/* Product Info */}
-                <div className="space-y-2">
+                <div className="flex-1 space-y-2">
                   <h3 className="font-semibold line-clamp-2 text-sm leading-tight">
                     {product.title}
                   </h3>
