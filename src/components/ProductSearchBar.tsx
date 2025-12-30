@@ -215,8 +215,8 @@ export const ProductSearchBar = () => {
             key={product.id}
             className="hover:shadow-lg transition-all duration-300 group"
           >
-            <CardContent className="p-4">
-              <div className="space-y-3">
+            <CardContent className="p-4 h-full">
+              <div className="flex flex-col h-full space-y-3">
                 {/* Product Image */}
                 {product.image && (
                   <div className="aspect-square rounded-lg overflow-hidden bg-muted">
@@ -294,14 +294,13 @@ export const ProductSearchBar = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 mt-4">
-                  <Button className="flex-1" size="sm">
+                <div className="flex gap-2 mt-auto pt-4">
+                  <Button className="flex-1 text-xs px-2" size="sm">
                     Compare Prices
                   </Button>
                   <Button 
-                    variant="outline" 
                     size="sm" 
-                    className="flex-1"
+                    className="flex-1 text-xs px-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0"
                     onClick={() => handleAddToCart(product)}
                   >
                     <Plus className="h-4 w-4 mr-1" />
