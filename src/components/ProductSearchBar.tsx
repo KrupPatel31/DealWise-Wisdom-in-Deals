@@ -17,6 +17,7 @@ import {
   ProductData,
 } from "@/utils/ProductSearchService";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
 
 export const ProductSearchBar = () => {
@@ -28,14 +29,38 @@ export const ProductSearchBar = () => {
   const [isLoading, setIsLoading] = useState(false);
   
   const { user } = useAuth();
+  const { addToCart } = useCart();
   const navigate = useNavigate();
+
+  const parsePrice = (priceStr: string): number => {
+    const numStr = priceStr.replace(/[₹,]/g, "");
+    return parseFloat(numStr) || 0;
+  };
+
+  const parseDiscount = (discountStr?: string): number => {
+    if (!discountStr) return 0;
+    const match = discountStr.match(/(\d+)/);
+    return match ? parseInt(match[1]) : 0;
+  };
 
   const handleAddToCart = (product: ProductData) => {
     if (!user) {
       toast.error("Please sign in to add items to cart");
-      navigate("/signin");
+      navigate("/sign-in");
       return;
     }
+    
+    const cartItem = {
+      id: product.id,
+      name: product.title,
+      price: parsePrice(product.price),
+      originalPrice: parsePrice(product.originalPrice || product.price),
+      image: product.image || "",
+      store: product.store || "Unknown",
+      discount: parseDiscount(product.discount),
+    };
+    
+    addToCart(cartItem);
     toast.success(`${product.title} added to cart!`);
   };
 
@@ -90,16 +115,6 @@ export const ProductSearchBar = () => {
     setIsLoading(false);
   };
 
-  const parsePrice = (priceStr: string): number => {
-    const numStr = priceStr.replace(/[₹,]/g, "");
-    return parseFloat(numStr) || 0;
-  };
-
-  const parseDiscount = (discountStr?: string): number => {
-    if (!discountStr) return 0;
-    const match = discountStr.match(/(\d+)/);
-    return match ? parseInt(match[1]) : 0;
-  };
 
   const getCategories = () => {
     const categories = [

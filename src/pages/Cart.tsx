@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,60 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 import { Link } from "react-router-dom";
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice: number;
-  quantity: number;
-  image: string;
-  store: string;
-  discount: number;
-}
 
 const Cart = () => {
   const { user } = useAuth();
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "Samsung Galaxy S24 Ultra",
-      price: 89999,
-      originalPrice: 124999,
-      quantity: 1,
-      image:
-        "https://m.media-amazon.com/images/I/717Q2swzhBL._UF894,1000_QL80_.jpg",
-      store: "Amazon",
-      discount: 28,
-    },
-    {
-      id: "2",
-      name: "Sony WH-1000XM5 Headphones",
-      price: 24990,
-      originalPrice: 29990,
-      quantity: 2,
-      image:
-        "https://www.sony.co.in/image/6145c1d32e6ac8e63a46c912dc33c5bb?fmt=pjpeg&wid=330&bgcolor=FFFFFF&bgc=FFFFFF",
-      store: "Flipkart",
-      discount: 17,
-    },
-  ]);
-
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity === 0) {
-      removeItem(id);
-      return;
-    }
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
+  const { cartItems, updateQuantity, removeFromCart } = useCart();
 
   const removeItem = (id: string) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
+    removeFromCart(id);
   };
 
   const subtotal = cartItems.reduce(
@@ -71,6 +25,7 @@ const Cart = () => {
     (sum, item) => sum + (item.originalPrice - item.price) * item.quantity,
     0
   );
+
 
   if (!user) {
     return (
