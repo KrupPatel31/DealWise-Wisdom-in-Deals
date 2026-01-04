@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -10,12 +11,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { TrendingUp, Eye, EyeOff, Check, X, CheckCircle } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
 const ResetPassword = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const token = searchParams.get('token');
+  const { session, updatePassword } = useAuth();
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -23,7 +21,15 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
+  const [isValidSession, setIsValidSession] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if user has a valid recovery session
+    if (session) {
+      setIsValidSession(true);
+    }
+  }, [session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,40 +55,26 @@ const ResetPassword = () => {
 
     setLoading(true);
 
-    try {
-      const response = await fetch(`${API_URL}/auth/reset-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, password })
-      });
+    const { error } = await updatePassword(password);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setResetSuccess(true);
-        toast({
-          title: "Password reset successful",
-          description: "You can now sign in with your new password.",
-        });
-      } else {
-        toast({
-          title: "Reset failed",
-          description: data.error || "Invalid or expired reset link.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
+    if (error) {
       toast({
-        title: "Network error",
-        description: "Please check your connection and try again.",
+        title: "Reset failed",
+        description: error.message || "Unable to reset password.",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
+    } else {
+      setResetSuccess(true);
+      toast({
+        title: "Password reset successful",
+        description: "You can now sign in with your new password.",
+      });
     }
+
+    setLoading(false);
   };
 
-  if (!token) {
+  if (!isValidSession && !session) {
     return (
       <div className="min-h-screen dark">
         <Header />
