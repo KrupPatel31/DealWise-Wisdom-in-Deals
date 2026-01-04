@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,49 +10,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { TrendingUp, ArrowLeft, Mail, CheckCircle } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const { toast } = useToast();
+  const { resetPassword } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const response = await fetch(`${API_URL}/auth/request-reset`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
+    const { error } = await resetPassword(email);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setEmailSent(true);
-        toast({
-          title: "Check your email",
-          description: "If an account exists, you'll receive a password reset link.",
-        });
-      } else {
-        toast({
-          title: "Request failed",
-          description: data.error || "Please try again later.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
+    if (error) {
       toast({
-        title: "Network error",
-        description: "Please check your connection and try again.",
+        title: "Request failed",
+        description: error.message || "Please try again later.",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
+    } else {
+      setEmailSent(true);
+      toast({
+        title: "Check your email",
+        description: "If an account exists, you'll receive a password reset link.",
+      });
     }
+
+    setLoading(false);
   };
 
   return (
