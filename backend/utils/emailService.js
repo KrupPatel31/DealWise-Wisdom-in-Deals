@@ -6,8 +6,10 @@ const FROM_EMAIL = process.env.FROM_EMAIL || 'DealWise <onboarding@resend.dev>';
 
 const sendEmail = async (to, subject, html) => {
   if (!RESEND_API_KEY) {
-    console.warn('RESEND_API_KEY not set - falling back to mock email');
-    console.log(`\n[MOCK EMAIL] To: ${to}\nSubject: ${subject}\n${html}\n`);
+    console.warn('RESEND_API_KEY not set - using mock mode');
+    // Sanitize logging - only show email type, not full content or tokens
+    const maskedEmail = to ? `${to.substring(0, 3)}***@${to.split('@')[1] || '***'}` : '***';
+    console.log(`[MOCK EMAIL] Type: ${subject.split(' - ')[0]}, Recipient: ${maskedEmail}`);
     return { success: true, mock: true };
   }
 
@@ -29,14 +31,14 @@ const sendEmail = async (to, subject, html) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Resend API error:', data);
+      console.error('Resend API error:', data.message || 'Unknown error');
       return { success: false, error: data };
     }
 
-    console.log('Email sent successfully:', data.id);
+    console.log('Email sent successfully');
     return { success: true, id: data.id };
   } catch (error) {
-    console.error('Email send error:', error);
+    console.error('Email send error:', error.message);
     return { success: false, error: error.message };
   }
 };
