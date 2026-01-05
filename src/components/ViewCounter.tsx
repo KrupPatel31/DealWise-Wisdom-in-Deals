@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Eye, Users, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -6,22 +7,22 @@ export const ViewCounter = () => {
   const [viewCount, setViewCount] = useState<number>(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [todayViews, setTodayViews] = useState<number>(0);
+  const location = useLocation();
 
   useEffect(() => {
     const incrementAndFetchCount = async () => {
       try {
-        // Call the database function to increment and get the count
+        // Call the database function to increment and get the count for current page
         const { data, error } = await supabase.rpc('increment_view_count', {
-          page: '/'
+          page: location.pathname
         });
-
         if (error) {
           console.error('Error incrementing view count:', error);
           // Fallback to fetching current count
           const { data: counterData } = await supabase
             .from('view_counter')
             .select('view_count')
-            .eq('page_path', '/')
+            .eq('page_path', location.pathname)
             .maybeSingle();
           
           if (counterData) {
@@ -60,7 +61,7 @@ export const ViewCounter = () => {
     };
 
     incrementAndFetchCount();
-  }, []);
+  }, [location.pathname]);
 
   const formatNumber = (num: number) => {
     return num.toLocaleString("en-IN");

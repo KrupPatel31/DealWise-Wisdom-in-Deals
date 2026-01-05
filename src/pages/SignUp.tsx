@@ -193,6 +193,8 @@ const SignUp = () => {
                            </>
                          );
                        })()}
+                     </div>
+                   )}
                    {!formData.password && (
                      <div className="bg-muted/30 rounded-lg p-3 space-y-2">
                        <p className="text-sm font-medium text-foreground">Password Requirements:</p>
@@ -219,8 +221,6 @@ const SignUp = () => {
                          </div>
                        </div>
                      </div>
-                   )}
-                 </div>
                    )}
                  </div>
 
