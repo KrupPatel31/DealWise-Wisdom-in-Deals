@@ -41,36 +41,13 @@ export type Database = {
         }
         Relationships: []
       }
-      view_counter: {
-        Row: {
-          created_at: string
-          id: string
-          page_path: string
-          updated_at: string
-          view_count: number
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          page_path?: string
-          updated_at?: string
-          view_count?: number
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          page_path?: string
-          updated_at?: string
-          view_count?: number
-        }
-        Relationships: []
-      }
+      
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      increment_view_count: { Args: { page?: string }; Returns: number }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

@@ -14,7 +14,6 @@ import {
   Heart,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ViewCounter } from "./ViewCounter";
 
 export const Footer = () => {
   return (
@@ -188,9 +187,7 @@ export const Footer = () => {
           </div>
         </div>
 
-        {/* View Counter */}
-        <Separator className="bg-border/30 my-6" />
-        <ViewCounter />
+        
       </div>
     </footer>
   );
