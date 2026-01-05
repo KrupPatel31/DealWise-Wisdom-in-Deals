@@ -69,8 +69,8 @@ const SignUp = () => {
       });
     } else {
       toast({
-        title: "Account created!",
-        description: "Welcome to DealWise! You can now start comparing deals.",
+        title: "Verify your email",
+        description: "Check your inbox for a confirmation link. Once you confirm your email, we'll sign you in automatically.",
       });
     }
     
