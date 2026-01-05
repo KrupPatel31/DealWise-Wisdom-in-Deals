@@ -1,5 +1,6 @@
 const errorHandler = (err, req, res, next) => {
-  console.error('Error:', err);
+  // Sanitize error logging - only log message, not full stack or sensitive data
+  console.error('Error:', err.message || 'Unknown error');
 
   // JWT errors
   if (err.name === 'JsonWebTokenError') {

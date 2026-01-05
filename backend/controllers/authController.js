@@ -51,7 +51,7 @@ const authController = {
         user: { id: user.id, email: user.email, full_name: user.full_name }
       });
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Registration error:', error.message);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -118,7 +118,7 @@ const authController = {
         }
       });
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Login error:', error.message);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -175,7 +175,7 @@ const authController = {
 
       res.json({ accessToken });
     } catch (error) {
-      console.error('Refresh error:', error);
+      console.error('Refresh error:', error.message);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -192,7 +192,7 @@ const authController = {
       res.clearCookie('refreshToken');
       res.json({ message: 'Logged out successfully' });
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('Logout error:', error.message);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -231,7 +231,7 @@ const authController = {
 
       res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
     } catch (error) {
-      console.error('Password reset request error:', error);
+      console.error('Password reset request error:', error.message);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -275,7 +275,7 @@ const authController = {
         throw error;
       }
     } catch (error) {
-      console.error('Password reset error:', error);
+      console.error('Password reset error:', error.message);
       res.status(500).json({ error: 'Internal server error' });
     }
   },
@@ -314,7 +314,7 @@ const authController = {
         throw error;
       }
     } catch (error) {
-      console.error('Email verification error:', error);
+      console.error('Email verification error:', error.message);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
