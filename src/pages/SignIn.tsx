@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { validatePassword } from "@/utils/passwordValidation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -30,11 +29,10 @@ const SignIn = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.isValid) {
+    if (!email || !password) {
       toast({
-        title: "Invalid password format",
-        description: "Please check your password meets the requirements.",
+        title: "Missing credentials",
+        description: "Please enter both email and password.",
         variant: "destructive",
       });
       return;
