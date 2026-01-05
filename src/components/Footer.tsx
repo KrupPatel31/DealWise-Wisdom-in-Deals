@@ -165,7 +165,7 @@ export const Footer = () => {
         {/* Copyright */}
         <div className="text-center pt-8 mt-8 border-t border-border/30">
           <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-            © 2025 DealWise. Made with
+            © 2025-26 DealWise. Made with
             <Heart className="h-4 w-4 text-red-500 fill-current" />
             by the DealWise team. All rights reserved.
           </p>
