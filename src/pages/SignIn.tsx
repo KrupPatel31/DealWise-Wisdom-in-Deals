@@ -39,27 +39,22 @@ const SignIn = () => {
     }
     
     setLoading(true);
-    const result = await signIn(email, password);
-
-    if (result.error) {
-      const message = (result.error && (result.error.message || String(result.error))) || 'Unable to sign in';
+    
+    const { error } = await signIn(email, password);
+    
+    if (error) {
       toast({
         title: "Sign in failed",
-        description: message,
+        description: error.message,
         variant: "destructive",
       });
-      setLoading(false);
-      return;
-    }
-
-    // If sign-in returned a session, navigate immediately. Otherwise rely on auth listener.
-    if (result.data?.session) {
-      toast({ title: "Welcome back!", description: "You have successfully signed in." });
-      navigate('/');
     } else {
-      toast({ title: "Signed in", description: "Sign-in succeeded. Finalizing..." });
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully signed in.",
+      });
     }
-
+    
     setLoading(false);
   };
 
