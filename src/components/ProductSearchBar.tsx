@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus } from "lucide-react";
+import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,7 +17,7 @@ import {
   ProductData,
 } from "@/utils/ProductSearchService";
 import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/hooks/useCart";
+import { useCart, CartItem } from "@/hooks/useCart";
 import { toast } from "sonner";
 
 export const ProductSearchBar = () => {
@@ -29,7 +29,7 @@ export const ProductSearchBar = () => {
   const [isLoading, setIsLoading] = useState(false);
   
   const { user } = useAuth();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems, updateQuantity } = useCart();
   const navigate = useNavigate();
 
   const parsePrice = (priceStr: string): number => {
@@ -41,6 +41,11 @@ export const ProductSearchBar = () => {
     if (!discountStr) return 0;
     const match = discountStr.match(/(\d+)/);
     return match ? parseInt(match[1]) : 0;
+  };
+
+  const getCartItemQuantity = (productId: string): number => {
+    const item = cartItems.find((i) => i.id === productId);
+    return item?.quantity || 0;
   };
 
   const handleAddToCart = (product: ProductData) => {
@@ -64,8 +69,29 @@ export const ProductSearchBar = () => {
     toast.success(`${product.title} added to cart!`);
   };
 
+  const handleIncrement = (product: ProductData) => {
+    if (!user) {
+      toast.error("Please sign in to add items to cart");
+      navigate("/sign-in");
+      return;
+    }
+    
+    const currentQty = getCartItemQuantity(product.id);
+    if (currentQty === 0) {
+      handleAddToCart(product);
+    } else {
+      updateQuantity(product.id, currentQty + 1);
+    }
+  };
+
+  const handleDecrement = (productId: string) => {
+    const currentQty = getCartItemQuantity(productId);
+    if (currentQty > 0) {
+      updateQuantity(productId, currentQty - 1);
+    }
+  };
+
   useEffect(() => {
-    // Load mock products for demo
     const mockProducts = ProductSearchService.getMockProducts();
     setProducts(mockProducts);
     setFilteredProducts(mockProducts);
@@ -80,7 +106,6 @@ export const ProductSearchBar = () => {
 
     let filtered = ProductSearchService.searchProducts(products, searchQuery);
 
-    // Filter by category
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
         (product) =>
@@ -88,7 +113,6 @@ export const ProductSearchBar = () => {
       );
     }
 
-    // Sort products
     switch (sortBy) {
       case "price-low":
         filtered.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
@@ -107,14 +131,12 @@ export const ProductSearchBar = () => {
         );
         break;
       default:
-        // relevance - keep original order
         break;
     }
 
     setFilteredProducts(filtered);
     setIsLoading(false);
   };
-
 
   const getCategories = () => {
     const categories = [
@@ -210,107 +232,136 @@ export const ProductSearchBar = () => {
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <Card
-            key={product.id}
-            className="hover:shadow-lg transition-all duration-300 group h-full flex flex-col"
-          >
-            <CardContent className="p-4 flex-1 flex flex-col">
-              <div className="flex flex-col h-full">
-                {/* Product Image */}
-                {product.image && (
-                  <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3">
-                    <img
-                      src={product.image}
-                      alt={product.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                )}
+        {filteredProducts.map((product) => {
+          const quantity = getCartItemQuantity(product.id);
+          
+          return (
+            <Card
+              key={product.id}
+              className="hover:shadow-lg transition-all duration-300 group h-full flex flex-col"
+            >
+              <CardContent className="p-4 flex-1 flex flex-col">
+                <div className="flex flex-col h-full">
+                  {/* Product Image */}
+                  {product.image && (
+                    <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3">
+                      <img
+                        src={product.image}
+                        alt={product.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
 
-                {/* Product Info */}
-                <div className="flex-1 space-y-2">
-                  <h3 className="font-semibold line-clamp-2 text-sm leading-tight">
-                    {product.title}
-                  </h3>
+                  {/* Product Info */}
+                  <div className="flex-1 space-y-2">
+                    <h3 className="font-semibold line-clamp-2 text-sm leading-tight">
+                      {product.title}
+                    </h3>
 
-                  {/* Price */}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-lg font-bold text-primary">
-                      {product.price}
-                    </span>
-                    {product.originalPrice && (
-                      <span className="text-sm text-muted-foreground line-through">
-                        {product.originalPrice}
+                    {/* Price */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-lg font-bold text-primary">
+                        {product.price}
                       </span>
+                      {product.originalPrice && (
+                        <span className="text-sm text-muted-foreground line-through">
+                          {product.originalPrice}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Discount Badge */}
+                    {product.discount && (
+                      <Badge
+                        variant="secondary"
+                        className="text-xs bg-green-100 text-green-700"
+                      >
+                        <Tag className="h-3 w-3 mr-1" />
+                        {product.discount}
+                      </Badge>
+                    )}
+
+                    {/* Rating */}
+                    {product.rating && (
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">
+                          {product.rating}
+                        </span>
+                        <span className="text-xs text-muted-foreground">/5</span>
+                      </div>
+                    )}
+
+                    {/* Store */}
+                    {product.store && (
+                      <div className="flex items-center gap-1">
+                        <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
+                          {product.store}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Category */}
+                    {product.category && (
+                      <Badge variant="outline" className="text-xs">
+                        {product.category}
+                      </Badge>
+                    )}
+
+                    {/* Description */}
+                    {product.description && (
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        {product.description}
+                      </p>
                     )}
                   </div>
 
-                  {/* Discount Badge */}
-                  {product.discount && (
-                    <Badge
-                      variant="secondary"
-                      className="text-xs bg-green-100 text-green-700"
-                    >
-                      <Tag className="h-3 w-3 mr-1" />
-                      {product.discount}
-                    </Badge>
-                  )}
-
-                  {/* Rating */}
-                  {product.rating && (
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm font-medium">
-                        {product.rating}
-                      </span>
-                      <span className="text-xs text-muted-foreground">/5</span>
-                    </div>
-                  )}
-
-                  {/* Store */}
-                  {product.store && (
-                    <div className="flex items-center gap-1">
-                      <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        {product.store}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Category */}
-                  {product.category && (
-                    <Badge variant="outline" className="text-xs">
-                      {product.category}
-                    </Badge>
-                  )}
-
-                  {/* Description */}
-                  {product.description && (
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {product.description}
-                    </p>
-                  )}
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 mt-auto pt-4">
+                    <Button className="flex-1 text-xs px-2" size="sm">
+                      Compare Prices
+                    </Button>
+                    
+                    {quantity === 0 ? (
+                      <Button 
+                        size="sm" 
+                        className="flex-1 text-xs px-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0"
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add to Cart
+                      </Button>
+                    ) : (
+                      <div className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 rounded-md">
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                          onClick={() => handleDecrement(product.id)}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="text-white font-bold min-w-[24px] text-center">
+                          {quantity}
+                        </span>
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                          onClick={() => handleIncrement(product)}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-2 mt-auto pt-4">
-                  <Button className="flex-1 text-xs px-2" size="sm">
-                    Compare Prices
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    className="flex-1 text-xs px-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add to Cart
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* No Results */}

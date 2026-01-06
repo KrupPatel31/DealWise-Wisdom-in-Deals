@@ -1,18 +1,24 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, ShoppingCart, User, LogOut, Menu, X } from "lucide-react";
+import { TrendingUp, ShoppingCart, User, LogOut, Menu, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
+import { useProfile } from "@/hooks/useProfile";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const Header = () => {
   const { user, signOut } = useAuth();
+  const { cartCount } = useCart();
+  const { profile } = useProfile();
   const [isOpen, setIsOpen] = useState(false);
 
   const navigation = [
@@ -23,6 +29,9 @@ export const Header = () => {
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
+
+  const displayName = profile?.full_name || user?.email?.split('@')[0] || 'User';
+  const displayEmail = profile?.email || user?.email || '';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -53,6 +62,11 @@ export const Header = () => {
                 <Link to="/cart">
                   <Button variant="ghost" size="sm" className="relative">
                     <ShoppingCart className="h-4 w-4" />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        {cartCount > 99 ? '99+' : cartCount}
+                      </span>
+                    )}
                     <span className="sr-only">Cart</span>
                   </Button>
                 </Link>
@@ -66,8 +80,18 @@ export const Header = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="bg-background border-border"
+                    className="bg-background border-border w-64"
                   >
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{displayName}</p>
+                        <p className="text-xs leading-none text-muted-foreground flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          {displayEmail}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
@@ -101,6 +125,11 @@ export const Header = () => {
               <Link to="/cart">
                 <Button variant="ghost" size="sm" className="relative">
                   <ShoppingCart className="h-4 w-4" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartCount > 99 ? '99+' : cartCount}
+                    </span>
+                  )}
                   <span className="sr-only">Cart</span>
                 </Button>
               </Link>
@@ -137,7 +166,11 @@ export const Header = () => {
 
                   <div className="mt-6 pt-6 border-t border-border">
                     {user ? (
-                      <div className="space-y-3">
+                      <div className="space-y-4">
+                        <div className="px-3 py-2 bg-muted/50 rounded-lg">
+                          <p className="text-sm font-medium">{displayName}</p>
+                          <p className="text-xs text-muted-foreground">{displayEmail}</p>
+                        </div>
                         <Button
                           variant="outline"
                           className="w-full justify-start"
