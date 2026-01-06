@@ -186,8 +186,6 @@ export const Footer = () => {
             <div className="text-xs text-muted-foreground">Uptime</div>
           </div>
         </div>
-
-        
       </div>
     </footer>
   );
