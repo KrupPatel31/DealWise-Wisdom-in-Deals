@@ -93,7 +93,7 @@ export class ProductSearchService {
         store: "Amazon",
         category: "Electronics",
         description: "Pure Android experience with AI features",
-        image: "https://www.dateks.lv/images/pic/2400/2400/664/1643.jpg",
+        image: "https://www.designinfo.in/wp-content/uploads/2023/10/Google-Pixel-8-Pro-128GB-Unlocked-Bay-1-optimized.webp"
       },
 
       // Electronics - Laptops
@@ -293,7 +293,7 @@ export class ProductSearchService {
         category: "Fashion",
         description: "Trendy oversized denim jacket",
         image:
-          "https://www.fugazee.com/cdn/shop/files/Main_52e81351-ea98-4bb8-b94d-5f357d8e6828.jpg?v=1746882797&width=1500",
+          "https://image.hm.com/assets/hm/db/85/db8510b9f83eb5b39e1a24de10cec51fd942fc77.jpg?imwidth=2160"
       },
 
       // Home & Kitchen
@@ -1137,7 +1137,7 @@ export class ProductSearchService {
         category: "Music",
         description: "Professional tabla set with carrying bag",
         image:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpnca9C5qm1khPBKLLEvZawno978Z1JMCh7A&s",
+          "https://m.media-amazon.com/images/I/81YcQ4HTb6S._AC_UF1000,1000_QL80_.jpg"
       },
       {
         id: "85",
