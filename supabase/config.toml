@@ -1,1 +1,4 @@
 project_id = "bpurlsnfjnzriyrnuknq"
+
+[functions.search-products]
+verify_jwt = false

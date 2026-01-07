@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus } from "lucide-react";
+import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,8 +17,9 @@ import {
   ProductData,
 } from "@/utils/ProductSearchService";
 import { useAuth } from "@/hooks/useAuth";
-import { useCart, CartItem } from "@/hooks/useCart";
+import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const ProductSearchBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,6 +28,7 @@ export const ProductSearchBar = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSearchingApi, setIsSearchingApi] = useState(false);
   
   const { user } = useAuth();
   const { addToCart, cartItems, updateQuantity } = useCart();
@@ -91,20 +93,78 @@ export const ProductSearchBar = () => {
     }
   };
 
+  // Fetch products from RapidAPI
+  const fetchProductsFromApi = useCallback(async (query: string) => {
+    if (!query.trim()) return;
+    
+    setIsSearchingApi(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('search-products', {
+        body: { query }
+      });
+
+      if (error) {
+        console.error('API search error:', error);
+        toast.error('Failed to fetch products from API');
+        return;
+      }
+
+      if (data?.products && data.products.length > 0) {
+        const transformedProducts: ProductData[] = data.products.map((p: any) => ({
+          id: p.id,
+          title: p.name,
+          price: `₹${p.price.toLocaleString('en-IN')}`,
+          originalPrice: p.originalPrice > p.price ? `₹${p.originalPrice.toLocaleString('en-IN')}` : undefined,
+          discount: p.discount ? `${p.discount}% off` : undefined,
+          rating: p.rating?.toString(),
+          store: p.store,
+          category: p.category,
+          description: p.description,
+          image: p.image,
+          link: p.link
+        }));
+        
+        setProducts(transformedProducts);
+        setFilteredProducts(transformedProducts);
+        toast.success(`Found ${transformedProducts.length} products`);
+      } else {
+        toast.info('No products found, showing local results');
+      }
+    } catch (error) {
+      console.error('Error searching products:', error);
+      toast.error('Search failed, showing local results');
+    } finally {
+      setIsSearchingApi(false);
+    }
+  }, []);
+
+  // Load mock products initially
   useEffect(() => {
     const mockProducts = ProductSearchService.getMockProducts();
     setProducts(mockProducts);
     setFilteredProducts(mockProducts);
   }, []);
 
+  // Debounced API search
   useEffect(() => {
-    handleSearch();
-  }, [searchQuery, selectedCategory, sortBy, products]);
+    const timer = setTimeout(() => {
+      if (searchQuery.trim().length >= 3) {
+        fetchProductsFromApi(searchQuery);
+      }
+    }, 500);
 
-  const handleSearch = () => {
+    return () => clearTimeout(timer);
+  }, [searchQuery, fetchProductsFromApi]);
+
+  // Local filtering and sorting
+  useEffect(() => {
+    handleLocalFilter();
+  }, [selectedCategory, sortBy, products]);
+
+  const handleLocalFilter = () => {
     setIsLoading(true);
 
-    let filtered = ProductSearchService.searchProducts(products, searchQuery);
+    let filtered = [...products];
 
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
@@ -214,11 +274,16 @@ export const ProductSearchBar = () => {
 
       {/* Results Count */}
       <div className="flex items-center justify-between">
-        <p className="text-muted-foreground">
-          {isLoading
-            ? "Searching..."
-            : `Showing ${filteredProducts.length} products`}
-        </p>
+        <div className="flex items-center gap-2">
+          {isSearchingApi && <Loader2 className="h-4 w-4 animate-spin" />}
+          <p className="text-muted-foreground">
+            {isSearchingApi
+              ? "Searching live products..."
+              : isLoading
+              ? "Filtering..."
+              : `Showing ${filteredProducts.length} products`}
+          </p>
+        </div>
         {searchQuery && (
           <Button
             variant="ghost"
