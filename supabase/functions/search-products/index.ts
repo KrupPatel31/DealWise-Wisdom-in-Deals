@@ -26,45 +26,71 @@ serve(async (req) => {
     console.log('Searching for products:', query);
 
     // Using Real-Time Product Search API from RapidAPI
-    const url = `https://real-time-product-search.p.rapidapi.com/search?q=${encodeURIComponent(query)}&country=in&language=en&limit=30`;
-    
+    // NOTE: API uses versioned endpoints (v2)
+    const url = `https://real-time-product-search.p.rapidapi.com/search-v2?q=${encodeURIComponent(query)}&country=in&language=en&limit=30`;
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'X-RapidAPI-Key': rapidApiKey,
-        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com'
-      }
+        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
+      },
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('RapidAPI error:', response.status, errorText);
-      
+
       // Return empty products so frontend can fall back to local data
       return new Response(
-        JSON.stringify({ products: [], fallback: true, message: 'API not subscribed - using local data' }),
+        JSON.stringify({
+          products: [],
+          fallback: true,
+          message: `RapidAPI error ${response.status}: ${errorText}`,
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const data = await response.json();
-    console.log('Products fetched successfully:', data.data?.length || 0, 'items');
+
+    const rawItems =
+      data?.data?.products || // search-v2 typical shape
+      data?.data ||
+      data?.products ||
+      [];
+
+    const items = Array.isArray(rawItems) ? rawItems : [];
+    console.log('Products fetched successfully:', items.length, 'items');
 
     // Transform the data to match our product structure
-    const products = (data.data || []).map((item: any, index: number) => ({
-      id: item.product_id || `product-${index}`,
-      name: item.product_title || 'Unknown Product',
-      price: parseFloat(item.offer?.price?.replace(/[^0-9.]/g, '')) || 0,
-      originalPrice: parseFloat(item.typical_price_range?.[1]?.replace(/[^0-9.]/g, '')) || parseFloat(item.offer?.price?.replace(/[^0-9.]/g, '')) || 0,
-      discount: item.offer?.discount || 0,
-      rating: parseFloat(item.product_rating) || 4.0,
-      reviews: parseInt(item.product_num_reviews) || 0,
-      store: item.offer?.store_name || item.product_source || 'Online Store',
-      category: item.product_category || 'General',
-      description: item.product_description || '',
-      image: item.product_photos?.[0] || item.product_photo || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
-      link: item.offer?.offer_page_url || item.product_page_url || '#'
-    }));
+    const products = items.map((item: any, index: number) => {
+      const offerPriceStr = item.offer?.price ?? item.price ?? '';
+      const typicalHighStr = item.typical_price_range?.[1] ?? item.typical_price_range?.[0] ?? '';
+
+      const price = parseFloat(String(offerPriceStr).replace(/[^0-9.]/g, '')) || 0;
+      const originalPrice =
+        parseFloat(String(typicalHighStr).replace(/[^0-9.]/g, '')) || price;
+
+      return {
+        id: item.product_id || item.id || `product-${index}`,
+        name: item.product_title || item.title || item.name || 'Unknown Product',
+        price,
+        originalPrice,
+        discount: item.offer?.discount || item.discount || 0,
+        rating: parseFloat(item.product_rating) || parseFloat(item.rating) || 4.0,
+        reviews: parseInt(item.product_num_reviews) || parseInt(item.reviews) || 0,
+        store: item.offer?.store_name || item.product_source || item.store || 'Online Store',
+        category: item.product_category || item.category || 'General',
+        description: item.product_description || item.description || '',
+        image:
+          item.product_photos?.[0] ||
+          item.product_photo ||
+          item.image ||
+          'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
+        link: item.offer?.offer_page_url || item.product_page_url || item.link || '#',
+      };
+    });
 
     return new Response(
       JSON.stringify({ products }),
