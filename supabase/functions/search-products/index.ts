@@ -37,10 +37,13 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      console.error('RapidAPI error:', response.status, await response.text());
+      const errorText = await response.text();
+      console.error('RapidAPI error:', response.status, errorText);
+      
+      // Return empty products so frontend can fall back to local data
       return new Response(
-        JSON.stringify({ error: 'Failed to fetch products' }),
-        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ products: [], fallback: true, message: 'API not subscribed - using local data' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
