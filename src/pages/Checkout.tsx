@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
 import { CreditCard, MapPin, Shield, Truck, ArrowLeft } from "lucide-react";
 
@@ -164,30 +165,78 @@ const Checkout = () => {
       return;
     }
 
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to place an order.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Simulate order processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Generate order number
+      const orderNumber = `DW${Date.now().toString(36).toUpperCase()}`;
 
-      // Here you would typically:
-      // 1. Save order to database
-      // 2. Process payment
-      // 3. Send confirmation email
-      // 4. Clear cart
+      // Prepare order items
+      const orderItems = cartItems.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image || "",
+      }));
+
+      // Save order to database
+      const { error: orderError } = await supabase.from("orders").insert({
+        user_id: user.id,
+        order_number: orderNumber,
+        status: "placed",
+        subtotal,
+        shipping,
+        total,
+        payment_method: paymentMethod,
+        shipping_address: address,
+        items: orderItems,
+        notes: orderNotes || null,
+      });
+
+      if (orderError) throw orderError;
+
+      // Send confirmation email
+      try {
+        await supabase.functions.invoke("send-order-confirmation", {
+          body: {
+            orderNumber,
+            customerEmail: address.email,
+            customerName: address.fullName,
+            items: orderItems,
+            subtotal,
+            shipping,
+            total,
+            paymentMethod,
+            shippingAddress: address,
+          },
+        });
+      } catch (emailError) {
+        console.error("Failed to send confirmation email:", emailError);
+        // Don't fail the order if email fails
+      }
 
       clearCart();
 
       toast({
         title: "Order Placed Successfully!",
-        description: "Your order has been confirmed. You will receive a confirmation email shortly.",
+        description: `Order #${orderNumber} confirmed. Check your email for confirmation.`,
       });
 
-      navigate("/");
-    } catch (error) {
+      navigate("/orders");
+    } catch (error: any) {
       toast({
         title: "Order Failed",
-        description: "There was an error processing your order. Please try again.",
+        description: error.message || "There was an error processing your order. Please try again.",
         variant: "destructive",
       });
     } finally {
