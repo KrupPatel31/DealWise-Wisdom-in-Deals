@@ -3,13 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
+import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TrendingUp, Eye, EyeOff, Check, X } from "lucide-react";
 
@@ -26,7 +26,7 @@ const SignUp = () => {
     agreeToTerms: false
   });
   
-  const { signUp, signInWithGoogle, user } = useAuth();
+  const { signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -60,7 +60,16 @@ const SignUp = () => {
 
     setLoading(true);
     
-    const { error } = await signUp(formData.email, formData.password, formData.name);
+    // Use signUp with email OTP (no auto-confirm)
+    const { error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: {
+          full_name: formData.name
+        }
+      }
+    });
     
     if (error) {
       toast({
@@ -68,14 +77,21 @@ const SignUp = () => {
         description: error.message,
         variant: "destructive",
       });
+      setLoading(false);
     } else {
       toast({
-        title: "Verify your email",
-        description: "Check your inbox for a confirmation link. Once you confirm your email, we'll sign you in automatically.",
+        title: "OTP Sent!",
+        description: "Check your email for a 6-digit verification code.",
+      });
+      // Navigate to OTP verification page
+      navigate("/verify-otp", {
+        state: {
+          email: formData.email,
+          type: "signup",
+          fullName: formData.name
+        }
       });
     }
-    
-    setLoading(false);
   };
 
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -284,7 +300,7 @@ const SignUp = () => {
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   disabled={!formData.agreeToTerms || loading}
                 >
-                  {loading ? "Creating account..." : "Create Account"}
+                  {loading ? "Sending OTP..." : "Create Account"}
                 </Button>
               </form>
 
