@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, ShoppingCart, User, LogOut, Menu, Mail } from "lucide-react";
+import { TrendingUp, ShoppingCart, User, LogOut, Menu, Mail, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
@@ -71,6 +71,13 @@ export const Header = () => {
                   </Button>
                 </Link>
 
+                <Link to="/orders">
+                  <Button variant="ghost" size="sm">
+                    <Package className="h-4 w-4" />
+                    <span className="sr-only">Orders</span>
+                  </Button>
+                </Link>
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm">
@@ -122,17 +129,25 @@ export const Header = () => {
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center gap-2">
             {user && (
-              <Link to="/cart">
-                <Button variant="ghost" size="sm" className="relative">
-                  <ShoppingCart className="h-4 w-4" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartCount > 99 ? '99+' : cartCount}
-                    </span>
-                  )}
-                  <span className="sr-only">Cart</span>
-                </Button>
-              </Link>
+              <>
+                <Link to="/cart">
+                  <Button variant="ghost" size="sm" className="relative">
+                    <ShoppingCart className="h-4 w-4" />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        {cartCount > 99 ? '99+' : cartCount}
+                      </span>
+                    )}
+                    <span className="sr-only">Cart</span>
+                  </Button>
+                </Link>
+                <Link to="/orders">
+                  <Button variant="ghost" size="sm">
+                    <Package className="h-4 w-4" />
+                    <span className="sr-only">Orders</span>
+                  </Button>
+                </Link>
+              </>
             )}
 
             <Sheet open={isOpen} onOpenChange={setIsOpen}>

@@ -197,9 +197,11 @@ const Cart = () => {
                     <span>₹{subtotal.toLocaleString()}</span>
                   </div>
 
-                  <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                    Proceed to Checkout
-                  </Button>
+                  <Link to="/checkout" className="w-full">
+                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                      Proceed to Checkout
+                    </Button>
+                  </Link>
 
                   <div className="text-center">
                     <Link
