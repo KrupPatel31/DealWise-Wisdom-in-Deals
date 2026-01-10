@@ -30,9 +30,10 @@ const Checkout = () => {
   const navigate = useNavigate();
   
   const [isProcessing, setIsProcessing] = useState(false);
-  const [discountCode, setDiscountCode] = useState("");
-  const [discountApplied, setDiscountApplied] = useState(false);
-  const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponError, setCouponError] = useState("");
   
   const [shippingAddress, setShippingAddress] = useState({
     fullName: "",
@@ -57,21 +58,57 @@ const Checkout = () => {
     0
   );
   const shipping = subtotal > 500 ? 0 : 50;
-  const total = subtotal + shipping - discountAmount;
+  const total = subtotal + shipping - couponDiscount;
 
-  const handleApplyDiscount = () => {
-    if (discountCode.toUpperCase() === "DEALWISE10") {
-      const discount = Math.round(subtotal * 0.1);
-      setDiscountAmount(discount);
-      setDiscountApplied(true);
-      toast.success(`Discount applied! You saved ₹${discount.toLocaleString()}`);
-    } else if (discountCode.toUpperCase() === "FIRST50") {
-      setDiscountAmount(50);
-      setDiscountApplied(true);
-      toast.success("Discount applied! You saved ₹50");
-    } else {
-      toast.error("Invalid discount code");
+  const validCoupons: Record<string, { type: 'percent' | 'fixed'; value: number; minOrder?: number; description: string }> = {
+    "DEALWISE10": { type: 'percent', value: 10, description: "10% off on your order" },
+    "FIRST50": { type: 'fixed', value: 50, description: "₹50 off" },
+    "SAVE100": { type: 'fixed', value: 100, minOrder: 1000, description: "₹100 off on orders above ₹1000" },
+    "MEGA20": { type: 'percent', value: 20, minOrder: 2000, description: "20% off on orders above ₹2000" },
+    "WELCOME15": { type: 'percent', value: 15, description: "15% off for new users" },
+  };
+
+  const handleApplyCoupon = () => {
+    setCouponError("");
+    const code = couponCode.toUpperCase().trim();
+    
+    if (!code) {
+      setCouponError("Please enter a coupon code");
+      return;
     }
+    
+    const coupon = validCoupons[code];
+    
+    if (!coupon) {
+      setCouponError("Invalid coupon code. Try DEALWISE10, FIRST50, SAVE100, MEGA20, or WELCOME15");
+      toast.error("Invalid coupon code");
+      return;
+    }
+    
+    if (coupon.minOrder && subtotal < coupon.minOrder) {
+      setCouponError(`Minimum order of ₹${coupon.minOrder} required for this coupon`);
+      toast.error(`Minimum order of ₹${coupon.minOrder} required`);
+      return;
+    }
+    
+    let discount = 0;
+    if (coupon.type === 'percent') {
+      discount = Math.round(subtotal * (coupon.value / 100));
+    } else {
+      discount = coupon.value;
+    }
+    
+    setCouponDiscount(discount);
+    setCouponApplied(true);
+    toast.success(`Coupon applied! You saved ₹${discount.toLocaleString()}`);
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponCode("");
+    setCouponApplied(false);
+    setCouponDiscount(0);
+    setCouponError("");
+    toast.info("Coupon removed");
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -404,34 +441,63 @@ const Checkout = () => {
 
                 <Separator className="bg-border" />
 
-                {/* Discount Code */}
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
+                {/* Coupon Code */}
+                <div className="space-y-3">
+                  <Label className="flex items-center gap-2 font-semibold">
                     <Tag className="h-4 w-4 text-primary" />
-                    Discount Code
+                    Apply Coupon Code
                   </Label>
                   <div className="flex gap-2">
                     <Input
-                      value={discountCode}
-                      onChange={(e) => setDiscountCode(e.target.value)}
-                      placeholder="Enter code"
-                      disabled={discountApplied}
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value.toUpperCase());
+                        setCouponError("");
+                      }}
+                      placeholder="Enter coupon code"
+                      disabled={couponApplied}
+                      className="uppercase"
                     />
-                    <Button
-                      variant="outline"
-                      onClick={handleApplyDiscount}
-                      disabled={discountApplied || !discountCode}
-                    >
-                      Apply
-                    </Button>
+                    {couponApplied ? (
+                      <Button
+                        variant="destructive"
+                        onClick={handleRemoveCoupon}
+                        size="sm"
+                      >
+                        Remove
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleApplyCoupon}
+                        disabled={!couponCode.trim()}
+                        className="bg-primary hover:bg-primary/90"
+                      >
+                        Apply
+                      </Button>
+                    )}
                   </div>
-                  {discountApplied && (
-                    <div className="flex items-center gap-1 text-green-600 text-sm">
+                  
+                  {couponError && (
+                    <p className="text-xs text-red-500">{couponError}</p>
+                  )}
+                  
+                  {couponApplied && (
+                    <div className="flex items-center gap-1 text-green-600 text-sm bg-green-50 dark:bg-green-900/20 p-2 rounded">
                       <CheckCircle className="h-4 w-4" />
-                      Code applied!
+                      <span>Coupon applied! Saving ₹{couponDiscount.toLocaleString()}</span>
                     </div>
                   )}
-                  <p className="text-xs text-muted-foreground">Try: DEALWISE10 or FIRST50</p>
+                  
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <p className="font-medium">Available coupons:</p>
+                    <ul className="list-disc list-inside space-y-0.5">
+                      <li>DEALWISE10 - 10% off</li>
+                      <li>FIRST50 - ₹50 off</li>
+                      <li>SAVE100 - ₹100 off (min ₹1000)</li>
+                      <li>MEGA20 - 20% off (min ₹2000)</li>
+                      <li>WELCOME15 - 15% off</li>
+                    </ul>
+                  </div>
                 </div>
 
                 <Separator className="bg-border" />
@@ -448,10 +514,10 @@ const Checkout = () => {
                     <span>-₹{totalSavings.toLocaleString()}</span>
                   </div>
 
-                  {discountApplied && (
+                  {couponApplied && (
                     <div className="flex justify-between text-green-600">
-                      <span>Discount</span>
-                      <span>-₹{discountAmount.toLocaleString()}</span>
+                      <span>Coupon Discount</span>
+                      <span>-₹{couponDiscount.toLocaleString()}</span>
                     </div>
                   )}
 

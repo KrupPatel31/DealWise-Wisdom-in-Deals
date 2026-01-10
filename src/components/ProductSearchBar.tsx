@@ -138,11 +138,22 @@ export const ProductSearchBar = () => {
     }
   }, []);
 
-  // Load mock products initially
+  // Load live products on mount
   useEffect(() => {
-    const mockProducts = ProductSearchService.getMockProducts();
-    setProducts(mockProducts);
-    setFilteredProducts(mockProducts);
+    const loadInitialProducts = async () => {
+      const searchTerms = ["electronics", "smartphone", "laptop", "headphones", "gadgets", "camera", "tablet", "smartwatch"];
+      const randomTerm = searchTerms[Math.floor(Math.random() * searchTerms.length)];
+      await fetchProductsFromApi(randomTerm);
+      
+      // If API fails, fall back to mock products
+      if (products.length === 0) {
+        const mockProducts = ProductSearchService.getMockProducts();
+        setProducts(mockProducts);
+        setFilteredProducts(mockProducts);
+      }
+    };
+    
+    loadInitialProducts();
   }, []);
 
   // Debounced API search
