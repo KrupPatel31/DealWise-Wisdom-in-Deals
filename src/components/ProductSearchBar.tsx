@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2 } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -138,11 +138,22 @@ export const ProductSearchBar = () => {
     }
   }, []);
 
-  // Load mock products initially
+  // Load live products on mount
   useEffect(() => {
-    const mockProducts = ProductSearchService.getMockProducts();
-    setProducts(mockProducts);
-    setFilteredProducts(mockProducts);
+    const loadInitialProducts = async () => {
+      const searchTerms = ["electronics", "smartphone", "laptop", "headphones", "gadgets", "camera", "tablet", "smartwatch"];
+      const randomTerm = searchTerms[Math.floor(Math.random() * searchTerms.length)];
+      await fetchProductsFromApi(randomTerm);
+      
+      // If API fails, fall back to mock products
+      if (products.length === 0) {
+        const mockProducts = ProductSearchService.getMockProducts();
+        setProducts(mockProducts);
+        setFilteredProducts(mockProducts);
+      }
+    };
+    
+    loadInitialProducts();
   }, []);
 
   // Debounced API search
@@ -385,8 +396,11 @@ export const ProductSearchBar = () => {
 
                   {/* Action Buttons */}
                   <div className="flex gap-2 mt-auto pt-4">
-                    <Button className="flex-1 text-xs px-2" size="sm">
-                      Compare Prices
+                    <Button className="flex-1 text-xs px-2" size="sm" asChild>
+                      <Link to={`/compare-prices?id=${encodeURIComponent(product.id)}&name=${encodeURIComponent(product.title)}&image=${encodeURIComponent(product.image || '')}&price=${parsePrice(product.price)}&store=${encodeURIComponent(product.store || '')}`}>
+                        Compare Prices
+                        <ArrowRight className="h-3 w-3 ml-1" />
+                      </Link>
                     </Button>
                     
                     {quantity === 0 ? (
