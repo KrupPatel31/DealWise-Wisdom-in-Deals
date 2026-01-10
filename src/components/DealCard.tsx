@@ -1,10 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Heart, ShoppingCart, Truck, Shield, Award } from "lucide-react";
+import { Star, Heart, Truck, Shield, Award, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface DealCardProps {
+  id?: string;
   image: string;
   title: string;
   currentPrice: string;
@@ -21,6 +22,7 @@ interface DealCardProps {
 }
 
 export const DealCard = ({
+  id = "",
   image,
   title,
   currentPrice,
@@ -35,6 +37,11 @@ export const DealCard = ({
   warranty = "1 year warranty",
   availability = "In stock",
 }: DealCardProps) => {
+  const parsePrice = (priceStr: string): number => {
+    const numStr = priceStr.replace(/[₹,]/g, "");
+    return parseFloat(numStr) || 0;
+  };
+
   return (
     <Card className="bg-deal border-deal-border overflow-hidden hover-lift hover-glow group animate-fade-up">
       <div className="relative overflow-hidden">
@@ -161,10 +168,13 @@ export const DealCard = ({
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
-          <Link to="/search" className="flex-1">
+          <Link 
+            to={`/compare-prices?id=${encodeURIComponent(id)}&name=${encodeURIComponent(title)}&image=${encodeURIComponent(image)}&price=${parsePrice(currentPrice)}&store=${encodeURIComponent(store)}`} 
+            className="flex-1"
+          >
             <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium">
-              <ShoppingCart className="h-4 w-4 mr-2" />
               Compare Prices
+              <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
           </Link>
           <Button
