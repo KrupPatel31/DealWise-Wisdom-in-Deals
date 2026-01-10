@@ -6,6 +6,7 @@ import { ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Deal {
+  id: string;
   image: string;
   title: string;
   currentPrice: string;
@@ -23,6 +24,7 @@ interface Deal {
 
 const fallbackDeals: Deal[] = [
   {
+    id: "macbook-air-m2",
     image: "https://m.media-amazon.com/images/I/71RDgtHsREL.jpg",
     title: "Apple MacBook Air M2",
     currentPrice: "₹1,04,900",
@@ -38,6 +40,7 @@ const fallbackDeals: Deal[] = [
     availability: "In stock",
   },
   {
+    id: "oneplus-12r",
     image: "https://rukminim2.flixcart.com/image/704/844/xif0q/mobile/r/w/j/12r-cph2585-oneplus-original-imah9zk6nddhcbsh.jpeg?q=90&crop=false",
     title: "OnePlus 12R 5G",
     currentPrice: "₹39,999",
@@ -79,7 +82,8 @@ export const FeaturedDeals = () => {
           return;
         }
 
-        const liveDeals: Deal[] = data.products.slice(0, 6).map((p: any) => ({
+        const liveDeals: Deal[] = data.products.slice(0, 6).map((p: any, index: number) => ({
+          id: p.id || `deal-${index}-${Date.now()}`,
           image: p.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
           title: p.name || "Product",
           currentPrice: `₹${p.price?.toLocaleString('en-IN') || 0}`,
