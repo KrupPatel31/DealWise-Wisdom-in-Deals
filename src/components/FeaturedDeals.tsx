@@ -1,116 +1,111 @@
-import { useState, useEffect } from "react";
 import { DealCard } from "./DealCard";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { ArrowRight, Sparkles } from "lucide-react";
 
-interface Deal {
-  id: string;
-  image: string;
-  title: string;
-  currentPrice: string;
-  originalPrice: string;
-  discount: string;
-  store: string;
-  description: string;
-  rating: number;
-  reviewCount: number;
-  features: string[];
-  shipping: string;
-  warranty: string;
-  availability: string;
-}
-
-const fallbackDeals: Deal[] = [
+const deals = [
   {
-    id: "macbook-air-m2",
+    image:
+      "https://media.tatacroma.com/Croma%20Assets/Entertainment/Headphones%20and%20Earphones/Images/262566_0_emihyi.png",
+    title: "Sony WH-1000XM5 Noise Cancelling Headphones",
+    currentPrice: "₹24,990",
+    originalPrice: "₹29,990",
+    discount: "17% OFF",
+    store: "Amazon India",
+    description:
+      "Industry-leading noise canceling perfect for Mumbai commutes and Bangalore traffic. Trusted by Arjun from Delhi.",
+    rating: 4.8,
+    reviewCount: 2847,
+    features: ["Noise Cancelling", "30Hr Battery", "Quick Charge"],
+    shipping: "Free delivery across India",
+    warranty: "2 year warranty",
+    availability: "In stock - Delhi warehouse",
+  },
+  {
     image: "https://m.media-amazon.com/images/I/71RDgtHsREL.jpg",
-    title: "Apple MacBook Air M2",
+    title: "Apple MacBook Air M2 (2022)",
     currentPrice: "₹1,04,900",
     originalPrice: "₹1,19,900",
     discount: "13% OFF",
-    store: "Amazon India",
-    description: "Perfect for professionals with M2 chip performance.",
+    store: "Croma",
+    description:
+      "Perfect for IT professionals in Hyderabad and Chennai. Recommended by Priya from Pune for coding and design work.",
     rating: 4.9,
     reviewCount: 5234,
     features: ["M2 Chip", '13.6" Display', "8GB RAM"],
-    shipping: "Free delivery",
-    warranty: "1 year warranty",
-    availability: "In stock",
+    shipping: "Free delivery + setup",
+    warranty: "1 year Apple warranty",
+    availability: "Available in Mumbai store",
   },
   {
-    id: "oneplus-12r",
-    image: "https://rukminim2.flixcart.com/image/704/844/xif0q/mobile/r/w/j/12r-cph2585-oneplus-original-imah9zk6nddhcbsh.jpeg?q=90&crop=false",
-    title: "OnePlus 12R 5G",
+    image:
+      "https://rukminim2.flixcart.com/image/704/844/xif0q/mobile/r/w/j/12r-cph2585-oneplus-original-imah9zk6nddhcbsh.jpeg?q=90&crop=false",
+    title: "OnePlus 12R 5G Smartphone",
     currentPrice: "₹39,999",
     originalPrice: "₹45,999",
     discount: "13% OFF",
     store: "Flipkart",
-    description: "Flagship with 120Hz display and 100W charging.",
+    description:
+      "Latest flagship from OnePlus with 120Hz display. Popular choice among students in Delhi and Bangalore colleges.",
     rating: 4.7,
     reviewCount: 3421,
     features: ["5G Ready", "120Hz Display", "100W Charging"],
-    shipping: "Same day delivery",
-    warranty: "1 year warranty",
-    availability: "Limited stock",
+    shipping: "Same day delivery in metros",
+    warranty: "1 year OnePlus warranty",
+    availability: "Limited stock - Mumbai",
+  },
+  {
+    image:
+      "https://i01.appmifile.com/webfile/globalimg/products/m/mi-tv-4x-65/app_01.jpg",
+    title: "Mi 65-inch 4K Android TV",
+    currentPrice: "₹54,999",
+    originalPrice: "₹79,999",
+    discount: "31% OFF",
+    store: "Mi Store India",
+    description:
+      "Smart TV with Dolby Vision, perfect for Indian families. Highly rated by Rajesh from Ahmedabad for cricket viewing.",
+    rating: 4.6,
+    reviewCount: 1876,
+    features: ["4K HDR", "Android TV", "Dolby Audio"],
+    shipping: "Free installation",
+    warranty: "2 year comprehensive warranty",
+    availability: "Available nationwide",
+  },
+  {
+    image: "https://m.media-amazon.com/images/I/61BrDg5QSUL.jpg",
+    title: "Prestige Svachh 5L Pressure Cooker",
+    currentPrice: "₹2,499",
+    originalPrice: "₹3,995",
+    discount: "37% OFF",
+    store: "Amazon India",
+    description:
+      "Perfect for Indian cooking - dal, rice, and curries. Recommended by Kavitha from Chennai for large families.",
+    rating: 4.5,
+    reviewCount: 12450,
+    features: ["5 Liter", "Induction Base", "Safety Features"],
+    shipping: "Free delivery",
+    warranty: "5 year warranty",
+    availability: "In stock - Chennai warehouse",
+  },
+  {
+    image: "https://m.media-amazon.com/images/I/61ni3t1ryQL.jpg",
+    title: "Logitech MX Master 3S Wireless Mouse",
+    currentPrice: "₹7,995",
+    originalPrice: "₹9,995",
+    discount: "20% OFF",
+    store: "Amazon India",
+    description:
+      "Premium mouse for professionals. Popular among software engineers in Bangalore and designers in Mumbai.",
+    rating: 4.8,
+    reviewCount: 3215,
+    features: ["Wireless", "Precision Scroll", "Multi-Device"],
+    shipping: "Next day delivery",
+    warranty: "2 year warranty",
+    availability: "In stock",
   },
 ];
 
-const searchTerms = [
-  "laptop", "smartphone", "headphones", "tablet", "smartwatch", 
-  "camera", "speaker", "earbuds", "monitor", "keyboard",
-  "mouse", "gaming", "fitness", "electronics", "gadgets"
-];
-
 export const FeaturedDeals = () => {
-  const [deals, setDeals] = useState<Deal[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchLiveDeals = async () => {
-      setIsLoading(true);
-      try {
-        const randomTerm = searchTerms[Math.floor(Math.random() * searchTerms.length)];
-        
-        const { data, error } = await supabase.functions.invoke('search-products', {
-          body: { query: randomTerm }
-        });
-
-        if (error || !data?.products?.length) {
-          setDeals(fallbackDeals);
-          return;
-        }
-
-        const liveDeals: Deal[] = data.products.slice(0, 6).map((p: any, index: number) => ({
-          id: p.id || `deal-${index}-${Date.now()}`,
-          image: p.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
-          title: p.name || "Product",
-          currentPrice: `₹${p.price?.toLocaleString('en-IN') || 0}`,
-          originalPrice: `₹${(p.originalPrice || p.price * 1.2)?.toLocaleString('en-IN') || 0}`,
-          discount: p.discount ? `${p.discount}% OFF` : `${Math.floor(Math.random() * 20 + 10)}% OFF`,
-          store: p.store || "Online Store",
-          description: p.description?.slice(0, 100) || "Great deal on this product!",
-          rating: p.rating || (Math.random() * 1 + 4).toFixed(1),
-          reviewCount: p.reviews || Math.floor(Math.random() * 5000 + 100),
-          features: ["Quality Product", "Fast Delivery", "Best Price"],
-          shipping: "Free delivery across India",
-          warranty: "Standard warranty",
-          availability: "In stock",
-        }));
-
-        setDeals(liveDeals);
-      } catch (error) {
-        console.error("Error fetching deals:", error);
-        setDeals(fallbackDeals);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLiveDeals();
-  }, []);
-
   return (
     <section className="container mx-auto px-6 py-20">
       <div className="text-center space-y-6 mb-16 animate-fade-up">
@@ -137,20 +132,13 @@ export const FeaturedDeals = () => {
         </p>
       </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="ml-3 text-muted-foreground">Loading live deals...</span>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {deals.map((deal, index) => (
-            <div key={index} style={{ animationDelay: `${index * 100}ms` }}>
-              <DealCard {...deal} />
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        {deals.map((deal, index) => (
+          <div key={index} style={{ animationDelay: `${index * 100}ms` }}>
+            <DealCard {...deal} />
+          </div>
+        ))}
+      </div>
 
       <div className="text-center">
         <Link to="/search">
