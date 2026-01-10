@@ -385,8 +385,11 @@ export const ProductSearchBar = () => {
 
                   {/* Action Buttons */}
                   <div className="flex gap-2 mt-auto pt-4">
-                    <Button className="flex-1 text-xs px-2" size="sm">
-                      Compare Prices
+                    <Button className="flex-1 text-xs px-2" size="sm" asChild>
+                      <Link to={`/compare-prices?id=${encodeURIComponent(product.id)}&name=${encodeURIComponent(product.title)}&image=${encodeURIComponent(product.image || '')}&price=${parsePrice(product.price)}&store=${encodeURIComponent(product.store || '')}`}>
+                        Compare Prices
+                        <ArrowRight className="h-3 w-3 ml-1" />
+                      </Link>
                     </Button>
                     
                     {quantity === 0 ? (
