@@ -43,9 +43,7 @@ export const DealCard = ({
         </Badge>
 
         {/* Wishlist Button */}
-        <Button size="icon" variant="ghost" className="absolute top-4 right-4 h-10 w-10 bg-black/20 hover:bg-black/40 text-white backdrop-blur-sm">
-          <Heart className="h-5 w-5" />
-        </Button>
+        
 
         {/* Store Badge */}
         <div className="absolute bottom-4 left-4">
@@ -118,9 +116,7 @@ export const DealCard = ({
         </div>
 
         {/* Description */}
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {description}
-        </p>
+        
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
