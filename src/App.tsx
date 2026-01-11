@@ -19,6 +19,7 @@ import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import NotFound from "./pages/NotFound";
 import Search from "./pages/Search";
+import ComparePrices from "./pages/ComparePrices";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/orders" element={<Orders />} />
 
               <Route path="/search" element={<Search />} />
+              <Route path="/compare-prices" element={<ComparePrices />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

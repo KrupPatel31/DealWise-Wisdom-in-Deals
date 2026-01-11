@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2 } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2, BarChart3 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -385,9 +385,15 @@ export const ProductSearchBar = () => {
 
                   {/* Action Buttons */}
                   <div className="flex gap-2 mt-auto pt-4">
-                    <Button className="flex-1 text-xs px-2" size="sm">
-                      Compare Prices
-                    </Button>
+                    <Link 
+                      to={`/compare-prices?name=${encodeURIComponent(product.title)}&price=${parsePrice(product.price)}&image=${encodeURIComponent(product.image || '')}&store=${encodeURIComponent(product.store || '')}`}
+                      className="flex-1"
+                    >
+                      <Button className="w-full text-xs px-2" size="sm">
+                        <BarChart3 className="h-3 w-3 mr-1" />
+                        Compare Prices
+                      </Button>
+                    </Link>
                     
                     {quantity === 0 ? (
                       <Button 
