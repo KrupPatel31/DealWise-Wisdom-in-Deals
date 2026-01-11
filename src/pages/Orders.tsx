@@ -13,11 +13,14 @@ import {
   ShoppingBag,
   MapPin,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  FileText,
+  Download
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { downloadBill } from "@/utils/billGenerator";
 
 interface OrderItem {
   id: string;
@@ -229,13 +232,24 @@ const Orders = () => {
                         Placed on {formatDate(order.created_at)}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-foreground">
-                        ₹{order.total.toLocaleString()}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {order.items.reduce((sum, item) => sum + item.quantity, 0)} items
-                      </p>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-foreground">
+                          ₹{order.total.toLocaleString()}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {order.items.reduce((sum, item) => sum + item.quantity, 0)} items
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => downloadBill(order)}
+                        className="hidden sm:flex"
+                      >
+                        <Download className="h-4 w-4 mr-1" />
+                        Invoice
+                      </Button>
                     </div>
                   </div>
 
@@ -372,6 +386,17 @@ const Orders = () => {
                           </div>
                         </>
                       )}
+
+                      {/* Download Invoice Button */}
+                      <div className="pt-4">
+                        <Button
+                          onClick={() => downloadBill(order)}
+                          className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          Download Invoice / Bill
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </CardContent>

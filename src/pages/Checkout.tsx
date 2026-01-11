@@ -16,13 +16,16 @@ import {
   Tag, 
   ShoppingBag,
   CheckCircle,
-  ArrowLeft
+  ArrowLeft,
+  FileText,
+  PartyPopper
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { downloadBill } from "@/utils/billGenerator";
 
 // Text field validation: allow alphanumeric, spaces, and common punctuation
 const validateTextField = (value: string, maxLength: number): boolean => {
@@ -38,6 +41,8 @@ const Checkout = () => {
   const navigate = useNavigate();
   
   const [isProcessing, setIsProcessing] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState<any>(null);
   const [discountCode, setDiscountCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
@@ -188,9 +193,34 @@ const Checkout = () => {
         throw new Error(data?.error || 'Failed to place order');
       }
 
+      // Store completed order data for invoice
+      const orderData = {
+        order_number: data.order.orderNumber,
+        items: cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          originalPrice: item.originalPrice,
+          quantity: item.quantity,
+          image: item.image,
+          store: item.store,
+          discount: item.discount
+        })),
+        subtotal: data.order.subtotal,
+        shipping: data.order.shipping,
+        total: data.order.total,
+        discount: data.order.discount,
+        shipping_address: shippingAddress,
+        payment_method: paymentMethod,
+        status: 'placed',
+        notes: orderNotes,
+        created_at: new Date().toISOString()
+      };
+
+      setCompletedOrder(orderData);
       await clearCart();
+      setOrderSuccess(true);
       toast.success("Order placed successfully!");
-      navigate("/orders");
     } catch (error: any) {
       console.error("Error placing order:", error);
       toast.error(error.message || "Failed to place order. Please try again.");
@@ -217,6 +247,94 @@ const Checkout = () => {
                 Sign In
               </Button>
             </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Order Success Screen
+  if (orderSuccess && completedOrder) {
+    return (
+      <div className="min-h-screen dark">
+        <Header />
+        <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-16">
+          <div className="max-w-lg mx-auto text-center">
+            <div className="mb-6">
+              <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <PartyPopper className="h-10 w-10 text-green-500" />
+              </div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Order Placed Successfully!
+              </h1>
+              <p className="text-muted-foreground">
+                Thank you for your order. Your order number is
+              </p>
+              <p className="text-xl font-bold text-primary mt-2">
+                #{completedOrder.order_number}
+              </p>
+            </div>
+
+            <Card className="border-border bg-card/50 backdrop-blur-sm mb-6">
+              <CardContent className="p-6 space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Items</span>
+                  <span className="text-foreground">
+                    {completedOrder.items.reduce((sum: number, i: any) => sum + i.quantity, 0)} items
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-foreground">₹{completedOrder.subtotal.toLocaleString()}</span>
+                </div>
+                {completedOrder.discount > 0 && (
+                  <div className="flex justify-between text-sm text-green-500">
+                    <span>Discount</span>
+                    <span>-₹{completedOrder.discount.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Shipping</span>
+                  <span className={completedOrder.shipping === 0 ? "text-green-500" : "text-foreground"}>
+                    {completedOrder.shipping === 0 ? "Free" : `₹${completedOrder.shipping}`}
+                  </span>
+                </div>
+                <Separator className="bg-border" />
+                <div className="flex justify-between font-bold text-lg">
+                  <span className="text-foreground">Total Paid</span>
+                  <span className="text-primary">₹{completedOrder.total.toLocaleString()}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-3">
+              <Button
+                onClick={() => downloadBill(completedOrder)}
+                className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
+                size="lg"
+              >
+                <FileText className="h-5 w-5 mr-2" />
+                Download Invoice / Bill
+              </Button>
+              
+              <div className="flex gap-3">
+                <Link to="/orders" className="flex-1">
+                  <Button variant="outline" className="w-full">
+                    View Orders
+                  </Button>
+                </Link>
+                <Link to="/search" className="flex-1">
+                  <Button variant="outline" className="w-full">
+                    Continue Shopping
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground mt-6">
+              A confirmation has been sent. You can download your invoice anytime from the Orders page.
+            </p>
           </div>
         </main>
         <Footer />
