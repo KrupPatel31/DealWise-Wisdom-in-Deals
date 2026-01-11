@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,7 +13,50 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Verify JWT token using getClaims
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: authError } = await supabase.auth.getClaims(token);
+    if (authError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { query } = await req.json();
+    
+    // Validate query input
+    if (!query || typeof query !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid query parameter' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Limit query length to prevent abuse
+    const sanitizedQuery = query.trim().slice(0, 200);
+    if (sanitizedQuery.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Query cannot be empty' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const rapidApiKey = Deno.env.get('RAPIDAPI_KEY');
 
     if (!rapidApiKey) {
@@ -23,11 +67,11 @@ serve(async (req) => {
       );
     }
 
-    console.log('Searching for products:', query);
+    console.log('Searching for products:', sanitizedQuery, 'by user:', claimsData.claims.sub);
 
     // Using Real-Time Product Search API from RapidAPI
     // NOTE: API uses versioned endpoints (v2)
-    const url = `https://real-time-product-search.p.rapidapi.com/search-v2?q=${encodeURIComponent(query)}&country=in&language=en&limit=30`;
+    const url = `https://real-time-product-search.p.rapidapi.com/search-v2?q=${encodeURIComponent(sanitizedQuery)}&country=in&language=en&limit=30`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -46,7 +90,7 @@ serve(async (req) => {
         JSON.stringify({
           products: [],
           fallback: true,
-          message: `RapidAPI error ${response.status}: ${errorText}`,
+          message: `RapidAPI error ${response.status}`,
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -100,7 +144,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in search-products function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'An error occurred while processing your request' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
