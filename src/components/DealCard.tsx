@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, Heart, ShoppingCart, Truck, Shield, Award, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
-
 interface DealCardProps {
   image: string;
   title: string;
@@ -19,7 +18,6 @@ interface DealCardProps {
   warranty?: string;
   availability?: string;
 }
-
 export const DealCard = ({
   image,
   title,
@@ -33,16 +31,11 @@ export const DealCard = ({
   features = [],
   shipping = "Free shipping",
   warranty = "1 year warranty",
-  availability = "In stock",
+  availability = "In stock"
 }: DealCardProps) => {
-  return (
-    <Card className="bg-deal border-deal-border overflow-hidden hover-lift hover-glow group animate-fade-up">
+  return <Card className="bg-deal border-deal-border overflow-hidden hover-lift hover-glow group animate-fade-up">
       <div className="relative overflow-hidden">
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
-        />
+        <img src={image} alt={title} className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500" />
 
         {/* Discount Badge */}
         <Badge className="absolute top-4 left-4 bg-discount-bg text-discount-text font-bold text-sm px-3 py-1 animate-glow-pulse">
@@ -50,20 +43,13 @@ export const DealCard = ({
         </Badge>
 
         {/* Wishlist Button */}
-        <Button
-          size="icon"
-          variant="ghost"
-          className="absolute top-4 right-4 h-10 w-10 bg-black/20 hover:bg-black/40 text-white backdrop-blur-sm"
-        >
+        <Button size="icon" variant="ghost" className="absolute top-4 right-4 h-10 w-10 bg-black/20 hover:bg-black/40 text-white backdrop-blur-sm">
           <Heart className="h-5 w-5" />
         </Button>
 
         {/* Store Badge */}
         <div className="absolute bottom-4 left-4">
-          <Badge
-            variant="outline"
-            className="bg-white/10 backdrop-blur-md border-white/20 text-white"
-          >
+          <Badge variant="outline" className="bg-white/10 backdrop-blur-md border-white/20 text-white">
             {store}
           </Badge>
         </div>
@@ -74,31 +60,19 @@ export const DealCard = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-4 w-4 ${
-                    i < Math.floor(rating)
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                />
-              ))}
+              {Array.from({
+              length: 5
+            }).map((_, i) => <Star key={i} className={`h-4 w-4 ${i < Math.floor(rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`} />)}
             </div>
             <span className="text-sm text-muted-foreground">
               {rating} ({reviewCount.toLocaleString()})
             </span>
           </div>
 
-          {availability === "In stock" && (
-            <Badge
-              variant="outline"
-              className="text-accent border-accent/30 bg-accent/10"
-            >
+          {availability === "In stock" && <Badge variant="outline" className="text-accent border-accent/30 bg-accent/10">
               <Award className="h-3 w-3 mr-1" />
               In Stock
-            </Badge>
-          )}
+            </Badge>}
         </div>
 
         {/* Product Title */}
@@ -107,19 +81,11 @@ export const DealCard = ({
         </h3>
 
         {/* Key Features */}
-        {features.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {features.slice(0, 3).map((feature, index) => (
-              <Badge
-                key={index}
-                variant="secondary"
-                className="text-xs px-2 py-1 bg-muted/50 text-muted-foreground"
-              >
+        {features.length > 0 && <div className="flex flex-wrap gap-1">
+            {features.slice(0, 3).map((feature, index) => <Badge key={index} variant="secondary" className="text-xs px-2 py-1 bg-muted/50 text-muted-foreground">
                 {feature}
-              </Badge>
-            ))}
-          </div>
-        )}
+              </Badge>)}
+          </div>}
 
         {/* Pricing */}
         <div className="space-y-2">
@@ -135,10 +101,7 @@ export const DealCard = ({
           {/* Savings */}
           <div className="text-sm text-accent font-medium">
             You save: ₹
-            {(
-              parseInt(originalPrice.replace(/[₹,]/g, "")) -
-              parseInt(currentPrice.replace(/[₹,]/g, ""))
-            ).toLocaleString()}
+            {(parseInt(originalPrice.replace(/[₹,]/g, "")) - parseInt(currentPrice.replace(/[₹,]/g, ""))).toLocaleString()}
           </div>
         </div>
 
@@ -161,24 +124,14 @@ export const DealCard = ({
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
-          <Link 
-            to={`/compare-prices?name=${encodeURIComponent(title)}&price=${parseInt(currentPrice.replace(/[₹,]/g, ""))}&image=${encodeURIComponent(image)}&store=${encodeURIComponent(store)}`} 
-            className="flex-1"
-          >
+          <Link to={`/compare-prices?name=${encodeURIComponent(title)}&price=${parseInt(currentPrice.replace(/[₹,]/g, ""))}&image=${encodeURIComponent(image)}&store=${encodeURIComponent(store)}`} className="flex-1">
             <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium">
               <BarChart3 className="h-4 w-4 mr-2" />
               Compare Prices
             </Button>
           </Link>
-          <Button
-            variant="outline"
-            size="icon"
-            className="hover:bg-accent hover:text-accent-foreground border-border"
-          >
-            <Heart className="h-4 w-4" />
-          </Button>
+          
         </div>
       </div>
-    </Card>
-  );
+    </Card>;
 };
