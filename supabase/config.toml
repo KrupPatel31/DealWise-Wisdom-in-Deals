@@ -2,3 +2,6 @@ project_id = "bpurlsnfjnzriyrnuknq"
 
 [functions.search-products]
 verify_jwt = false
+
+[functions.validate-order]
+verify_jwt = false

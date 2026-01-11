@@ -24,6 +24,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+// Text field validation: allow alphanumeric, spaces, and common punctuation
+const validateTextField = (value: string, maxLength: number): boolean => {
+  if (value.length > maxLength) return false;
+  // Allow letters, numbers, spaces, and common punctuation for addresses
+  const validPattern = /^[a-zA-Z0-9\s,.\-/'#()]+$/;
+  return value.length === 0 || validPattern.test(value);
+};
+
 const Checkout = () => {
   const { user } = useAuth();
   const { cartItems, clearCart } = useCart();
@@ -59,16 +67,18 @@ const Checkout = () => {
   const shipping = subtotal > 500 ? 0 : 50;
   const total = subtotal + shipping - discountAmount;
 
+  // Client-side preview of discount (actual validation happens server-side)
   const handleApplyDiscount = () => {
-    if (discountCode.toUpperCase() === "DEALWISE10") {
+    const code = discountCode.toUpperCase().trim();
+    if (code === "DEALWISE10") {
       const discount = Math.round(subtotal * 0.1);
       setDiscountAmount(discount);
       setDiscountApplied(true);
-      toast.success(`Discount applied! You saved ₹${discount.toLocaleString()}`);
-    } else if (discountCode.toUpperCase() === "FIRST50") {
+      toast.success(`Discount applied! You'll save ₹${discount.toLocaleString()}`);
+    } else if (code === "FIRST50") {
       setDiscountAmount(50);
       setDiscountApplied(true);
-      toast.success("Discount applied! You saved ₹50");
+      toast.success("Discount applied! You'll save ₹50");
     } else {
       toast.error("Invalid discount code");
     }
@@ -76,7 +86,32 @@ const Checkout = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setShippingAddress(prev => ({ ...prev, [name]: value }));
+    
+    // Field-specific max lengths
+    const maxLengths: Record<string, number> = {
+      fullName: 100,
+      phone: 10,
+      addressLine1: 200,
+      addressLine2: 200,
+      city: 100,
+      state: 100,
+      pincode: 6,
+      landmark: 200,
+    };
+    
+    // For phone and pincode, only allow digits
+    if (name === 'phone' || name === 'pincode') {
+      const numericValue = value.replace(/\D/g, '');
+      if (numericValue.length <= maxLengths[name]) {
+        setShippingAddress(prev => ({ ...prev, [name]: numericValue }));
+      }
+      return;
+    }
+    
+    // For text fields, validate characters
+    if (value.length <= (maxLengths[name] || 200) && validateTextField(value, maxLengths[name] || 200)) {
+      setShippingAddress(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const validateForm = () => {
@@ -87,6 +122,17 @@ const Checkout = () => {
         return false;
       }
     }
+    
+    // Validate field lengths
+    if (shippingAddress.fullName.length > 100) {
+      toast.error("Name must be less than 100 characters");
+      return false;
+    }
+    if (shippingAddress.addressLine1.length > 200) {
+      toast.error("Address must be less than 200 characters");
+      return false;
+    }
+    
     if (!/^\d{10}$/.test(shippingAddress.phone)) {
       toast.error("Please enter a valid 10-digit phone number");
       return false;
@@ -114,38 +160,40 @@ const Checkout = () => {
     setIsProcessing(true);
     
     try {
-      const orderNumber = `DW${Date.now().toString().slice(-8)}`;
-      
-      const { error } = await supabase.from('orders').insert({
-        user_id: user.id,
-        order_number: orderNumber,
-        items: cartItems.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          originalPrice: item.originalPrice,
-          quantity: item.quantity,
-          image: item.image,
-          store: item.store,
-          discount: item.discount
-        })),
-        subtotal,
-        shipping,
-        total,
-        shipping_address: shippingAddress,
-        payment_method: paymentMethod,
-        notes: orderNotes,
-        status: 'placed'
+      // Call server-side order validation function
+      const { data, error } = await supabase.functions.invoke('validate-order', {
+        body: {
+          items: cartItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            originalPrice: item.originalPrice,
+            quantity: item.quantity,
+            image: item.image,
+            store: item.store,
+            discount: item.discount
+          })),
+          discountCode: discountApplied ? discountCode : null,
+          shippingAddress,
+          paymentMethod,
+          notes: orderNotes,
+        },
       });
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message || 'Failed to place order');
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to place order');
+      }
 
       await clearCart();
       toast.success("Order placed successfully!");
       navigate("/orders");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error placing order:", error);
-      toast.error("Failed to place order. Please try again.");
+      toast.error(error.message || "Failed to place order. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -235,6 +283,7 @@ const Checkout = () => {
                       value={shippingAddress.fullName}
                       onChange={handleInputChange}
                       placeholder="Enter your full name"
+                      maxLength={100}
                     />
                   </div>
                   <div className="space-y-2">
@@ -259,6 +308,7 @@ const Checkout = () => {
                     value={shippingAddress.addressLine1}
                     onChange={handleInputChange}
                     placeholder="House/Flat No., Building Name, Street"
+                    maxLength={200}
                   />
                 </div>
                 
@@ -270,6 +320,7 @@ const Checkout = () => {
                     value={shippingAddress.addressLine2}
                     onChange={handleInputChange}
                     placeholder="Area, Colony (Optional)"
+                    maxLength={200}
                   />
                 </div>
 
@@ -282,6 +333,7 @@ const Checkout = () => {
                       value={shippingAddress.city}
                       onChange={handleInputChange}
                       placeholder="City"
+                      maxLength={100}
                     />
                   </div>
                   <div className="space-y-2">
@@ -292,6 +344,7 @@ const Checkout = () => {
                       value={shippingAddress.state}
                       onChange={handleInputChange}
                       placeholder="State"
+                      maxLength={100}
                     />
                   </div>
                   <div className="space-y-2">
@@ -315,6 +368,7 @@ const Checkout = () => {
                     value={shippingAddress.landmark}
                     onChange={handleInputChange}
                     placeholder="Nearby landmark (Optional)"
+                    maxLength={200}
                   />
                 </div>
               </CardContent>
@@ -366,10 +420,14 @@ const Checkout = () => {
               <CardContent>
                 <Textarea
                   value={orderNotes}
-                  onChange={(e) => setOrderNotes(e.target.value)}
+                  onChange={(e) => setOrderNotes(e.target.value.slice(0, 500))}
                   placeholder="Add any special instructions for delivery (Optional)"
                   className="min-h-[100px]"
+                  maxLength={500}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {orderNotes.length}/500 characters
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -413,14 +471,15 @@ const Checkout = () => {
                   <div className="flex gap-2">
                     <Input
                       value={discountCode}
-                      onChange={(e) => setDiscountCode(e.target.value)}
+                      onChange={(e) => setDiscountCode(e.target.value.slice(0, 20))}
                       placeholder="Enter code"
                       disabled={discountApplied}
+                      maxLength={20}
                     />
                     <Button
                       variant="outline"
                       onClick={handleApplyDiscount}
-                      disabled={discountApplied || !discountCode}
+                      disabled={discountApplied || !discountCode.trim()}
                     >
                       Apply
                     </Button>
