@@ -145,16 +145,21 @@ export const ProductSearchBar = () => {
     setFilteredProducts(mockProducts);
   }, []);
 
-  // Debounced API search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery.trim().length >= 3) {
-        fetchProductsFromApi(searchQuery);
-      }
-    }, 500);
+  // Handle search button click
+  const handleSearch = () => {
+    if (searchQuery.trim().length >= 2) {
+      fetchProductsFromApi(searchQuery);
+    } else if (searchQuery.trim().length > 0) {
+      toast.error("Please enter at least 2 characters to search");
+    }
+  };
 
-    return () => clearTimeout(timer);
-  }, [searchQuery, fetchProductsFromApi]);
+  // Handle Enter key press
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   // Local filtering and sorting
   useEffect(() => {
@@ -218,14 +223,31 @@ export const ProductSearchBar = () => {
       {/* Search Bar */}
       <Card className="p-6">
         <div className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search for products, brands, or categories..."
-              className="pl-12 h-12 text-lg"
-            />
+          <div className="flex gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Search for products, brands, or categories..."
+                className="pl-12 h-12 text-lg"
+              />
+            </div>
+            <Button 
+              onClick={handleSearch}
+              disabled={isSearchingApi}
+              className="h-12 px-6 bg-primary hover:bg-primary/90"
+            >
+              {isSearchingApi ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <>
+                  <Search className="h-5 w-5 mr-2" />
+                  Search
+                </>
+              )}
+            </Button>
           </div>
 
           {/* Filters */}
