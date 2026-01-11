@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Heart, ShoppingCart, Truck, Shield, Award } from "lucide-react";
+import { Star, Heart, ShoppingCart, Truck, Shield, Award, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface DealCardProps {
@@ -161,9 +161,12 @@ export const DealCard = ({
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
-          <Link to="/search" className="flex-1">
+          <Link 
+            to={`/compare-prices?name=${encodeURIComponent(title)}&price=${parseInt(currentPrice.replace(/[₹,]/g, ""))}&image=${encodeURIComponent(image)}&store=${encodeURIComponent(store)}`} 
+            className="flex-1"
+          >
             <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium">
-              <ShoppingCart className="h-4 w-4 mr-2" />
+              <BarChart3 className="h-4 w-4 mr-2" />
               Compare Prices
             </Button>
           </Link>
