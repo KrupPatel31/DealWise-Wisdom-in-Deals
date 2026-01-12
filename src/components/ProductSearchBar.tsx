@@ -97,10 +97,30 @@ export const ProductSearchBar = () => {
   const fetchProductsFromApi = useCallback(async (query: string) => {
     if (!query.trim()) return;
     
+    // Check if user is authenticated
+    if (!user) {
+      toast.error("Please sign in to search products");
+      navigate("/sign-in");
+      return;
+    }
+    
     setIsSearchingApi(true);
     try {
+      // Get the current session to use the user's access token
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      
+      if (!accessToken) {
+        toast.error("Session expired. Please sign in again.");
+        navigate("/sign-in");
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('search-products', {
-        body: { query }
+        body: { query },
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
       });
 
       if (error) {
@@ -136,7 +156,7 @@ export const ProductSearchBar = () => {
     } finally {
       setIsSearchingApi(false);
     }
-  }, []);
+  }, [user, navigate]);
 
   // Load mock products initially
   useEffect(() => {
