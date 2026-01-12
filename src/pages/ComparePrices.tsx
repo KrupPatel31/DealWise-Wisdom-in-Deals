@@ -37,6 +37,7 @@ interface StorePrice {
   link: string;
   offers: string[];
   isOriginalStore?: boolean;
+  isLowestPrice?: boolean;
 }
 
 interface EMIOption {
@@ -58,43 +59,72 @@ interface CardOffer {
 
 // Simulated store prices for comparison
 const generateStorePrices = (basePrice: number, productName: string, originalStore: string): StorePrice[] => {
-  const stores = [
-    { name: "Amazon", variation: 0, deliveryDays: "1-2 days", rating: 4.5 },
-    { name: "Flipkart", variation: -5, deliveryDays: "2-3 days", rating: 4.3 },
-    { name: "Myntra", variation: 8, deliveryDays: "3-4 days", rating: 4.2 },
-    { name: "Ajio", variation: -3, deliveryDays: "4-5 days", rating: 4.0 },
-    { name: "Croma", variation: 12, deliveryDays: "2-3 days", rating: 4.4 },
-    { name: "Reliance Digital", variation: 5, deliveryDays: "3-5 days", rating: 4.1 },
-    { name: "Tata CLiQ", variation: -2, deliveryDays: "2-4 days", rating: 4.2 },
-    { name: "JioMart", variation: -8, deliveryDays: "1-3 days", rating: 4.0 },
-    { name: "Apple Store", variation: 2, deliveryDays: "1-2 days", rating: 4.9 },
-    { name: "Samsung Store", variation: 3, deliveryDays: "2-3 days", rating: 4.8 },
-    { name: "Xiaomi Store", variation: -6, deliveryDays: "2-3 days", rating: 4.6 },
-    { name: "Nike", variation: 5, deliveryDays: "3-5 days", rating: 4.7 },
-    { name: "Dyson", variation: 0, deliveryDays: "2-4 days", rating: 4.8 },
+  // Determine product category based on name/store for relevant store filtering
+  const productNameLower = productName.toLowerCase();
+  const originalStoreLower = originalStore?.trim().toLowerCase() || "";
+  
+  // Store configurations with category relevance
+  const allStores = [
+    { name: "Amazon", variation: 0, deliveryDays: "1-2 days", baseRating: 4.5, categories: ["all"] },
+    { name: "Flipkart", variation: -5, deliveryDays: "2-3 days", baseRating: 4.3, categories: ["all"] },
+    { name: "Croma", variation: 12, deliveryDays: "2-3 days", baseRating: 4.4, categories: ["electronics", "appliances"] },
+    { name: "Reliance Digital", variation: 5, deliveryDays: "3-5 days", baseRating: 4.1, categories: ["electronics", "appliances"] },
+    { name: "Tata CLiQ", variation: -2, deliveryDays: "2-4 days", baseRating: 4.2, categories: ["all"] },
+    { name: "JioMart", variation: -8, deliveryDays: "1-3 days", baseRating: 4.0, categories: ["all"] },
+    { name: "Apple Store", variation: 2, deliveryDays: "1-2 days", baseRating: 4.9, categories: ["apple"] },
+    { name: "Samsung Store", variation: 3, deliveryDays: "2-3 days", baseRating: 4.8, categories: ["samsung"] },
+    { name: "Xiaomi Store", variation: -6, deliveryDays: "2-3 days", baseRating: 4.6, categories: ["xiaomi", "redmi", "mi"] },
+    { name: "Myntra", variation: 8, deliveryDays: "3-4 days", baseRating: 4.2, categories: ["fashion", "clothing"] },
+    { name: "Ajio", variation: -3, deliveryDays: "4-5 days", baseRating: 4.0, categories: ["fashion", "clothing"] },
+    { name: "Nike", variation: 5, deliveryDays: "3-5 days", baseRating: 4.7, categories: ["nike", "shoes", "sportswear"] },
+    { name: "Dyson", variation: 0, deliveryDays: "2-4 days", baseRating: 4.8, categories: ["dyson", "appliances"] },
+    { name: "Vijay Sales", variation: -4, deliveryDays: "2-3 days", baseRating: 4.3, categories: ["electronics", "appliances"] },
   ];
 
-  // Check if original store exists in our list, if not add it
-  const normalizedOriginalStore = originalStore?.trim().toLowerCase();
-  const storeExists = stores.some(s => s.name.toLowerCase() === normalizedOriginalStore);
-  
+  // Detect product category
+  const isElectronics = /iphone|samsung|galaxy|phone|laptop|macbook|tv|headphone|watch|tablet|ipad/i.test(productName);
+  const isFashion = /shoe|sneaker|clothing|shirt|dress|jacket|jeans/i.test(productName);
+  const isApple = /iphone|ipad|macbook|apple|airpod/i.test(productName);
+  const isSamsung = /samsung|galaxy/i.test(productName);
+  const isXiaomi = /xiaomi|redmi|poco|mi /i.test(productName);
+  const isNike = /nike/i.test(productName);
+  const isDyson = /dyson/i.test(productName);
+
+  // Filter stores based on product category
+  let relevantStores = allStores.filter(store => {
+    const storeLower = store.name.toLowerCase();
+    if (store.categories.includes("all")) return true;
+    if (isApple && store.categories.includes("apple")) return true;
+    if (isSamsung && store.categories.includes("samsung")) return true;
+    if (isXiaomi && store.categories.some(c => ["xiaomi", "redmi", "mi"].includes(c))) return true;
+    if (isNike && store.categories.includes("nike")) return true;
+    if (isDyson && store.categories.includes("dyson")) return true;
+    if (isElectronics && store.categories.includes("electronics")) return true;
+    if (isFashion && store.categories.includes("fashion")) return true;
+    return false;
+  });
+
+  // Ensure original store is included
+  const storeExists = relevantStores.some(s => s.name.toLowerCase() === originalStoreLower);
   if (originalStore && !storeExists) {
-    stores.push({
+    relevantStores.push({
       name: originalStore,
       variation: 0,
       deliveryDays: "1-2 days",
-      rating: 4.9
+      baseRating: 4.7,
+      categories: ["all"]
     });
   }
 
-  const storePrices = stores.map(store => {
-    const isOriginalStore = store.name.toLowerCase() === normalizedOriginalStore;
+  // Generate prices for each store
+  let storePrices = relevantStores.map(store => {
+    const isOriginalStore = store.name.toLowerCase() === originalStoreLower;
     const priceVariation = basePrice * (store.variation / 100);
     const storePrice = Math.round(basePrice + priceVariation);
     const originalPrice = Math.round(storePrice * 1.25);
     const discount = Math.round(((originalPrice - storePrice) / originalPrice) * 100);
     
-    const offers = [];
+    const offers: string[] = [];
     if (isOriginalStore) {
       offers.push("Official Store - Genuine Product");
       offers.push("Manufacturer Warranty");
@@ -112,19 +142,24 @@ const generateStorePrices = (basePrice: number, productName: string, originalSto
       inStock: isOriginalStore ? true : Math.random() > 0.2,
       deliveryDays: store.deliveryDays,
       shipping: storePrice > 500 ? "Free Shipping" : "₹50 Shipping",
-      rating: isOriginalStore ? 5.0 : store.rating, // Original store gets best rating
+      rating: store.baseRating,
       link: "#",
       offers: offers.length > 0 ? offers : ["Standard delivery"],
-      isOriginalStore
+      isOriginalStore,
+      isLowestPrice: false
     };
   });
 
-  // Sort: Original store first, then by price
-  return storePrices.sort((a, b) => {
-    if (a.isOriginalStore) return -1;
-    if (b.isOriginalStore) return 1;
-    return a.price - b.price;
-  });
+  // Sort by price first to find lowest
+  storePrices.sort((a, b) => a.price - b.price);
+  
+  // Give best rating (5.0) to lowest price store
+  if (storePrices.length > 0) {
+    storePrices[0].rating = 5.0;
+    storePrices[0].isLowestPrice = true;
+  }
+
+  return storePrices;
 };
 
 // EMI options for the product
@@ -311,10 +346,10 @@ const ComparePrices = () => {
                     <div 
                       key={storePrice.store}
                       className={`p-4 rounded-lg border ${
-                        storePrice.isOriginalStore 
-                          ? "border-primary bg-primary/10 ring-2 ring-primary/20" 
-                          : index === 0 
-                            ? "border-green-500 bg-green-500/10" 
+                        storePrice.isLowestPrice 
+                          ? "border-green-500 bg-green-500/10 ring-2 ring-green-500/20" 
+                          : storePrice.isOriginalStore 
+                            ? "border-primary bg-primary/10" 
                             : "border-border bg-background/50"
                       }`}
                     >
@@ -322,20 +357,20 @@ const ComparePrices = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <h3 className="font-semibold text-lg">{storePrice.store}</h3>
-                            {storePrice.isOriginalStore && (
-                              <Badge className="bg-primary text-primary-foreground text-xs">
-                                <Star className="h-3 w-3 mr-1 fill-current" />
-                                Official Store
+                            {storePrice.isLowestPrice && (
+                              <Badge className="bg-green-500 text-white text-xs">
+                                Lowest Price
                               </Badge>
                             )}
-                            {storePrice.isOriginalStore && (
+                            {storePrice.isLowestPrice && (
                               <Badge className="bg-yellow-500 text-white text-xs">
                                 ⭐ Best Rating (5.0)
                               </Badge>
                             )}
-                            {!storePrice.isOriginalStore && index === 0 && (
-                              <Badge className="bg-green-500 text-white text-xs">
-                                Lowest Price
+                            {storePrice.isOriginalStore && (
+                              <Badge className="bg-primary text-primary-foreground text-xs">
+                                <Star className="h-3 w-3 mr-1 fill-current" />
+                                Official Store
                               </Badge>
                             )}
                             {!storePrice.inStock && (
