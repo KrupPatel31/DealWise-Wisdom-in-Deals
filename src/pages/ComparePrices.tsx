@@ -347,9 +347,9 @@ const ComparePrices = () => {
                       key={storePrice.store}
                       className={`p-4 rounded-lg border ${
                         storePrice.isLowestPrice 
-                          ? "border-green-500 bg-green-500/10 ring-2 ring-green-500/20" 
+                          ? "border-primary bg-primary/10 ring-2 ring-primary/30" 
                           : storePrice.isOriginalStore 
-                            ? "border-primary bg-primary/10" 
+                            ? "border-green-500 bg-green-500/10" 
                             : "border-border bg-background/50"
                       }`}
                     >
@@ -358,8 +358,8 @@ const ComparePrices = () => {
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <h3 className="font-semibold text-lg">{storePrice.store}</h3>
                             {storePrice.isLowestPrice && (
-                              <Badge className="bg-green-500 text-white text-xs">
-                                Lowest Price
+                              <Badge className="bg-primary text-primary-foreground text-xs">
+                                🏆 Lowest Price
                               </Badge>
                             )}
                             {storePrice.isLowestPrice && (
