@@ -36,6 +36,7 @@ interface StorePrice {
   rating: number;
   link: string;
   offers: string[];
+  isOriginalStore?: boolean;
 }
 
 interface EMIOption {
@@ -56,7 +57,7 @@ interface CardOffer {
 }
 
 // Simulated store prices for comparison
-const generateStorePrices = (basePrice: number, productName: string): StorePrice[] => {
+const generateStorePrices = (basePrice: number, productName: string, originalStore: string): StorePrice[] => {
   const stores = [
     { name: "Amazon", variation: 0, deliveryDays: "1-2 days", rating: 4.5 },
     { name: "Flipkart", variation: -5, deliveryDays: "2-3 days", rating: 4.3 },
@@ -66,15 +67,38 @@ const generateStorePrices = (basePrice: number, productName: string): StorePrice
     { name: "Reliance Digital", variation: 5, deliveryDays: "3-5 days", rating: 4.1 },
     { name: "Tata CLiQ", variation: -2, deliveryDays: "2-4 days", rating: 4.2 },
     { name: "JioMart", variation: -8, deliveryDays: "1-3 days", rating: 4.0 },
+    { name: "Apple Store", variation: 2, deliveryDays: "1-2 days", rating: 4.9 },
+    { name: "Samsung Store", variation: 3, deliveryDays: "2-3 days", rating: 4.8 },
+    { name: "Xiaomi Store", variation: -6, deliveryDays: "2-3 days", rating: 4.6 },
+    { name: "Nike", variation: 5, deliveryDays: "3-5 days", rating: 4.7 },
+    { name: "Dyson", variation: 0, deliveryDays: "2-4 days", rating: 4.8 },
   ];
 
-  return stores.map(store => {
+  // Check if original store exists in our list, if not add it
+  const normalizedOriginalStore = originalStore?.trim().toLowerCase();
+  const storeExists = stores.some(s => s.name.toLowerCase() === normalizedOriginalStore);
+  
+  if (originalStore && !storeExists) {
+    stores.push({
+      name: originalStore,
+      variation: 0,
+      deliveryDays: "1-2 days",
+      rating: 4.9
+    });
+  }
+
+  const storePrices = stores.map(store => {
+    const isOriginalStore = store.name.toLowerCase() === normalizedOriginalStore;
     const priceVariation = basePrice * (store.variation / 100);
     const storePrice = Math.round(basePrice + priceVariation);
     const originalPrice = Math.round(storePrice * 1.25);
     const discount = Math.round(((originalPrice - storePrice) / originalPrice) * 100);
     
     const offers = [];
+    if (isOriginalStore) {
+      offers.push("Official Store - Genuine Product");
+      offers.push("Manufacturer Warranty");
+    }
     if (Math.random() > 0.5) offers.push("No Cost EMI available");
     if (Math.random() > 0.6) offers.push("Extra 5% off with Bank offers");
     if (Math.random() > 0.7) offers.push("Free extended warranty");
@@ -85,14 +109,22 @@ const generateStorePrices = (basePrice: number, productName: string): StorePrice
       price: storePrice,
       originalPrice,
       discount,
-      inStock: Math.random() > 0.2,
+      inStock: isOriginalStore ? true : Math.random() > 0.2,
       deliveryDays: store.deliveryDays,
       shipping: storePrice > 500 ? "Free Shipping" : "₹50 Shipping",
-      rating: store.rating,
+      rating: isOriginalStore ? 5.0 : store.rating, // Original store gets best rating
       link: "#",
-      offers: offers.length > 0 ? offers : ["Standard delivery"]
+      offers: offers.length > 0 ? offers : ["Standard delivery"],
+      isOriginalStore
     };
-  }).sort((a, b) => a.price - b.price);
+  });
+
+  // Sort: Original store first, then by price
+  return storePrices.sort((a, b) => {
+    if (a.isOriginalStore) return -1;
+    if (b.isOriginalStore) return 1;
+    return a.price - b.price;
+  });
 };
 
 // EMI options for the product
@@ -161,13 +193,13 @@ const ComparePrices = () => {
     // Simulate API call to fetch prices from different stores
     setIsLoading(true);
     const timer = setTimeout(() => {
-      setStorePrices(generateStorePrices(productPrice, productName));
+      setStorePrices(generateStorePrices(productPrice, productName, productStore));
       setEMIOptions(generateEMIOptions(productPrice));
       setIsLoading(false);
     }, 800);
     
     return () => clearTimeout(timer);
-  }, [productPrice, productName]);
+  }, [productPrice, productName, productStore]);
 
   const lowestPrice = storePrices.length > 0 ? storePrices[0] : null;
   const savings = lowestPrice ? lowestPrice.originalPrice - lowestPrice.price : 0;
@@ -279,16 +311,29 @@ const ComparePrices = () => {
                     <div 
                       key={storePrice.store}
                       className={`p-4 rounded-lg border ${
-                        index === 0 
-                          ? "border-green-500 bg-green-500/10" 
-                          : "border-border bg-background/50"
+                        storePrice.isOriginalStore 
+                          ? "border-primary bg-primary/10 ring-2 ring-primary/20" 
+                          : index === 0 
+                            ? "border-green-500 bg-green-500/10" 
+                            : "border-border bg-background/50"
                       }`}
                     >
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <h3 className="font-semibold text-lg">{storePrice.store}</h3>
-                            {index === 0 && (
+                            {storePrice.isOriginalStore && (
+                              <Badge className="bg-primary text-primary-foreground text-xs">
+                                <Star className="h-3 w-3 mr-1 fill-current" />
+                                Official Store
+                              </Badge>
+                            )}
+                            {storePrice.isOriginalStore && (
+                              <Badge className="bg-yellow-500 text-white text-xs">
+                                ⭐ Best Rating (5.0)
+                              </Badge>
+                            )}
+                            {!storePrice.isOriginalStore && index === 0 && (
                               <Badge className="bg-green-500 text-white text-xs">
                                 Lowest Price
                               </Badge>
