@@ -34,6 +34,17 @@ interface OrderData {
   discount?: number;
 }
 
+// HTML escape function to prevent XSS attacks
+const escapeHtml = (unsafe: string): string => {
+  if (!unsafe) return '';
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
 const getPaymentMethodLabel = (method: string): string => {
   switch (method) {
     case 'cod':
@@ -43,7 +54,7 @@ const getPaymentMethodLabel = (method: string): string => {
     case 'card':
       return 'Credit/Debit Card';
     default:
-      return method;
+      return escapeHtml(method);
   }
 };
 
@@ -62,8 +73,8 @@ export const generateBillHTML = (order: OrderData): string => {
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">${index + 1}</td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">
-        <strong>${item.name}</strong><br>
-        <span style="color: #6b7280; font-size: 12px;">Store: ${item.store}</span>
+        <strong>${escapeHtml(item.name)}</strong><br>
+        <span style="color: #6b7280; font-size: 12px;">Store: ${escapeHtml(item.store)}</span>
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${item.price.toLocaleString('en-IN')}</td>
@@ -147,12 +158,12 @@ export const generateBillHTML = (order: OrderData): string => {
         <div class="info-box">
           <h3>Shipping Address</h3>
           <p>
-            <strong>${order.shipping_address.fullName}</strong><br>
-            ${order.shipping_address.addressLine1}<br>
-            ${order.shipping_address.addressLine2 ? order.shipping_address.addressLine2 + '<br>' : ''}
-            ${order.shipping_address.city}, ${order.shipping_address.state} - ${order.shipping_address.pincode}<br>
-            Phone: ${order.shipping_address.phone}
-            ${order.shipping_address.landmark ? '<br>Landmark: ' + order.shipping_address.landmark : ''}
+            <strong>${escapeHtml(order.shipping_address.fullName)}</strong><br>
+            ${escapeHtml(order.shipping_address.addressLine1)}<br>
+            ${order.shipping_address.addressLine2 ? escapeHtml(order.shipping_address.addressLine2) + '<br>' : ''}
+            ${escapeHtml(order.shipping_address.city)}, ${escapeHtml(order.shipping_address.state)} - ${escapeHtml(order.shipping_address.pincode)}<br>
+            Phone: ${escapeHtml(order.shipping_address.phone)}
+            ${order.shipping_address.landmark ? '<br>Landmark: ' + escapeHtml(order.shipping_address.landmark) : ''}
           </p>
         </div>
       </div>
@@ -204,7 +215,7 @@ export const generateBillHTML = (order: OrderData): string => {
       ${order.notes ? `
       <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 8px;">
         <strong style="color: #d97706;">Delivery Instructions:</strong>
-        <p style="color: #92400e; margin-top: 5px;">${order.notes}</p>
+        <p style="color: #92400e; margin-top: 5px;">${escapeHtml(order.notes)}</p>
       </div>
       ` : ''}
       
