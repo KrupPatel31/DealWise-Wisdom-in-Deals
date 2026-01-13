@@ -18,7 +18,9 @@ import {
   Clock,
   CheckCircle,
   Gift,
-  Banknote
+  Banknote,
+  Plus,
+  Minus
 } from "lucide-react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -212,10 +214,16 @@ const ComparePrices = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems, updateQuantity } = useCart();
   
   const productName = searchParams.get("name") || "Product";
   const productPrice = parseInt(searchParams.get("price") || "10000");
+  
+  const getCartItemQuantity = (store: string): number => {
+    const itemId = `${productName}-${store}`.replace(/\s+/g, '-').toLowerCase();
+    const item = cartItems.find((i) => i.id === itemId);
+    return item?.quantity || 0;
+  };
   const productImage = searchParams.get("image") || "";
   const productStore = searchParams.get("store") || "";
   
@@ -263,6 +271,30 @@ const ComparePrices = () => {
     });
     
     toast.success(`Added to cart from ${storePrice.store}`);
+  };
+
+  const handleIncrement = (storePrice: StorePrice) => {
+    if (!user) {
+      toast.error("Please sign in to add items to cart");
+      navigate("/sign-in");
+      return;
+    }
+    
+    const currentQty = getCartItemQuantity(storePrice.store);
+    if (currentQty === 0) {
+      handleAddToCart(storePrice);
+    } else {
+      const itemId = `${productName}-${storePrice.store}`.replace(/\s+/g, '-').toLowerCase();
+      updateQuantity(itemId, currentQty + 1);
+    }
+  };
+
+  const handleDecrement = (storePrice: StorePrice) => {
+    const currentQty = getCartItemQuantity(storePrice.store);
+    if (currentQty > 0) {
+      const itemId = `${productName}-${storePrice.store}`.replace(/\s+/g, '-').toLowerCase();
+      updateQuantity(itemId, currentQty - 1);
+    }
   };
 
   return (
@@ -342,104 +374,127 @@ const ComparePrices = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {storePrices.map((storePrice, index) => (
-                    <div 
-                      key={storePrice.store}
-                      className={`p-4 rounded-lg border ${
-                        storePrice.isLowestPrice 
-                          ? "border-primary bg-primary/10 ring-2 ring-primary/30" 
-                          : storePrice.isOriginalStore 
-                            ? "border-green-500 bg-green-500/10" 
-                            : "border-border bg-background/50"
-                      }`}
-                    >
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2 flex-wrap">
-                            <h3 className="font-semibold text-lg">{storePrice.store}</h3>
-                            {storePrice.isLowestPrice && (
-                              <Badge className="bg-primary text-primary-foreground text-xs">
-                                🏆 Lowest Price
-                              </Badge>
-                            )}
-                            {storePrice.isLowestPrice && (
-                              <Badge className="bg-yellow-500 text-white text-xs">
-                                ⭐ Best Rating (5.0)
-                              </Badge>
-                            )}
-                            {storePrice.isOriginalStore && (
-                              <Badge className="bg-primary text-primary-foreground text-xs">
-                                <Star className="h-3 w-3 mr-1 fill-current" />
-                                Official Store
-                              </Badge>
-                            )}
-                            {!storePrice.inStock && (
-                              <Badge variant="destructive" className="text-xs">
-                                Out of Stock
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-1">
-                              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                              {storePrice.rating}
+                  {storePrices.map((storePrice, index) => {
+                    const quantity = getCartItemQuantity(storePrice.store);
+                    
+                    return (
+                      <div 
+                        key={storePrice.store}
+                        className={`p-4 rounded-lg border ${
+                          storePrice.isLowestPrice 
+                            ? "border-green-500 bg-green-500/10 ring-2 ring-green-500/30" 
+                            : storePrice.isOriginalStore 
+                              ? "border-primary bg-primary/10 ring-2 ring-primary/20" 
+                              : "border-border bg-background/50"
+                        }`}
+                      >
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                              <h3 className="font-semibold text-lg">{storePrice.store}</h3>
+                              {storePrice.isLowestPrice && (
+                                <Badge className="bg-green-500 text-white text-xs">
+                                  🏆 Lowest Price
+                                </Badge>
+                              )}
+                              {storePrice.isOriginalStore && (
+                                <Badge className="bg-primary text-primary-foreground text-xs">
+                                  <Star className="h-3 w-3 mr-1 fill-current" />
+                                  Official Store
+                                </Badge>
+                              )}
+                              {!storePrice.inStock && (
+                                <Badge variant="destructive" className="text-xs">
+                                  Out of Stock
+                                </Badge>
+                              )}
                             </div>
-                            <span>•</span>
-                            <div className="flex items-center gap-1">
-                              <Truck className="h-3 w-3" />
-                              {storePrice.deliveryDays}
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                {storePrice.rating}
+                              </div>
+                              <span>•</span>
+                              <div className="flex items-center gap-1">
+                                <Truck className="h-3 w-3" />
+                                {storePrice.deliveryDays}
+                              </div>
+                              <span>•</span>
+                              <span className={storePrice.shipping === "Free Shipping" ? "text-green-500" : ""}>
+                                {storePrice.shipping}
+                              </span>
                             </div>
-                            <span>•</span>
-                            <span className={storePrice.shipping === "Free Shipping" ? "text-green-500" : ""}>
-                              {storePrice.shipping}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {storePrice.offers.map((offer, i) => (
-                              <Badge key={i} variant="outline" className="text-xs">
-                                <Gift className="h-3 w-3 mr-1" />
-                                {offer}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-foreground">
-                              ₹{storePrice.price.toLocaleString()}
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {storePrice.offers.map((offer, i) => (
+                                <Badge key={i} variant="outline" className="text-xs">
+                                  <Gift className="h-3 w-3 mr-1" />
+                                  {offer}
+                                </Badge>
+                              ))}
                             </div>
-                            <div className="text-sm text-muted-foreground line-through">
-                              ₹{storePrice.originalPrice.toLocaleString()}
-                            </div>
-                            <Badge className="bg-red-500 text-white text-xs mt-1">
-                              {storePrice.discount}% OFF
-                            </Badge>
                           </div>
                           
-                          <div className="flex flex-col gap-2">
-                            <Button 
-                              size="sm"
-                              disabled={!storePrice.inStock}
-                              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
-                              onClick={() => handleAddToCart(storePrice)}
-                            >
-                              <ShoppingCart className="h-4 w-4 mr-1" />
-                              Add to Cart
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              className="text-xs"
-                            >
-                              <ExternalLink className="h-3 w-3 mr-1" />
-                              Visit Store
-                            </Button>
+                          <div className="flex items-center gap-4">
+                            <div className="text-right">
+                              <div className="text-2xl font-bold text-foreground">
+                                ₹{storePrice.price.toLocaleString()}
+                              </div>
+                              <div className="text-sm text-muted-foreground line-through">
+                                ₹{storePrice.originalPrice.toLocaleString()}
+                              </div>
+                              <Badge className="bg-red-500 text-white text-xs mt-1">
+                                {storePrice.discount}% OFF
+                              </Badge>
+                            </div>
+                            
+                            <div className="flex flex-col gap-2">
+                              {quantity === 0 ? (
+                                <Button 
+                                  size="sm"
+                                  disabled={!storePrice.inStock}
+                                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+                                  onClick={() => handleAddToCart(storePrice)}
+                                >
+                                  <ShoppingCart className="h-4 w-4 mr-1" />
+                                  Add to Cart
+                                </Button>
+                              ) : (
+                                <div className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 rounded-md">
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                                    onClick={() => handleDecrement(storePrice)}
+                                  >
+                                    <Minus className="h-4 w-4" />
+                                  </Button>
+                                  <span className="text-white font-bold min-w-[24px] text-center">
+                                    {quantity}
+                                  </span>
+                                  <Button 
+                                    size="sm" 
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                                    onClick={() => handleIncrement(storePrice)}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              )}
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                Visit Store
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </CardContent>
               </Card>
 
