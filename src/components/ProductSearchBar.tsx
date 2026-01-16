@@ -231,54 +231,54 @@ export const ProductSearchBar = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-6 space-y-6">
+    <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Search Header */}
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-foreground">Find Best Deals</h1>
-        <p className="text-muted-foreground">
-          Compare prices across multiple stores and find the best deals
+      <div className="text-center space-y-2 sm:space-y-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Find Best Deals</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Compare prices across multiple stores
         </p>
       </div>
 
       {/* Search Bar */}
-      <Card className="p-6">
-        <div className="space-y-4">
-          <div className="flex gap-3">
+      <Card className="p-4 sm:p-6">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 sm:h-5 sm:w-5" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Search for products, brands, or categories..."
-                className="pl-12 h-12 text-lg"
+                placeholder="Search products..."
+                className="pl-10 sm:pl-12 h-10 sm:h-12 text-base sm:text-lg"
               />
             </div>
             <Button 
               onClick={handleSearch}
               disabled={isSearchingApi}
-              className="h-12 px-6 bg-primary hover:bg-primary/90"
+              className="h-10 sm:h-12 px-4 sm:px-6 bg-primary hover:bg-primary/90"
             >
               {isSearchingApi ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
               ) : (
                 <>
-                  <Search className="h-5 w-5 mr-2" />
-                  Search
+                  <Search className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2" />
+                  <span className="hidden sm:inline">Search</span>
                 </>
               )}
             </Button>
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-4 items-center">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 flex-1 sm:flex-none">
+              <Filter className="h-4 w-4 text-muted-foreground hidden sm:block" />
               <Select
                 value={selectedCategory}
                 onValueChange={setSelectedCategory}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[160px]">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -295,10 +295,10 @@ export const ProductSearchBar = () => {
               </Select>
             </div>
 
-            <div className="flex items-center gap-2">
-              <SortAsc className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2 flex-1 sm:flex-none">
+              <SortAsc className="h-4 w-4 text-muted-foreground hidden sm:block" />
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[160px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
