@@ -1,16 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
   TrendingUp,
-  Mail,
-  Phone,
-  MapPin,
   Facebook,
   Twitter,
   Instagram,
   Linkedin,
-  Github,
   Heart,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -18,36 +13,34 @@ import { Link } from "react-router-dom";
 export const Footer = () => {
   return (
     <footer className="bg-gradient-to-br from-card via-background to-muted/20 border-t border-border/50">
-      {/* Newsletter Section */}
-      <div className="container mx-auto px-6 py-16">
-        <Separator className="bg-border/50 mb-12" />
+      <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-16">
+        <Separator className="bg-border/50 mb-8 sm:mb-12" />
 
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {/* Company Info */}
-          <div className="lg:col-span-2 space-y-6">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center shadow-glow">
-                <TrendingUp className="h-6 w-6 text-white" />
+          <div className="col-span-2 lg:col-span-2 space-y-4 sm:space-y-6">
+            <Link to="/" className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center shadow-glow">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
-              <span className="text-2xl font-bold text-primary font-display">
+              <span className="text-xl sm:text-2xl font-bold text-primary font-display">
                 DEALWISE
               </span>
             </Link>
 
-            <p className="text-muted-foreground leading-relaxed max-w-sm">
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-sm">
               The ultimate price comparison platform that helps you find the
-              best deals across multiple stores. Save time, save money, shop
-              smart.
+              best deals across multiple stores.
             </p>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-foreground text-lg">
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="font-semibold text-foreground text-base sm:text-lg">
               Quick Links
             </h3>
-            <nav className="space-y-3">
+            <nav className="space-y-2 sm:space-y-3">
               {[
                 { name: "Home", path: "/" },
                 { name: "Features", path: "/features" },
@@ -59,7 +52,7 @@ export const Footer = () => {
                 <Link
                   key={link.name}
                   to={link.path}
-                  className="block text-muted-foreground hover:text-accent transition-colors"
+                  className="block text-sm sm:text-base text-muted-foreground hover:text-accent transition-colors"
                 >
                   {link.name}
                 </Link>
@@ -67,26 +60,22 @@ export const Footer = () => {
             </nav>
           </div>
 
-          {/* Categories */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-foreground text-lg">
+          {/* Categories - Hidden on smallest screens */}
+          <div className="hidden sm:block space-y-3 sm:space-y-4">
+            <h3 className="font-semibold text-foreground text-base sm:text-lg">
               Categories
             </h3>
-            <nav className="space-y-3">
+            <nav className="space-y-2 sm:space-y-3">
               {[
                 "Electronics",
                 "Gaming",
                 "Home & Kitchen",
                 "Fashion",
-                "Books",
-                "Sports",
-                "Beauty",
-                "Automotive",
               ].map((category) => (
                 <Link
                   key={category}
                   to="/search"
-                  className="block text-muted-foreground hover:text-accent transition-colors"
+                  className="block text-sm sm:text-base text-muted-foreground hover:text-accent transition-colors"
                 >
                   {category}
                 </Link>
@@ -94,24 +83,19 @@ export const Footer = () => {
             </nav>
           </div>
 
-          {/* Support */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-foreground text-lg">Support</h3>
-            <nav className="space-y-3">
+          {/* Support - Hidden on smallest screens */}
+          <div className="hidden lg:block space-y-3 sm:space-y-4">
+            <h3 className="font-semibold text-foreground text-base sm:text-lg">Support</h3>
+            <nav className="space-y-2 sm:space-y-3">
               {[
                 "Help Center",
-                "API Documentation",
-                "Status Page",
-                "Bug Reports",
-                "Feature Requests",
-                "Community Forum",
+                "Contact Us",
                 "Live Chat",
-                "Email Support",
               ].map((item) => (
                 <Link
                   key={item}
                   to="/contact"
-                  className="block text-muted-foreground hover:text-accent transition-colors"
+                  className="block text-sm sm:text-base text-muted-foreground hover:text-accent transition-colors"
                 >
                   {item}
                 </Link>
@@ -120,28 +104,27 @@ export const Footer = () => {
           </div>
         </div>
 
-        <Separator className="bg-border/50 mb-8" />
+        <Separator className="bg-border/50 mb-6 sm:mb-8" />
 
         {/* Bottom Section */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex flex-col items-center gap-4 sm:gap-6">
           {/* Social Links */}
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Follow us:</span>
-            <div className="flex gap-3">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <span className="text-xs sm:text-sm text-muted-foreground">Follow us:</span>
+            <div className="flex gap-1 sm:gap-2">
               {[
                 { icon: Facebook, name: "Facebook" },
                 { icon: Twitter, name: "Twitter" },
                 { icon: Instagram, name: "Instagram" },
                 { icon: Linkedin, name: "LinkedIn" },
-                { icon: Github, name: "GitHub" },
               ].map(({ icon: Icon, name }) => (
                 <Button
                   key={name}
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 hover:bg-accent/20 hover:text-accent"
+                  className="h-8 w-8 sm:h-10 sm:w-10 hover:bg-accent/20 hover:text-accent"
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                   <span className="sr-only">{name}</span>
                 </Button>
               ))}
@@ -149,42 +132,26 @@ export const Footer = () => {
           </div>
 
           {/* Legal Links */}
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
             <Link to="/privacy" className="hover:text-accent transition-colors">
-              Privacy Policy
+              Privacy
             </Link>
             <Link to="/terms" className="hover:text-accent transition-colors">
-              Terms of Service
+              Terms
             </Link>
             <Link to="/cookies" className="hover:text-accent transition-colors">
-              Cookie Policy
+              Cookies
             </Link>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="text-center pt-8 mt-8 border-t border-border/30">
-          <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+        <div className="text-center pt-6 sm:pt-8 mt-6 sm:mt-8 border-t border-border/30">
+          <p className="text-xs sm:text-sm text-muted-foreground flex items-center justify-center gap-1 sm:gap-2 flex-wrap">
             © 2025-26 DealWise. Made with
-            <Heart className="h-4 w-4 text-red-500 fill-current" />
-            by the DealWise team. All rights reserved.
+            <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-red-500 fill-current" />
+            by the DealWise team.
           </p>
-        </div>
-
-        {/* Trust Badges */}
-        <div className="flex justify-center gap-8 pt-8 opacity-50">
-          <div className="text-center">
-            <div className="text-xl font-bold text-accent">SSL</div>
-            <div className="text-xs text-muted-foreground">Secured</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xl font-bold text-primary">24/7</div>
-            <div className="text-xs text-muted-foreground">Support</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xl font-bold text-accent">99.9%</div>
-            <div className="text-xs text-muted-foreground">Uptime</div>
-          </div>
         </div>
       </div>
     </footer>

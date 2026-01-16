@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Zap, Star, Users, ShoppingBag } from "lucide-react";
+import { TrendingUp, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const HeroSection = () => {
@@ -43,60 +42,40 @@ export const HeroSection = () => {
         </div>
       </div>
 
-      {/* Right Column - Enhanced Feature Card */}
-      <div
-        className="relative animate-slide-up"
-        style={{ animationDelay: "200ms" }}
-      >
-        <div
-          className="absolute -bottom-8 -left-8 z-20 animate-float"
-          style={{ animationDelay: "2s" }}
-        >
-          <div className="glass p-4 rounded-xl">
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 bg-accent rounded-full animate-glow-pulse"></div>
-              <span className="text-sm font-medium">Live Price Updates</span>
+      {/* Right Column - Feature Card */}
+      <div className="relative animate-slide-up hidden sm:block" style={{ animationDelay: "200ms" }}>
+        <div className="absolute -bottom-6 -left-6 z-20 animate-float hidden lg:block" style={{ animationDelay: "2s" }}>
+          <div className="glass p-3 sm:p-4 rounded-xl">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-accent rounded-full animate-glow-pulse"></div>
+              <span className="text-xs sm:text-sm font-medium">Live Price Updates</span>
             </div>
           </div>
         </div>
 
         <Card className="p-6 sm:p-8 bg-gradient-to-br from-card via-card to-muted/50 border-deal-border relative overflow-hidden backdrop-blur-sm hover-lift">
-          {/* Background pattern */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-accent/20 to-transparent rounded-full blur-2xl"></div>
+          <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-gradient-to-br from-accent/20 to-transparent rounded-full blur-2xl"></div>
 
           <div className="relative z-10">
-            <div className="absolute top-4 left-4">
-              <div className="w-4 h-4 bg-accent rounded-full animate-glow-pulse"></div>
+            <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-accent rounded-full animate-glow-pulse"></div>
             </div>
 
-            <div className="text-center space-y-6 sm:space-y-8">
-              <div className="w-20 h-20 sm:w-28 sm:h-28 mx-auto bg-gradient-to-br from-primary via-accent to-primary rounded-full flex items-center justify-center shadow-glow-lg animate-glow-pulse">
-                <TrendingUp className="h-10 w-10 sm:h-14 sm:w-14 text-white" />
+            <div className="text-center space-y-4 sm:space-y-6 lg:space-y-8">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28 mx-auto bg-gradient-to-br from-primary via-accent to-primary rounded-full flex items-center justify-center shadow-glow-lg animate-glow-pulse">
+                <TrendingUp className="h-8 w-8 sm:h-10 sm:w-10 lg:h-14 lg:w-14 text-white" />
               </div>
 
-              <div className="space-y-3">
-                <h3 className="text-2xl sm:text-3xl font-bold font-display">
+              <div className="space-y-2 sm:space-y-3">
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold font-display">
                   <span className="text-primary">WISDOM</span>{" "}
                   <span className="text-accent">IN DEALS</span>
                 </h3>
-
-                {/* Feature list */}
-                <div className="space-y-2 pt-4">
-                  {[].map((feature, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      <div className="w-2 h-2 bg-accent rounded-full"></div>
-                      <span className="text-muted-foreground">{feature}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
 
               <Link to="/search">
-                <Button className="bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 shadow-glow font-medium px-6 py-3">
+                <Button className="bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 shadow-glow font-medium px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base">
                   Discover Best Prices
                 </Button>
               </Link>
