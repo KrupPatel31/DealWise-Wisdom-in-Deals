@@ -131,18 +131,7 @@ export const Footer = () => {
             </div>
           </div>
 
-          {/* Legal Links */}
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
-            <Link to="/privacy" className="hover:text-accent transition-colors">
-              Privacy
-            </Link>
-            <Link to="/terms" className="hover:text-accent transition-colors">
-              Terms
-            </Link>
-            <Link to="/cookies" className="hover:text-accent transition-colors">
-              Cookies
-            </Link>
-          </div>
+          {/* Copyright info is shown below */}
         </div>
 
         {/* Copyright */}
