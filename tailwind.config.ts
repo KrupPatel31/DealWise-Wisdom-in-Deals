@@ -68,16 +68,11 @@ export default {
       backdropBlur: {
         xs: '2px',
       },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-      },
       boxShadow: {
         'glow': '0 0 20px rgba(66, 153, 225, 0.3)',
         'glow-lg': '0 0 40px rgba(66, 153, 225, 0.4)',
-        'glow-accent': '0 0 30px rgba(163, 230, 53, 0.3)',
         'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
-        'inner-glow': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.05)',
+        'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
       },
       keyframes: {
         "accordion-down": {
