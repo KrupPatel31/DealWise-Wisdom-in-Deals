@@ -107,49 +107,58 @@ const deals = [
 
 export const FeaturedDeals = () => {
   return (
-    <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
-      <div className="text-center space-y-4 sm:space-y-6 mb-10 sm:mb-16 animate-fade-up">
-        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-accent/10 rounded-full border border-accent/20">
-          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
-          <span className="text-accent font-medium text-sm sm:text-base">Hot Deals</span>
+    <section className="relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-24 relative z-10">
+        <div className="text-center space-y-4 sm:space-y-6 mb-10 sm:mb-16 animate-fade-up">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full border border-accent/20">
+            <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-accent animate-glow-pulse" />
+            <span className="text-accent font-semibold text-sm sm:text-base">Hot Deals</span>
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display">
+            <span className="text-muted-foreground">FEATURED</span>{" "}
+            <span className="gradient-text">DEALS</span>
+          </h2>
+
+          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"></div>
+
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Discover the{" "}
+            <span className="text-accent font-semibold">best deals</span> across
+            multiple platforms with{" "}
+            <span className="text-accent font-semibold">real-time price comparisons</span>.
+          </p>
         </div>
 
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display">
-          <span className="text-muted-foreground">FEATURED</span>{" "}
-          <span className="gradient-text">DEALS</span>
-        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 mb-10 sm:mb-14">
+          {deals.map((deal, index) => (
+            <div 
+              key={index} 
+              className="animate-fade-up" 
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <DealCard {...deal} />
+            </div>
+          ))}
+        </div>
 
-        <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"></div>
-
-        <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-2">
-          Discover the{" "}
-          <span className="text-accent font-semibold">best deals</span> across
-          multiple platforms with{" "}
-          <span className="text-accent font-semibold">
-            real-time price comparisons
-          </span>{" "}
-          and detailed product insights.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
-        {deals.map((deal, index) => (
-          <div key={index} style={{ animationDelay: `${index * 100}ms` }}>
-            <DealCard {...deal} />
-          </div>
-        ))}
-      </div>
-
-      <div className="text-center">
-        <Link to="/search">
-          <Button
-            size="lg"
-            className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 shadow-glow font-medium px-6 sm:px-8 py-3"
-          >
-            View All Deals
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </Link>
+        <div className="text-center">
+          <Link to="/search">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent text-white hover:from-primary/90 hover:to-accent/90 shadow-glow font-semibold px-8 sm:px-10 py-5 sm:py-6 text-base sm:text-lg group"
+            >
+              View All Deals
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
+        </div>
       </div>
     </section>
   );
