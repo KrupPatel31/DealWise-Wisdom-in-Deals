@@ -2,20 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TrendingUp, Zap, Sparkles, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
-
 export const HeroSection = () => {
-  const benefits = [
-    "Compare prices across 50+ stores",
-    "Save up to 40% on every purchase",
-    "Real-time price tracking",
-  ];
-
-  return (
-    <section className="relative overflow-hidden">
+  const benefits = ["Compare prices across 50+ stores", "Save up to 40% on every purchase", "Real-time price tracking"];
+  return <section className="relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "3s" }} />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float" style={{
+        animationDelay: "3s"
+      }} />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-primary/5 to-transparent rounded-full" />
       </div>
 
@@ -24,10 +19,7 @@ export const HeroSection = () => {
           {/* Left Column - Text Content */}
           <div className="space-y-6 sm:space-y-8 animate-fade-up order-2 lg:order-1">
             {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full border border-accent/20 animate-scale-in">
-              <Sparkles className="h-4 w-4 text-accent animate-glow-pulse" />
-              <span className="text-accent font-medium text-sm">Trusted by 50,000+ shoppers</span>
-            </div>
+            
 
             <div className="space-y-3 sm:space-y-4">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-display leading-[1.1]">
@@ -48,36 +40,18 @@ export const HeroSection = () => {
             </p>
 
             {/* Benefits list */}
-            <ul className="space-y-2 sm:space-y-3">
-              {benefits.map((benefit, index) => (
-                <li 
-                  key={index} 
-                  className="flex items-center gap-3 text-sm sm:text-base text-muted-foreground animate-fade-up"
-                  style={{ animationDelay: `${(index + 1) * 150}ms` }}
-                >
-                  <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-accent flex-shrink-0" />
-                  <span>{benefit}</span>
-                </li>
-              ))}
-            </ul>
+            
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
               <Link to="/sign-up" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto bg-gradient-to-r from-accent to-primary text-white hover:from-accent/90 hover:to-primary/90 shadow-glow font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg group"
-                >
+                <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-accent to-primary text-white hover:from-accent/90 hover:to-primary/90 shadow-glow font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg group">
                   <Zap className="mr-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:animate-glow-pulse" />
                   Start Comparing Now
                   <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               <Link to="/how-it-works" className="w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full sm:w-auto border-border/50 hover:bg-muted/50 font-medium px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg"
-                >
+                <Button variant="outline" size="lg" className="w-full sm:w-auto border-border/50 hover:bg-muted/50 font-medium px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg">
                   Learn How It Works
                 </Button>
               </Link>
@@ -85,9 +59,13 @@ export const HeroSection = () => {
           </div>
 
           {/* Right Column - Feature Card */}
-          <div className="relative animate-slide-up order-1 lg:order-2" style={{ animationDelay: "200ms" }}>
+          <div className="relative animate-slide-up order-1 lg:order-2" style={{
+          animationDelay: "200ms"
+        }}>
             {/* Floating badges */}
-            <div className="absolute -bottom-4 sm:-bottom-6 -left-2 sm:-left-6 z-20 animate-float hidden sm:block" style={{ animationDelay: "2s" }}>
+            <div className="absolute -bottom-4 sm:-bottom-6 -left-2 sm:-left-6 z-20 animate-float hidden sm:block" style={{
+            animationDelay: "2s"
+          }}>
               <div className="glass p-3 sm:p-4 rounded-xl shadow-glow">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-accent rounded-full animate-glow-pulse"></div>
@@ -96,7 +74,9 @@ export const HeroSection = () => {
               </div>
             </div>
 
-            <div className="absolute -top-4 sm:-top-6 -right-2 sm:-right-6 z-20 animate-float hidden md:block" style={{ animationDelay: "1s" }}>
+            <div className="absolute -top-4 sm:-top-6 -right-2 sm:-right-6 z-20 animate-float hidden md:block" style={{
+            animationDelay: "1s"
+          }}>
               <div className="glass p-3 sm:p-4 rounded-xl shadow-glow">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <Sparkles className="h-4 w-4 text-primary animate-glow-pulse" />
@@ -142,6 +122,5 @@ export const HeroSection = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
