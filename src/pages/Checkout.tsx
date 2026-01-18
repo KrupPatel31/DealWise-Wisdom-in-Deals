@@ -10,6 +10,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { 
   MapPin, 
   CreditCard, 
   Truck, 
@@ -18,7 +25,14 @@ import {
   CheckCircle,
   ArrowLeft,
   FileText,
-  PartyPopper
+  PartyPopper,
+  Smartphone,
+  Wallet,
+  Building2,
+  Clock,
+  X,
+  Shield,
+  Lock
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
@@ -87,6 +101,13 @@ const Checkout = () => {
     } else {
       toast.error("Invalid discount code");
     }
+  };
+
+  const handleRemoveDiscount = () => {
+    setDiscountCode("");
+    setDiscountApplied(false);
+    setDiscountAmount(0);
+    toast.info("Discount code removed");
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -500,30 +521,279 @@ const Checkout = () => {
                   Payment Method
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <div className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:bg-muted/50 cursor-pointer">
-                    <RadioGroupItem value="cod" id="cod" />
-                    <Label htmlFor="cod" className="flex-1 cursor-pointer">
-                      <span className="font-medium">Cash on Delivery</span>
-                      <p className="text-sm text-muted-foreground">Pay when you receive your order</p>
-                    </Label>
+                  {/* UPI Payment */}
+                  <div className={`border rounded-lg transition-all ${paymentMethod === 'upi' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                    <div className="flex items-center space-x-3 p-4 cursor-pointer">
+                      <RadioGroupItem value="upi" id="upi" />
+                      <Label htmlFor="upi" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="h-5 w-5 text-primary" />
+                          <span className="font-medium">UPI Payment</span>
+                          <Badge variant="secondary" className="text-xs">Instant</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">Pay using any UPI app</p>
+                      </Label>
+                    </div>
+                    {paymentMethod === 'upi' && (
+                      <div className="px-4 pb-4 pt-2 border-t border-border/50">
+                        <div className="grid grid-cols-4 gap-2 mb-3">
+                          {[
+                            { name: "Google Pay", icon: "G" },
+                            { name: "PhonePe", icon: "P" },
+                            { name: "Paytm", icon: "₽" },
+                            { name: "BHIM", icon: "B" }
+                          ].map((app) => (
+                            <button
+                              key={app.name}
+                              type="button"
+                              className="flex flex-col items-center gap-1 p-2 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors"
+                            >
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold">
+                                {app.icon}
+                              </div>
+                              <span className="text-xs text-muted-foreground">{app.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="upiId" className="text-sm">Or enter UPI ID</Label>
+                          <Input
+                            id="upiId"
+                            placeholder="yourname@upi"
+                            className="bg-background"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:bg-muted/50 cursor-pointer mt-3">
-                    <RadioGroupItem value="upi" id="upi" />
-                    <Label htmlFor="upi" className="flex-1 cursor-pointer">
-                      <span className="font-medium">UPI Payment</span>
-                      <p className="text-sm text-muted-foreground">Pay using Google Pay, PhonePe, Paytm etc.</p>
-                    </Label>
+
+                  {/* Credit/Debit Card */}
+                  <div className={`border rounded-lg transition-all ${paymentMethod === 'card' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                    <div className="flex items-center space-x-3 p-4 cursor-pointer">
+                      <RadioGroupItem value="card" id="card" />
+                      <Label htmlFor="card" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="h-5 w-5 text-primary" />
+                          <span className="font-medium">Credit/Debit Card</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">Visa, Mastercard, RuPay, Amex</p>
+                      </Label>
+                      <div className="flex gap-1">
+                        <div className="w-8 h-5 bg-blue-600 rounded text-white text-[8px] flex items-center justify-center font-bold">VISA</div>
+                        <div className="w-8 h-5 bg-red-500 rounded text-white text-[8px] flex items-center justify-center font-bold">MC</div>
+                        <div className="w-8 h-5 bg-green-600 rounded text-white text-[8px] flex items-center justify-center font-bold">RuPay</div>
+                      </div>
+                    </div>
+                    {paymentMethod === 'card' && (
+                      <div className="px-4 pb-4 pt-2 border-t border-border/50 space-y-3">
+                        <div className="space-y-2">
+                          <Label htmlFor="cardNumber" className="text-sm">Card Number</Label>
+                          <Input
+                            id="cardNumber"
+                            placeholder="1234 5678 9012 3456"
+                            className="bg-background"
+                            maxLength={19}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="expiry" className="text-sm">Expiry Date</Label>
+                            <Input
+                              id="expiry"
+                              placeholder="MM/YY"
+                              className="bg-background"
+                              maxLength={5}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="cvv" className="text-sm">CVV</Label>
+                            <Input
+                              id="cvv"
+                              type="password"
+                              placeholder="•••"
+                              className="bg-background"
+                              maxLength={4}
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="cardName" className="text-sm">Name on Card</Label>
+                          <Input
+                            id="cardName"
+                            placeholder="JOHN DOE"
+                            className="bg-background uppercase"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 p-2 rounded">
+                          <Lock className="h-3 w-3" />
+                          Your card details are encrypted and secure
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center space-x-3 p-4 border border-border rounded-lg hover:bg-muted/50 cursor-pointer mt-3">
-                    <RadioGroupItem value="card" id="card" />
-                    <Label htmlFor="card" className="flex-1 cursor-pointer">
-                      <span className="font-medium">Credit/Debit Card</span>
-                      <p className="text-sm text-muted-foreground">Visa, Mastercard, RuPay</p>
-                    </Label>
+
+                  {/* Net Banking */}
+                  <div className={`border rounded-lg transition-all ${paymentMethod === 'netbanking' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                    <div className="flex items-center space-x-3 p-4 cursor-pointer">
+                      <RadioGroupItem value="netbanking" id="netbanking" />
+                      <Label htmlFor="netbanking" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-5 w-5 text-primary" />
+                          <span className="font-medium">Net Banking</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">All major Indian banks supported</p>
+                      </Label>
+                    </div>
+                    {paymentMethod === 'netbanking' && (
+                      <div className="px-4 pb-4 pt-2 border-t border-border/50">
+                        <div className="grid grid-cols-3 gap-2 mb-3">
+                          {["HDFC", "ICICI", "SBI", "Axis", "Kotak", "Yes Bank"].map((bank) => (
+                            <button
+                              key={bank}
+                              type="button"
+                              className="p-2 text-sm rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors text-center"
+                            >
+                              {bank}
+                            </button>
+                          ))}
+                        </div>
+                        <Select>
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder="Select other bank" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pnb">Punjab National Bank</SelectItem>
+                            <SelectItem value="bob">Bank of Baroda</SelectItem>
+                            <SelectItem value="canara">Canara Bank</SelectItem>
+                            <SelectItem value="union">Union Bank</SelectItem>
+                            <SelectItem value="idbi">IDBI Bank</SelectItem>
+                            <SelectItem value="federal">Federal Bank</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* EMI Options */}
+                  <div className={`border rounded-lg transition-all ${paymentMethod === 'emi' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                    <div className="flex items-center space-x-3 p-4 cursor-pointer">
+                      <RadioGroupItem value="emi" id="emi" />
+                      <Label htmlFor="emi" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-5 w-5 text-primary" />
+                          <span className="font-medium">EMI</span>
+                          <Badge className="bg-green-500 text-white text-xs">No Cost EMI Available</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">Pay in easy monthly installments</p>
+                      </Label>
+                    </div>
+                    {paymentMethod === 'emi' && (
+                      <div className="px-4 pb-4 pt-2 border-t border-border/50 space-y-3">
+                        <div className="space-y-2">
+                          <Label className="text-sm">Select Bank</Label>
+                          <Select>
+                            <SelectTrigger className="bg-background">
+                              <SelectValue placeholder="Choose your bank" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="hdfc">HDFC Bank</SelectItem>
+                              <SelectItem value="icici">ICICI Bank</SelectItem>
+                              <SelectItem value="sbi">SBI Card</SelectItem>
+                              <SelectItem value="axis">Axis Bank</SelectItem>
+                              <SelectItem value="kotak">Kotak Bank</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm">Select Tenure</Label>
+                          <div className="grid grid-cols-4 gap-2">
+                            {[3, 6, 9, 12].map((months) => (
+                              <button
+                                key={months}
+                                type="button"
+                                className="p-2 text-sm rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors text-center"
+                              >
+                                <div className="font-medium">{months} mo</div>
+                                <div className="text-xs text-muted-foreground">
+                                  ₹{Math.round(total / months).toLocaleString()}/mo
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
+                          <div className="flex items-center gap-2 text-green-500 text-sm font-medium">
+                            <CheckCircle className="h-4 w-4" />
+                            No Cost EMI available on select banks
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Interest will be refunded as cashback
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Wallet */}
+                  <div className={`border rounded-lg transition-all ${paymentMethod === 'wallet' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                    <div className="flex items-center space-x-3 p-4 cursor-pointer">
+                      <RadioGroupItem value="wallet" id="wallet" />
+                      <Label htmlFor="wallet" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <Wallet className="h-5 w-5 text-primary" />
+                          <span className="font-medium">Mobile Wallets</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">Paytm, Mobikwik, Amazon Pay</p>
+                      </Label>
+                    </div>
+                    {paymentMethod === 'wallet' && (
+                      <div className="px-4 pb-4 pt-2 border-t border-border/50">
+                        <div className="grid grid-cols-3 gap-2">
+                          {["Paytm", "Mobikwik", "Amazon Pay"].map((wallet) => (
+                            <button
+                              key={wallet}
+                              type="button"
+                              className="p-3 text-sm rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors text-center"
+                            >
+                              {wallet}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Cash on Delivery */}
+                  <div className={`border rounded-lg transition-all ${paymentMethod === 'cod' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                    <div className="flex items-center space-x-3 p-4 cursor-pointer">
+                      <RadioGroupItem value="cod" id="cod" />
+                      <Label htmlFor="cod" className="flex-1 cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <Truck className="h-5 w-5 text-primary" />
+                          <span className="font-medium">Cash on Delivery</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">Pay when you receive your order</p>
+                      </Label>
+                    </div>
+                    {paymentMethod === 'cod' && (
+                      <div className="px-4 pb-4 pt-2 border-t border-border/50">
+                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+                          <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                            ⚠️ Extra ₹30 COD handling charges may apply
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </RadioGroup>
+
+                {/* Security Badge */}
+                <div className="flex items-center justify-center gap-2 pt-2 text-xs text-muted-foreground">
+                  <Shield className="h-4 w-4 text-green-500" />
+                  <span>100% Secure Payments • 256-bit SSL Encryption</span>
+                </div>
               </CardContent>
             </Card>
 
@@ -586,26 +856,37 @@ const Checkout = () => {
                     <Tag className="h-4 w-4 text-primary" />
                     Discount Code
                   </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={discountCode}
-                      onChange={(e) => setDiscountCode(e.target.value.slice(0, 20))}
-                      placeholder="Enter code"
-                      disabled={discountApplied}
-                      maxLength={20}
-                    />
-                    <Button
-                      variant="outline"
-                      onClick={handleApplyDiscount}
-                      disabled={discountApplied || !discountCode.trim()}
-                    >
-                      Apply
-                    </Button>
-                  </div>
-                  {discountApplied && (
-                    <div className="flex items-center gap-1 text-green-600 text-sm">
-                      <CheckCircle className="h-4 w-4" />
-                      Code applied!
+                  {discountApplied ? (
+                    <div className="flex items-center justify-between p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                        <span className="font-medium text-green-600 dark:text-green-400">{discountCode.toUpperCase()}</span>
+                        <span className="text-sm text-muted-foreground">applied</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleRemoveDiscount}
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Input
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value.slice(0, 20))}
+                        placeholder="Enter code"
+                        maxLength={20}
+                      />
+                      <Button
+                        variant="outline"
+                        onClick={handleApplyDiscount}
+                        disabled={!discountCode.trim()}
+                      >
+                        Apply
+                      </Button>
                     </div>
                   )}
                   <p className="text-xs text-muted-foreground">Try: DEALWISE10 or FIRST50</p>
