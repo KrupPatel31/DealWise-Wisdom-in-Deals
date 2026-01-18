@@ -59,6 +59,50 @@ interface CardOffer {
   code?: string;
 }
 
+// Store URL mappings for "Visit Store" functionality
+const storeUrls: Record<string, string> = {
+  "Amazon": "https://www.amazon.in",
+  "Amazon India": "https://www.amazon.in",
+  "Flipkart": "https://www.flipkart.com",
+  "Croma": "https://www.croma.com",
+  "Reliance Digital": "https://www.reliancedigital.in",
+  "Tata CLiQ": "https://www.tatacliq.com",
+  "JioMart": "https://www.jiomart.com",
+  "Apple Store": "https://www.apple.com/in/store",
+  "Samsung Store": "https://www.samsung.com/in",
+  "Xiaomi Store": "https://www.mi.com/in",
+  "Myntra": "https://www.myntra.com",
+  "Ajio": "https://www.ajio.com",
+  "Nike": "https://www.nike.com/in",
+  "Dyson": "https://www.dyson.in",
+  "Vijay Sales": "https://www.vijaysales.com",
+};
+
+// Get store URL with search query for the product
+const getStoreUrl = (storeName: string, productName: string): string => {
+  const baseUrl = storeUrls[storeName];
+  if (!baseUrl) {
+    // For unknown stores, try to create a generic search URL
+    const cleanStoreName = storeName.toLowerCase().replace(/\s+/g, '');
+    return `https://www.google.com/search?q=${encodeURIComponent(productName + ' ' + storeName)}`;
+  }
+  
+  // Add search query parameter based on store
+  const searchQuery = encodeURIComponent(productName);
+  if (storeName.includes("Amazon")) return `${baseUrl}/s?k=${searchQuery}`;
+  if (storeName === "Flipkart") return `${baseUrl}/search?q=${searchQuery}`;
+  if (storeName === "Croma") return `${baseUrl}/searchB?q=${searchQuery}`;
+  if (storeName === "Reliance Digital") return `${baseUrl}/search?q=${searchQuery}`;
+  if (storeName === "Tata CLiQ") return `${baseUrl}/search/?searchCategory=all&text=${searchQuery}`;
+  if (storeName === "JioMart") return `${baseUrl}/search/${searchQuery}`;
+  if (storeName === "Myntra") return `${baseUrl}/${searchQuery.replace(/%20/g, '-')}`;
+  if (storeName === "Ajio") return `${baseUrl}/search/?text=${searchQuery}`;
+  if (storeName === "Vijay Sales") return `${baseUrl}/search/?q=${searchQuery}`;
+  
+  // For brand stores, link to their main page
+  return baseUrl;
+};
+
 // Simulated store prices for comparison
 const generateStorePrices = (basePrice: number, productName: string, originalStore: string): StorePrice[] => {
   // Determine product category based on name/store for relevant store filtering
@@ -145,7 +189,7 @@ const generateStorePrices = (basePrice: number, productName: string, originalSto
       deliveryDays: store.deliveryDays,
       shipping: storePrice > 500 ? "Free Shipping" : "₹50 Shipping",
       rating: store.baseRating,
-      link: "#",
+      link: getStoreUrl(store.name, productName),
       offers: offers.length > 0 ? offers : ["Standard delivery"],
       isOriginalStore,
       isLowestPrice: false
@@ -485,6 +529,7 @@ const ComparePrices = () => {
                                 size="sm" 
                                 variant="outline"
                                 className="text-xs"
+                                onClick={() => window.open(storePrice.link, '_blank', 'noopener,noreferrer')}
                               >
                                 <ExternalLink className="h-3 w-3 mr-1" />
                                 Visit Store
