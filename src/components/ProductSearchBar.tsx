@@ -230,6 +230,21 @@ export const ProductSearchBar = () => {
     return categories;
   };
 
+  // Group products by category
+  const getProductsByCategory = () => {
+    const grouped: Record<string, ProductData[]> = {};
+    filteredProducts.forEach((product) => {
+      const category = product.category || "Other";
+      if (!grouped[category]) {
+        grouped[category] = [];
+      }
+      grouped[category].push(product);
+    });
+    return grouped;
+  };
+
+  const productsByCategory = getProductsByCategory();
+
   return (
     <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Search Header */}
@@ -337,155 +352,168 @@ export const ProductSearchBar = () => {
         )}
       </div>
 
-      {/* Product Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => {
-          const quantity = getCartItemQuantity(product.id);
-          
-          return (
-            <Card
-              key={product.id}
-              className="hover:shadow-lg transition-all duration-300 group h-full flex flex-col"
-            >
-              <CardContent className="p-4 flex-1 flex flex-col">
-                <div className="flex flex-col h-full">
-                  {/* Product Image */}
-                  {product.image && (
-                    <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3">
-                      <img
-                        src={product.image}
-                        alt={product.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  )}
-
-                  {/* Product Info */}
-                  <div className="flex-1 space-y-2">
-                    <h3 className="font-semibold line-clamp-2 text-sm leading-tight">
-                      {product.title}
-                    </h3>
-
-                    {/* Price */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-lg font-bold text-primary">
-                        {product.price}
-                      </span>
-                      {product.originalPrice && (
-                        <span className="text-sm text-muted-foreground line-through">
-                          {product.originalPrice}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Discount Badge */}
-                    {product.discount && (
-                      <Badge
-                        variant="secondary"
-                        className="text-xs bg-green-100 text-green-700"
-                      >
-                        <Tag className="h-3 w-3 mr-1" />
-                        {product.discount}
-                      </Badge>
-                    )}
-
-                    {/* Rating */}
-                    {product.rating && (
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-medium">
-                          {product.rating}
-                        </span>
-                        <span className="text-xs text-muted-foreground">/5</span>
-                      </div>
-                    )}
-
-                    {/* Store */}
-                    {product.store && (
-                      <div className="flex items-center gap-1">
-                        <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">
-                          {product.store}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Category */}
-                    {product.category && (
-                      <Badge variant="outline" className="text-xs">
-                        {product.category}
-                      </Badge>
-                    )}
-
-                    {/* Description */}
-                    {product.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2">
-                        {product.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 mt-auto pt-4">
-                    <Link 
-                      to={`/compare-prices?name=${encodeURIComponent(product.title)}&price=${parsePrice(product.price)}&image=${encodeURIComponent(product.image || '')}&store=${encodeURIComponent(product.store || '')}`}
-                      className="flex-1"
+      {/* Products by Category */}
+      {Object.keys(productsByCategory).length > 0 ? (
+        <div className="space-y-8">
+          {Object.entries(productsByCategory).map(([category, categoryProducts]) => (
+            <div key={category} className="space-y-4">
+              {/* Category Header */}
+              <div className="flex items-center justify-between border-b pb-2">
+                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                  <Badge variant="secondary" className="text-sm px-3 py-1">
+                    {category}
+                  </Badge>
+                  <span className="text-sm font-normal text-muted-foreground">
+                    ({categoryProducts.length} products)
+                  </span>
+                </h2>
+              </div>
+              
+              {/* Category Products Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {categoryProducts.map((product) => {
+                  const quantity = getCartItemQuantity(product.id);
+                  
+                  return (
+                    <Card
+                      key={product.id}
+                      className="hover:shadow-lg transition-all duration-300 group h-full flex flex-col"
                     >
-                      <Button className="w-full text-xs px-2" size="sm">
-                        <BarChart3 className="h-3 w-3 mr-1" />
-                        Compare Prices
-                      </Button>
-                    </Link>
-                    
-                    {quantity === 0 ? (
-                      <Button 
-                        size="sm" 
-                        className="flex-1 text-xs px-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0"
-                        onClick={() => handleAddToCart(product)}
-                      >
-                        <Plus className="h-4 w-4 mr-1" />
-                        Add to Cart
-                      </Button>
-                    ) : (
-                      <div className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 rounded-md">
-                        <Button 
-                          size="sm" 
-                          variant="ghost"
-                          className="h-8 w-8 p-0 text-white hover:bg-white/20"
-                          onClick={() => handleDecrement(product.id)}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="text-white font-bold min-w-[24px] text-center">
-                          {quantity}
-                        </span>
-                        <Button 
-                          size="sm" 
-                          variant="ghost"
-                          className="h-8 w-8 p-0 text-white hover:bg-white/20"
-                          onClick={() => handleIncrement(product)}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+                      <CardContent className="p-4 flex-1 flex flex-col">
+                        <div className="flex flex-col h-full">
+                          {/* Product Image */}
+                          {product.image && (
+                            <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3">
+                              <img
+                                src={product.image}
+                                alt={product.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            </div>
+                          )}
 
-      {/* No Results */}
-      {filteredProducts.length === 0 && !isLoading && (
-        <div className="text-center py-12">
-          <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No products found</h3>
-          <p className="text-muted-foreground">
-            Try adjusting your search terms or filters
-          </p>
+                          {/* Product Info */}
+                          <div className="flex-1 space-y-2">
+                            <h3 className="font-semibold line-clamp-2 text-sm leading-tight">
+                              {product.title}
+                            </h3>
+
+                            {/* Price */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-lg font-bold text-primary">
+                                {product.price}
+                              </span>
+                              {product.originalPrice && (
+                                <span className="text-sm text-muted-foreground line-through">
+                                  {product.originalPrice}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Discount Badge */}
+                            {product.discount && (
+                              <Badge
+                                variant="secondary"
+                                className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                              >
+                                <Tag className="h-3 w-3 mr-1" />
+                                {product.discount}
+                              </Badge>
+                            )}
+
+                            {/* Rating */}
+                            {product.rating && (
+                              <div className="flex items-center gap-1">
+                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                <span className="text-sm font-medium">
+                                  {product.rating}
+                                </span>
+                                <span className="text-xs text-muted-foreground">/5</span>
+                              </div>
+                            )}
+
+                            {/* Store */}
+                            {product.store && (
+                              <div className="flex items-center gap-1">
+                                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">
+                                  {product.store}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Description */}
+                            {product.description && (
+                              <p className="text-xs text-muted-foreground line-clamp-2">
+                                {product.description}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex gap-2 mt-auto pt-4">
+                            <Link 
+                              to={`/compare-prices?name=${encodeURIComponent(product.title)}&price=${parsePrice(product.price)}&image=${encodeURIComponent(product.image || '')}&store=${encodeURIComponent(product.store || '')}`}
+                              className="flex-1"
+                            >
+                              <Button className="w-full text-xs px-2" size="sm">
+                                <BarChart3 className="h-3 w-3 mr-1" />
+                                Compare Prices
+                              </Button>
+                            </Link>
+                            
+                            {quantity === 0 ? (
+                              <Button 
+                                size="sm" 
+                                className="flex-1 text-xs px-2 bg-emerald-600 hover:bg-emerald-700 text-primary-foreground border-0"
+                                onClick={() => handleAddToCart(product)}
+                              >
+                                <Plus className="h-4 w-4 mr-1" />
+                                Add to Cart
+                              </Button>
+                            ) : (
+                              <div className="flex items-center gap-1 bg-emerald-600 rounded-md">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
+                                  onClick={() => handleDecrement(product.id)}
+                                >
+                                  <Minus className="h-4 w-4" />
+                                </Button>
+                                <span className="text-primary-foreground font-bold min-w-[24px] text-center">
+                                  {quantity}
+                                </span>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
+                                  onClick={() => handleIncrement(product)}
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
+      ) : (
+        !isLoading && (
+          <div className="text-center py-12">
+            <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No products found</h3>
+            <p className="text-muted-foreground">
+              Try adjusting your search or filters
+            </p>
+          </div>
+        )
       )}
     </div>
   );
