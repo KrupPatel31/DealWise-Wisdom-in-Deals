@@ -382,15 +382,16 @@ export const ProductSearchBar = () => {
                       <CardContent className="p-4 flex-1 flex flex-col">
                         <div className="flex flex-col h-full">
                           {/* Product Image */}
-                          {product.image && (
-                            <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3">
-                              <img
-                                src={product.image}
-                                alt={product.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                            </div>
-                          )}
+                          <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3">
+                            <img
+                              src={product.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"}
+                              alt={product.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              onError={(e) => {
+                                e.currentTarget.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400";
+                              }}
+                            />
+                          </div>
 
                           {/* Product Info */}
                           <div className="flex-1 space-y-2">
