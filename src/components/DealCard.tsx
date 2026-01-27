@@ -33,8 +33,8 @@ export const DealCard = ({
   warranty = "1 year warranty",
   availability = "In stock"
 }: DealCardProps) => {
-  return <Card className="bg-deal border-deal-border overflow-hidden hover-lift hover-glow group animate-fade-up">
-      <div className="relative overflow-hidden">
+  return <Card className="bg-deal border-deal-border overflow-hidden hover-lift hover-glow group animate-fade-up h-full flex flex-col">
+      <div className="relative overflow-hidden flex-shrink-0">
         <img src={image} alt={title} className="w-full h-40 sm:h-48 lg:h-56 object-cover group-hover:scale-110 transition-transform duration-500" />
 
         {/* Discount Badge */}
@@ -50,9 +50,9 @@ export const DealCard = ({
         </div>
       </div>
 
-      <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+      <div className="p-4 sm:p-6 flex flex-col flex-1">
         {/* Rating and Reviews */}
-        <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center justify-between flex-wrap gap-2 flex-shrink-0">
           <div className="flex items-center gap-1 sm:gap-2">
             <div className="flex items-center gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -72,24 +72,22 @@ export const DealCard = ({
           )}
         </div>
 
-        {/* Product Title */}
-        <h3 className="font-display font-semibold text-base sm:text-lg text-foreground line-clamp-2 leading-snug">
+        {/* Product Title - Fixed height */}
+        <h3 className="font-display font-semibold text-base sm:text-lg text-foreground line-clamp-2 leading-snug mt-3 sm:mt-4 h-12 sm:h-14 flex-shrink-0">
           {title}
         </h3>
 
-        {/* Key Features */}
-        {features.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {features.slice(0, 3).map((feature, index) => (
-              <Badge key={index} variant="secondary" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-muted/50 text-muted-foreground">
-                {feature}
-              </Badge>
-            ))}
-          </div>
-        )}
+        {/* Key Features - Fixed height */}
+        <div className="flex flex-wrap gap-1 mt-2 sm:mt-3 h-8 sm:h-9 flex-shrink-0 overflow-hidden">
+          {features.slice(0, 3).map((feature, index) => (
+            <Badge key={index} variant="secondary" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-muted/50 text-muted-foreground h-fit">
+              {feature}
+            </Badge>
+          ))}
+        </div>
 
         {/* Pricing */}
-        <div className="space-y-1 sm:space-y-2">
+        <div className="mt-3 sm:mt-4 flex-shrink-0">
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-price-current font-display">
               {currentPrice}
@@ -99,13 +97,13 @@ export const DealCard = ({
             </span>
           </div>
 
-          <div className="text-xs sm:text-sm text-accent font-medium">
+          <div className="text-xs sm:text-sm text-accent font-medium mt-1">
             You save: ₹{(parseInt(originalPrice.replace(/[₹,]/g, "")) - parseInt(currentPrice.replace(/[₹,]/g, ""))).toLocaleString()}
           </div>
         </div>
 
-        {/* Shipping & Warranty Info */}
-        <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground">
+        {/* Shipping & Warranty Info - Fixed height */}
+        <div className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground h-12 sm:h-14 flex-shrink-0">
           <div className="flex items-center gap-2">
             <Truck className="h-3 w-3 sm:h-4 sm:w-4 text-accent flex-shrink-0" />
             <span className="truncate">{shipping}</span>
@@ -116,8 +114,11 @@ export const DealCard = ({
           </div>
         </div>
 
-        {/* Action Button */}
-        <div className="pt-2">
+        {/* Spacer to push button to bottom */}
+        <div className="flex-1 min-h-2"></div>
+
+        {/* Action Button - Always at bottom */}
+        <div className="mt-auto pt-3 sm:pt-4 flex-shrink-0">
           <Link to={`/compare-prices?name=${encodeURIComponent(title)}&price=${parseInt(currentPrice.replace(/[₹,]/g, ""))}&image=${encodeURIComponent(image)}&store=${encodeURIComponent(store)}`} className="block">
             <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm sm:text-base py-2 sm:py-2.5">
               <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
