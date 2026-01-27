@@ -38,9 +38,7 @@ export const DealCard = ({
         <img src={image} alt={title} className="w-full h-40 sm:h-48 lg:h-56 object-cover group-hover:scale-110 transition-transform duration-500" />
 
         {/* Discount Badge */}
-        <Badge className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-discount-bg text-discount-text font-bold text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 animate-glow-pulse">
-          {discount}
-        </Badge>
+        
 
         {/* Store Badge */}
         <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4">
@@ -55,21 +53,19 @@ export const DealCard = ({
         <div className="flex items-center justify-between flex-wrap gap-2 flex-shrink-0">
           <div className="flex items-center gap-1 sm:gap-2">
             <div className="flex items-center gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`h-3 w-3 sm:h-4 sm:w-4 ${i < Math.floor(rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`} />
-              ))}
+              {Array.from({
+              length: 5
+            }).map((_, i) => <Star key={i} className={`h-3 w-3 sm:h-4 sm:w-4 ${i < Math.floor(rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`} />)}
             </div>
             <span className="text-xs sm:text-sm text-muted-foreground">
               {rating} ({reviewCount.toLocaleString()})
             </span>
           </div>
 
-          {availability === "In stock" && (
-            <Badge variant="outline" className="text-accent border-accent/30 bg-accent/10 text-xs">
+          {availability === "In stock" && <Badge variant="outline" className="text-accent border-accent/30 bg-accent/10 text-xs">
               <Award className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
               In Stock
-            </Badge>
-          )}
+            </Badge>}
         </div>
 
         {/* Product Title - Fixed height */}
@@ -79,11 +75,9 @@ export const DealCard = ({
 
         {/* Key Features - Fixed height */}
         <div className="flex flex-wrap gap-1 mt-2 sm:mt-3 h-8 sm:h-9 flex-shrink-0 overflow-hidden">
-          {features.slice(0, 3).map((feature, index) => (
-            <Badge key={index} variant="secondary" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-muted/50 text-muted-foreground h-fit">
+          {features.slice(0, 3).map((feature, index) => <Badge key={index} variant="secondary" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-muted/50 text-muted-foreground h-fit">
               {feature}
-            </Badge>
-          ))}
+            </Badge>)}
         </div>
 
         {/* Pricing */}
