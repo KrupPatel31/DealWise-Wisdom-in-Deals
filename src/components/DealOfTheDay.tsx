@@ -201,7 +201,7 @@ export const DealOfTheDay = () => {
 
                 {/* Store Badge */}
                 <div className="absolute top-3 right-3">
-                  <Badge variant="secondary" className="backdrop-blur-sm bg-transparent">
+                  <Badge variant="secondary" className="backdrop-blur-sm bg-primary-foreground">
                     <ShoppingBag className="h-3 w-3 mr-1" />
                     {deal.store}
                   </Badge>
