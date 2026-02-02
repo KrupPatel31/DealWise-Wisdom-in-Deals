@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { PriceHistoryChart } from "@/components/PriceHistoryChart";
 import { 
   ArrowLeft, 
   Star, 
@@ -20,7 +21,8 @@ import {
   Gift,
   Banknote,
   Plus,
-  Minus
+  Minus,
+  TrendingDown
 } from "lucide-react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -542,6 +544,13 @@ const ComparePrices = () => {
                   })}
                 </CardContent>
               </Card>
+
+              {/* Price History Chart */}
+              <PriceHistoryChart 
+                productName={productName}
+                stores={storePrices.map(s => s.store)}
+                currentPrice={lowestPrice?.price || productPrice}
+              />
 
               {/* EMI Options */}
               <Card className="border-border bg-card/50 backdrop-blur-sm">

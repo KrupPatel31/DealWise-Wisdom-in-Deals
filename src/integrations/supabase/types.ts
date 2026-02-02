@@ -59,6 +59,60 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_deals: {
+        Row: {
+          category: string | null
+          created_at: string
+          deal_price: number
+          description: string | null
+          discount_percent: number
+          ends_at: string
+          id: string
+          image_url: string | null
+          is_active: boolean
+          original_price: number
+          product_link: string | null
+          starts_at: string
+          store: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          deal_price: number
+          description?: string | null
+          discount_percent: number
+          ends_at: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          original_price: number
+          product_link?: string | null
+          starts_at?: string
+          store: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          deal_price?: number
+          description?: string | null
+          discount_percent?: number
+          ends_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          original_price?: number
+          product_link?: string | null
+          starts_at?: string
+          store?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string
@@ -104,6 +158,33 @@ export type Database = {
           total?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      price_history: {
+        Row: {
+          created_at: string
+          id: string
+          price: number
+          product_name: string
+          recorded_at: string
+          store: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          price: number
+          product_name: string
+          recorded_at?: string
+          store: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          price?: number
+          product_name?: string
+          recorded_at?: string
+          store?: string
         }
         Relationships: []
       }
