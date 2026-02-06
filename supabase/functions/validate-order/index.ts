@@ -68,7 +68,7 @@ serve(async (req) => {
 
     const userId = claimsData.claims.sub;
     const body = await req.json();
-    const { items, discountCode, shippingAddress, paymentMethod, notes } = body;
+    const { items, discountCode, coinsToUse, shippingAddress, paymentMethod, notes } = body;
 
     // Validate items array
     if (!Array.isArray(items) || items.length === 0) {
@@ -177,7 +177,23 @@ serve(async (req) => {
       // Silently ignore invalid codes - don't apply discount
     }
 
-    const total = Math.max(0, subtotal + shipping - discountAmount);
+    // Validate and apply coins
+    let coinDiscount = 0;
+    if (coinsToUse && typeof coinsToUse === 'number' && coinsToUse > 0) {
+      // Verify user has enough coins
+      const { data: userCoins } = await supabase
+        .from('deal_coins')
+        .select('balance')
+        .eq('user_id', userId)
+        .single();
+
+      if (userCoins && userCoins.balance >= coinsToUse) {
+        // Cap at subtotal to prevent negative totals
+        coinDiscount = Math.min(coinsToUse, subtotal);
+      }
+    }
+
+    const total = Math.max(0, subtotal + shipping - discountAmount - coinDiscount);
 
     // Generate order number
     const orderNumber = `DW${Date.now().toString().slice(-8)}`;
@@ -238,6 +254,7 @@ serve(async (req) => {
           subtotal,
           shipping,
           discount: discountAmount,
+          coinDiscount,
           total,
           discountCode: validatedDiscountCode,
         },

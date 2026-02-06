@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { useProfile } from "@/hooks/useProfile";
+import { DealCoinsDisplay } from "@/components/DealCoinsDisplay";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,6 +60,8 @@ export const Header = () => {
           <div className="hidden lg:flex items-center gap-3">
             {user ? (
               <>
+                <DealCoinsDisplay />
+                
                 <Link to="/cart">
                   <Button variant="ghost" size="sm" className="relative">
                     <ShoppingCart className="h-4 w-4" />
@@ -130,6 +133,7 @@ export const Header = () => {
           <div className="lg:hidden flex items-center gap-2">
             {user && (
               <>
+                <DealCoinsDisplay />
                 <Link to="/cart">
                   <Button variant="ghost" size="sm" className="relative">
                     <ShoppingCart className="h-4 w-4" />

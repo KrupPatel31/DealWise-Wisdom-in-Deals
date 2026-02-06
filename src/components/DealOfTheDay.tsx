@@ -180,9 +180,9 @@ export const DealOfTheDay = () => {
 
         {/* Deals Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {deals.map((deal, index) => <Card key={deal.id} className={`group overflow-hidden hover:shadow-xl transition-all duration-300 border-border/50 ${index === 0 ? 'md:col-span-2 lg:col-span-1 ring-2 ring-destructive/20' : ''}`}>
+          {deals.map((deal, index) => <Card key={deal.id} className={`group overflow-hidden hover:shadow-xl transition-all duration-300 border-border/50 flex flex-col ${index === 0 ? 'ring-2 ring-destructive/20' : ''}`}>
               {/* Image Container */}
-              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted flex-shrink-0">
                 <img src={deal.image_url || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"} alt={deal.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={e => {
               e.currentTarget.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400";
             }} />
@@ -214,46 +214,54 @@ export const DealOfTheDay = () => {
               </div>
 
               {/* Content */}
-              <CardContent className="p-4 space-y-3">
+              <CardContent className="p-4 flex flex-col flex-grow">
                 {/* Category */}
-                {deal.category && <Badge variant="outline" className="text-xs">
-                    <Tag className="h-3 w-3 mr-1" />
-                    {deal.category}
-                  </Badge>}
+                <div className="mb-2">
+                  {deal.category ? (
+                    <Badge variant="outline" className="text-xs">
+                      <Tag className="h-3 w-3 mr-1" />
+                      {deal.category}
+                    </Badge>
+                  ) : (
+                    <div className="h-5" /> 
+                  )}
+                </div>
 
                 {/* Title */}
-                <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
+                <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors min-h-[3.5rem]">
                   {deal.title}
                 </h3>
 
                 {/* Description */}
-                {deal.description && <p className="text-sm text-muted-foreground line-clamp-2">
-                    {deal.description}
-                  </p>}
+                <p className="text-sm text-muted-foreground line-clamp-2 mt-2 min-h-[2.5rem]">
+                  {deal.description || "Great deal available now!"}
+                </p>
 
-                {/* Price */}
-                <div className="flex items-center gap-3 pt-2">
-                  <span className="text-2xl font-bold text-primary">
-                    ₹{deal.deal_price.toLocaleString('en-IN')}
-                  </span>
-                  <span className="text-base text-muted-foreground line-through">
-                    ₹{deal.original_price.toLocaleString('en-IN')}
-                  </span>
+                {/* Price - pushed to bottom with mt-auto */}
+                <div className="mt-auto pt-3 space-y-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl font-bold text-primary">
+                      ₹{deal.deal_price.toLocaleString('en-IN')}
+                    </span>
+                    <span className="text-base text-muted-foreground line-through">
+                      ₹{deal.original_price.toLocaleString('en-IN')}
+                    </span>
+                  </div>
+
+                  {/* Savings */}
+                  <div className="flex items-center gap-1 text-green-500 text-sm font-medium">
+                    <Tag className="h-4 w-4" />
+                    You save ₹{(deal.original_price - deal.deal_price).toLocaleString('en-IN')}
+                  </div>
+
+                  {/* CTA */}
+                  <Link to={`/compare-prices?name=${encodeURIComponent(deal.title)}&price=${deal.deal_price}&image=${encodeURIComponent(deal.image_url || '')}&store=${encodeURIComponent(deal.store)}`} className="block pt-2">
+                    <Button className="w-full group/btn">
+                      Compare Prices
+                      <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
                 </div>
-
-                {/* Savings */}
-                <div className="flex items-center gap-1 text-green-500 text-sm font-medium">
-                  <Tag className="h-4 w-4" />
-                  You save ₹{(deal.original_price - deal.deal_price).toLocaleString('en-IN')}
-                </div>
-
-                {/* CTA */}
-                <Link to={`/compare-prices?name=${encodeURIComponent(deal.title)}&price=${deal.deal_price}&image=${encodeURIComponent(deal.image_url || '')}&store=${encodeURIComponent(deal.store)}`} className="block pt-2">
-                  <Button className="w-full group/btn">
-                    Compare Prices
-                    <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
               </CardContent>
             </Card>)}
         </div>

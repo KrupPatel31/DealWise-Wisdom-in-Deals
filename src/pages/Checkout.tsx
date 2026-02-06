@@ -32,10 +32,12 @@ import {
   Clock,
   X,
   Shield,
-  Lock
+  Lock,
+  Coins
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
+import { useDealCoins, COIN_EARN_RATE } from "@/hooks/useDealCoins";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -52,14 +54,18 @@ const validateTextField = (value: string, maxLength: number): boolean => {
 const Checkout = () => {
   const { user } = useAuth();
   const { cartItems, clearCart } = useCart();
+  const { coins, spendCoins, earnCoins, refetchCoins } = useDealCoins();
   const navigate = useNavigate();
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<any>(null);
+  const [earnedCoins, setEarnedCoins] = useState(0);
   const [discountCode, setDiscountCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [coinsToUse, setCoinsToUse] = useState(0);
+  const [useCoins, setUseCoins] = useState(false);
   
   const [shippingAddress, setShippingAddress] = useState({
     fullName: "",
@@ -84,7 +90,28 @@ const Checkout = () => {
     0
   );
   const shipping = subtotal > 500 ? 0 : 50;
-  const total = subtotal + shipping - discountAmount;
+  const coinDiscount = useCoins ? Math.min(coinsToUse, coins.balance, subtotal) : 0;
+  const total = Math.max(0, subtotal + shipping - discountAmount - coinDiscount);
+  const potentialCoinsEarned = Math.floor(total * COIN_EARN_RATE);
+
+  // Handle applying/removing coins
+  const handleToggleCoins = () => {
+    if (useCoins) {
+      setUseCoins(false);
+      setCoinsToUse(0);
+    } else {
+      setUseCoins(true);
+      // Default to using all available coins up to subtotal
+      setCoinsToUse(Math.min(coins.balance, subtotal));
+    }
+  };
+
+  const handleCoinsChange = (value: string) => {
+    const numValue = parseInt(value) || 0;
+    // Cap at either user's balance or subtotal
+    const maxCoins = Math.min(coins.balance, subtotal);
+    setCoinsToUse(Math.min(Math.max(0, numValue), maxCoins));
+  };
 
   // Client-side preview of discount (actual validation happens server-side)
   const handleApplyDiscount = () => {
@@ -200,6 +227,7 @@ const Checkout = () => {
             discount: item.discount
           })),
           discountCode: discountApplied ? discountCode : null,
+          coinsToUse: useCoins ? coinDiscount : 0,
           shippingAddress,
           paymentMethod,
           notes: orderNotes,
@@ -213,6 +241,15 @@ const Checkout = () => {
       if (!data?.success) {
         throw new Error(data?.error || 'Failed to place order');
       }
+
+      // Handle coins - spend coins if used
+      if (useCoins && coinDiscount > 0) {
+        await spendCoins(coinDiscount, data.order.id);
+      }
+
+      // Earn coins from this order
+      const coinsEarned = await earnCoins(data.order.total, data.order.id);
+      setEarnedCoins(coinsEarned);
 
       // Store completed order data for invoice
       const orderData = {
@@ -231,6 +268,7 @@ const Checkout = () => {
         shipping: data.order.shipping,
         total: data.order.total,
         discount: data.order.discount,
+        coinDiscount: data.order.coinDiscount || 0,
         shipping_address: shippingAddress,
         payment_method: paymentMethod,
         status: 'placed',
@@ -240,6 +278,7 @@ const Checkout = () => {
 
       setCompletedOrder(orderData);
       await clearCart();
+      await refetchCoins();
       setOrderSuccess(true);
       toast.success("Order placed successfully!");
     } catch (error: any) {
@@ -315,6 +354,14 @@ const Checkout = () => {
                     <span>-₹{completedOrder.discount.toLocaleString()}</span>
                   </div>
                 )}
+                {completedOrder.coinDiscount > 0 && (
+                  <div className="flex justify-between text-sm text-amber-500">
+                    <span className="flex items-center gap-1">
+                      <Coins className="h-3 w-3" /> Deal Coins Used
+                    </span>
+                    <span>-₹{completedOrder.coinDiscount.toLocaleString()}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
                   <span className={completedOrder.shipping === 0 ? "text-green-500" : "text-foreground"}>
@@ -326,6 +373,19 @@ const Checkout = () => {
                   <span className="text-foreground">Total Paid</span>
                   <span className="text-primary">₹{completedOrder.total.toLocaleString()}</span>
                 </div>
+                
+                {/* Coins earned banner */}
+                {earnedCoins > 0 && (
+                  <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                    <div className="flex items-center gap-2 text-amber-500">
+                      <Coins className="h-5 w-5" />
+                      <span className="font-medium">You earned {earnedCoins} Deal Coins!</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Use them on your next order (1 coin = ₹1 off)
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -913,6 +973,15 @@ const Checkout = () => {
                     </div>
                   )}
 
+                  {useCoins && coinDiscount > 0 && (
+                    <div className="flex justify-between text-amber-500">
+                      <span className="flex items-center gap-1">
+                        <Coins className="h-3 w-3" /> Deal Coins
+                      </span>
+                      <span>-₹{coinDiscount.toLocaleString()}</span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between text-foreground">
                     <span>Shipping</span>
                     <span className={shipping === 0 ? "text-green-600" : ""}>
@@ -925,6 +994,80 @@ const Checkout = () => {
                     </p>
                   )}
                 </div>
+
+                <Separator className="bg-border" />
+
+                {/* Deal Coins Section */}
+                {coins.balance > 0 && (
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      <Coins className="h-4 w-4 text-amber-500" />
+                      Deal Coins
+                      <Badge variant="secondary" className="bg-amber-500/20 text-amber-500 text-xs">
+                        {coins.balance} available
+                      </Badge>
+                    </Label>
+                    {useCoins ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-amber-500" />
+                            <span className="text-sm text-amber-500">Using coins</span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleToggleCoins}
+                            className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="flex gap-2">
+                          <Input
+                            type="number"
+                            value={coinsToUse}
+                            onChange={(e) => handleCoinsChange(e.target.value)}
+                            min={0}
+                            max={Math.min(coins.balance, subtotal)}
+                            className="text-center"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setCoinsToUse(Math.min(coins.balance, subtotal))}
+                          >
+                            Max
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Save ₹{coinDiscount.toLocaleString()} with Deal Coins
+                        </p>
+                      </div>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={handleToggleCoins}
+                        className="w-full text-amber-500 border-amber-500/30 hover:bg-amber-500/10"
+                      >
+                        <Coins className="h-4 w-4 mr-2" />
+                        Use {coins.balance} coins (₹{coins.balance} off)
+                      </Button>
+                    )}
+                  </div>
+                )}
+
+                {/* Coins you'll earn */}
+                {potentialCoinsEarned > 0 && (
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Coins className="h-4 w-4 text-amber-500" />
+                      <span className="text-muted-foreground">You'll earn</span>
+                      <span className="font-medium text-amber-500">{potentialCoinsEarned} coins</span>
+                      <span className="text-muted-foreground">on this order</span>
+                    </div>
+                  </div>
+                )}
 
                 <Separator className="bg-border" />
 
