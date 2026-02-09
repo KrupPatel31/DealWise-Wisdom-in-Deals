@@ -2,14 +2,12 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { lovable } from "@/integrations/lovable";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { TrendingUp, Eye, EyeOff } from "lucide-react";
 
 const SignIn = () => {
@@ -19,7 +17,7 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   
-  const { signIn, user } = useAuth();
+  const { signIn, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -63,9 +61,7 @@ const SignIn = () => {
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
-    const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
+    const { error } = await signInWithGoogle();
     if (error) {
       toast({
         title: "Google sign in failed",
@@ -156,7 +152,7 @@ const SignIn = () => {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <Separator className="w-full" />
+                  <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-card px-2 text-muted-foreground">Or continue with</span>

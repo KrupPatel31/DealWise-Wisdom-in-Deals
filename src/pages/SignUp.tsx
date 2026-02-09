@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { lovable } from "@/integrations/lovable";
 import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -27,7 +26,7 @@ const SignUp = () => {
     agreeToTerms: false
   });
   
-  const { signUp, user } = useAuth();
+  const { signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -85,9 +84,7 @@ const SignUp = () => {
 
   const handleGoogleSignUp = async () => {
     setGoogleLoading(true);
-    const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
+    const { error } = await signInWithGoogle();
     if (error) {
       toast({
         title: "Google sign up failed",
@@ -293,7 +290,7 @@ const SignUp = () => {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <Separator className="w-full" />
+                  <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
