@@ -13,7 +13,7 @@ import { TrendingUp, Eye, EyeOff, Check, X, CheckCircle } from "lucide-react";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const { session, updatePassword } = useAuth();
+  const { session, updatePassword, loading: authLoading } = useAuth();
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -21,15 +21,19 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
-  const [isValidSession, setIsValidSession] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user has a valid recovery session
-    if (session) {
-      setIsValidSession(true);
+    // Wait for auth to finish loading before checking session
+    if (!authLoading) {
+      // Give a brief delay for recovery token to be processed from URL hash
+      const timer = setTimeout(() => {
+        setCheckingSession(false);
+      }, 2000);
+      return () => clearTimeout(timer);
     }
-  }, [session]);
+  }, [authLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +78,23 @@ const ResetPassword = () => {
     setLoading(false);
   };
 
-  if (!isValidSession && !session) {
+  if (checkingSession || authLoading) {
+    return (
+      <div className="min-h-screen dark">
+        <Header />
+        <main className="flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+          <Card className="border-border bg-card/50 backdrop-blur-sm max-w-md w-full">
+            <CardContent className="text-center py-12">
+              <p className="text-muted-foreground">Verifying reset link...</p>
+            </CardContent>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!session) {
     return (
       <div className="min-h-screen dark">
         <Header />
