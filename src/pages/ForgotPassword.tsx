@@ -1,39 +1,65 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
+import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, ArrowLeft, Mail, CheckCircle } from "lucide-react";
+import { TrendingUp, ArrowLeft, Eye, EyeOff, Check, X, CheckCircle } from "lucide-react";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
   const { toast } = useToast();
-  const { resetPassword } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast({
+        title: "Password mismatch",
+        description: "Passwords do not match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const validation = validatePassword(password);
+    if (!validation.isValid) {
+      toast({
+        title: "Invalid password",
+        description: validation.errors.join(', '),
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
-    const { error } = await resetPassword(email);
+    const { data, error } = await supabase.functions.invoke("reset-password", {
+      body: { email, newPassword: password },
+    });
 
     if (error) {
       toast({
-        title: "Request failed",
-        description: error.message || "Please try again later.",
+        title: "Reset failed",
+        description: "Unable to reset password. Please try again.",
         variant: "destructive",
       });
     } else {
-      setEmailSent(true);
+      setResetSuccess(true);
       toast({
-        title: "Check your email",
-        description: "If an account exists, you'll receive a password reset link.",
+        title: "Password updated",
+        description: "If an account exists, the password has been updated.",
       });
     }
 
@@ -53,7 +79,7 @@ const ForgotPassword = () => {
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Reset Password</h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Enter your email to receive a password reset link
+              Enter your email and choose a new password
             </p>
           </div>
 
@@ -61,12 +87,12 @@ const ForgotPassword = () => {
             <CardHeader className="text-center">
               <CardTitle className="text-xl text-foreground">Forgot Password</CardTitle>
               <CardDescription>
-                We'll send you instructions to reset your password
+                Enter your email and new password to reset
               </CardDescription>
             </CardHeader>
             
             <CardContent className="space-y-6">
-              {emailSent ? (
+              {resetSuccess ? (
                 <div className="text-center space-y-4">
                   <div className="flex justify-center">
                     <div className="h-16 w-16 rounded-full bg-green-500/20 flex items-center justify-center">
@@ -74,28 +100,15 @@ const ForgotPassword = () => {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Check your inbox</h3>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Password Reset Complete</h3>
                     <p className="text-muted-foreground text-sm">
                       If an account with <span className="font-medium text-foreground">{email}</span> exists, 
-                      you'll receive a password reset link shortly.
+                      the password has been updated. You can now sign in with your new password.
                     </p>
                   </div>
-                  <div className="pt-4 space-y-3">
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => setEmailSent(false)}
-                    >
-                      <Mail className="h-4 w-4 mr-2" />
-                      Try a different email
-                    </Button>
-                    <Link to="/sign-in" className="block">
-                      <Button variant="ghost" className="w-full">
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Sign In
-                      </Button>
-                    </Link>
-                  </div>
+                  <Link to="/sign-in" className="block">
+                    <Button className="w-full">Sign In Now</Button>
+                  </Link>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,12 +125,102 @@ const ForgotPassword = () => {
                     />
                   </div>
 
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-foreground">New Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter new password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="bg-input border-border focus:border-primary pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {password && (
+                      <div className="space-y-3">
+                        {(() => {
+                          const { strength, label, color } = getPasswordStrength(password);
+                          const validation = validatePassword(password);
+                          return (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1 bg-muted rounded-full h-2">
+                                  <div 
+                                    className={`h-full rounded-full transition-all duration-300 ${
+                                      strength <= 1 ? 'bg-red-500' :
+                                      strength === 2 ? 'bg-orange-500' :
+                                      strength === 3 ? 'bg-yellow-500' :
+                                      strength === 4 ? 'bg-blue-500' : 'bg-green-500'
+                                    }`}
+                                    style={{ width: `${(strength / 5) * 100}%` }}
+                                  />
+                                </div>
+                                <span className={`text-sm font-medium ${color}`}>{label}</span>
+                              </div>
+                              <div className="bg-muted/30 rounded-lg p-3 space-y-2">
+                                <p className="text-sm font-medium text-foreground">Password Requirements:</p>
+                                <div className="grid grid-cols-1 gap-1">
+                                  {validation.criteria.map((criterion, index) => (
+                                    <div key={index} className="flex items-center gap-2 text-sm">
+                                      {criterion.icon === 'check' ? (
+                                        <Check className="h-4 w-4 text-green-500" />
+                                      ) : (
+                                        <X className="h-4 w-4 text-red-500" />
+                                      )}
+                                      <span className={criterion.met ? 'text-green-600' : 'text-muted-foreground'}>
+                                        {criterion.label}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword" className="text-foreground">Confirm New Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm new password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="bg-input border-border focus:border-primary pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {confirmPassword && password !== confirmPassword && (
+                      <p className="text-sm text-destructive">Passwords do not match</p>
+                    )}
+                  </div>
+
                   <Button 
                     type="submit" 
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                    disabled={loading}
+                    disabled={loading || password !== confirmPassword}
                   >
-                    {loading ? "Sending..." : "Send Reset Link"}
+                    {loading ? "Resetting..." : "Reset Password"}
                   </Button>
 
                   <Link to="/sign-in" className="block">
