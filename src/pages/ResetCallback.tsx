@@ -38,17 +38,27 @@ const ResetCallback = () => {
       await supabase.auth.signOut();
     };
 
-    // Set up listener FIRST, before getSession
+    // Check URL hash for recovery type indicator
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const isRecovery = hashParams.get("type") === "recovery";
+
+    // Set up listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if ((event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") && session?.user?.email) {
+      if (
+        (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") &&
+        session?.user?.email
+      ) {
         await confirmReset(session.user.email);
       }
     });
 
-    // Then check existing session (in case event already fired)
+    // Then check for existing session (handles case where event already fired)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user?.email && !processedRef.current) {
-        confirmReset(session.user.email);
+        // Only auto-confirm if we're on a recovery flow
+        if (isRecovery || window.location.pathname === "/reset-callback") {
+          confirmReset(session.user.email);
+        }
       }
     });
 
