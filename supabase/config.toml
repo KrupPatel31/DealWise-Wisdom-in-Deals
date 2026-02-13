@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.validate-order]
 verify_jwt = false
+
+[functions.reset-password]
+verify_jwt = false
+
+[functions.confirm-password-reset]
+verify_jwt = false

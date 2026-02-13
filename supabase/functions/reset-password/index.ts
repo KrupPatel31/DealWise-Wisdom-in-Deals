@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { email, newPassword } = await req.json();
+    const { email, newPassword, origin } = await req.json();
 
     if (!email || !newPassword) {
       return new Response(
@@ -21,7 +21,6 @@ serve(async (req) => {
       );
     }
 
-    // Validate password length server-side
     if (newPassword.length < 8) {
       return new Response(
         JSON.stringify({ error: "Password must be at least 8 characters" }),
@@ -34,9 +33,8 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Find user by email
+    // Check if user exists
     const { data: users, error: listError } = await supabaseAdmin.auth.admin.listUsers();
-
     if (listError) {
       return new Response(
         JSON.stringify({ error: "Unable to process request" }),
@@ -49,28 +47,50 @@ serve(async (req) => {
     );
 
     if (!user) {
-      // Don't reveal if user exists or not
+      // Don't reveal if user exists
       return new Response(
-        JSON.stringify({ success: true, message: "If an account exists, the password has been updated." }),
+        JSON.stringify({ success: true, message: "If an account exists, a verification email has been sent." }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Update the user's password
-    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-      user.id,
-      { password: newPassword }
+    // Delete any existing pending resets for this email
+    await supabaseAdmin
+      .from("pending_password_resets")
+      .delete()
+      .eq("email", email.toLowerCase());
+
+    // Store pending password reset
+    const { error: insertError } = await supabaseAdmin
+      .from("pending_password_resets")
+      .insert({
+        email: email.toLowerCase(),
+        new_password: newPassword,
+      });
+
+    if (insertError) {
+      return new Response(
+        JSON.stringify({ error: "Unable to process request" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Send recovery email via Supabase Auth - user must click this to verify
+    const redirectTo = origin ? `${origin}/reset-callback` : undefined;
+    const { error: resetError } = await supabaseAdmin.auth.resetPasswordForEmail(
+      email,
+      { redirectTo }
     );
 
-    if (updateError) {
+    if (resetError) {
       return new Response(
-        JSON.stringify({ error: "Failed to update password" }),
+        JSON.stringify({ error: "Unable to send verification email" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     return new Response(
-      JSON.stringify({ success: true, message: "Password has been updated successfully." }),
+      JSON.stringify({ success: true, message: "Verification email sent." }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {

@@ -46,7 +46,7 @@ const ForgotPassword = () => {
     setLoading(true);
 
     const { data, error } = await supabase.functions.invoke("reset-password", {
-      body: { email, newPassword: password },
+      body: { email, newPassword: password, origin: window.location.origin },
     });
 
     if (error) {
@@ -58,8 +58,8 @@ const ForgotPassword = () => {
     } else {
       setResetSuccess(true);
       toast({
-        title: "Password updated",
-        description: "If an account exists, the password has been updated.",
+        title: "Verification email sent",
+        description: "Please check your email and click the link to complete the password reset.",
       });
     }
 
@@ -100,14 +100,14 @@ const ForgotPassword = () => {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Password Reset Complete</h3>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Verification Email Sent!</h3>
                     <p className="text-muted-foreground text-sm">
                       If an account with <span className="font-medium text-foreground">{email}</span> exists, 
-                      the password has been updated. You can now sign in with your new password.
+                      a verification email has been sent. Please click the link in the email to complete your password reset.
                     </p>
                   </div>
                   <Link to="/sign-in" className="block">
-                    <Button className="w-full">Sign In Now</Button>
+                    <Button className="w-full">Back to Sign In</Button>
                   </Link>
                 </div>
               ) : (
