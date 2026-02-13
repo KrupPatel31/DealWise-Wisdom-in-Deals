@@ -13,6 +13,7 @@ import Contact from "./pages/Contact";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetCallback from "./pages/ResetCallback";
 
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/sign-in" element={<SignIn />} />
               <Route path="/sign-up" element={<SignUp />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-callback" element={<ResetCallback />} />
               
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
