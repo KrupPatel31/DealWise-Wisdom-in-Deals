@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
@@ -10,38 +10,16 @@ import { TrendingUp, CheckCircle, XCircle, Loader2 } from "lucide-react";
 const ResetCallback = () => {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
+  const processedRef = useRef(false);
 
   useEffect(() => {
-    const handleReset = async () => {
-      // Wait for Supabase to process the recovery token from the URL
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      // Listen for recovery event
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === "PASSWORD_RECOVERY" && session?.user?.email) {
-          // Call confirm-password-reset edge function
-          const { data, error } = await supabase.functions.invoke("confirm-password-reset", {
-            body: { email: session.user.email },
-          });
+    const confirmReset = async (email: string) => {
+      if (processedRef.current) return;
+      processedRef.current = true;
 
-          if (error || data?.error) {
-            setStatus("error");
-            setMessage(data?.error || "Failed to reset password. The link may have expired.");
-          } else {
-            setStatus("success");
-            setMessage("Your password has been updated successfully!");
-          }
-
-          // Sign out the recovery session
-          await supabase.auth.signOut();
-          subscription.unsubscribe();
-        }
-      });
-
-      // If session already exists with recovery, handle it
-      if (session?.user?.email) {
+      try {
         const { data, error } = await supabase.functions.invoke("confirm-password-reset", {
-          body: { email: session.user.email },
+          body: { email },
         });
 
         if (error || data?.error) {
@@ -51,22 +29,42 @@ const ResetCallback = () => {
           setStatus("success");
           setMessage("Your password has been updated successfully!");
         }
-
-        await supabase.auth.signOut();
-        subscription.unsubscribe();
+      } catch {
+        setStatus("error");
+        setMessage("Failed to reset password. Please try again.");
       }
 
-      // Timeout after 10 seconds
-      setTimeout(() => {
-        setStatus((prev) => {
-          if (prev === "loading") return "error";
-          return prev;
-        });
-        setMessage((prev) => prev || "Reset link verification timed out. Please try again.");
-      }, 10000);
+      // Sign out the recovery session
+      await supabase.auth.signOut();
     };
 
-    handleReset();
+    // Set up listener FIRST, before getSession
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if ((event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") && session?.user?.email) {
+        await confirmReset(session.user.email);
+      }
+    });
+
+    // Then check existing session (in case event already fired)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.email && !processedRef.current) {
+        confirmReset(session.user.email);
+      }
+    });
+
+    // Timeout after 15 seconds
+    const timeout = setTimeout(() => {
+      if (!processedRef.current) {
+        processedRef.current = true;
+        setStatus("error");
+        setMessage("Reset link verification timed out. Please try again.");
+      }
+    }, 15000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   return (
