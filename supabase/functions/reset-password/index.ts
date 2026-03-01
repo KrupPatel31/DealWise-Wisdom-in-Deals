@@ -21,6 +21,26 @@ serve(async (req) => {
       );
     }
 
+    // Rate limiting: max 3 reset requests per email per hour
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count: recentResets } = await supabaseAdmin
+      .from("pending_password_resets")
+      .select("*", { count: "exact", head: true })
+      .eq("email", email.toLowerCase())
+      .gte("created_at", oneHourAgo);
+
+    if (recentResets !== null && recentResets >= 3) {
+      return new Response(
+        JSON.stringify({ error: "Too many reset requests. Please try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     if (newPassword.length < 8) {
       return new Response(
         JSON.stringify({ error: "Password must be at least 8 characters" }),
@@ -28,10 +48,7 @@ serve(async (req) => {
       );
     }
 
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    // supabaseAdmin already created above for rate limiting
 
     // Check if user exists
     const { data: users, error: listError } = await supabaseAdmin.auth.admin.listUsers();

@@ -181,17 +181,19 @@ serve(async (req) => {
 
     // Validate and apply coins
     let coinDiscount = 0;
+    let userCoinsData: { balance: number; total_spent: number } | null = null;
     if (coinsToUse && typeof coinsToUse === 'number' && coinsToUse > 0) {
       // Verify user has enough coins
       const { data: userCoins } = await supabase
         .from('deal_coins')
-        .select('balance')
+        .select('balance, total_spent')
         .eq('user_id', userId)
         .single();
 
       if (userCoins && userCoins.balance >= coinsToUse) {
         // Cap at subtotal to prevent negative totals
         coinDiscount = Math.min(coinsToUse, subtotal);
+        userCoinsData = userCoins;
       }
     }
 
@@ -242,6 +244,35 @@ serve(async (req) => {
         JSON.stringify({ error: 'Failed to create order' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Deduct coins server-side to prevent race conditions
+    if (coinDiscount > 0 && userCoinsData) {
+      const newBalance = userCoinsData.balance - coinDiscount;
+      const newTotalSpent = userCoinsData.total_spent + coinDiscount;
+
+      const { error: coinUpdateError } = await supabase
+        .from('deal_coins')
+        .update({
+          balance: newBalance,
+          total_spent: newTotalSpent,
+        })
+        .eq('user_id', userId)
+        .gte('balance', coinDiscount); // Extra safety: only deduct if balance still sufficient
+
+      if (coinUpdateError) {
+        console.error('Error deducting coins:', coinUpdateError);
+        // Order was already created, log but don't fail
+      } else {
+        // Record the coin transaction
+        await supabase.from('deal_coins_transactions').insert({
+          user_id: userId,
+          amount: -coinDiscount,
+          type: 'spent',
+          description: 'Used at checkout',
+          order_id: order.id,
+        });
+      }
     }
 
     // Clear user's cart after successful order
