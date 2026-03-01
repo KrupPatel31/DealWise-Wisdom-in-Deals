@@ -221,36 +221,6 @@ export type Database = {
         }
         Relationships: []
       }
-      pending_password_resets: {
-        Row: {
-          created_at: string
-          email: string
-          expires_at: string
-          id: string
-          new_password: string
-          token: string
-          used: boolean
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          expires_at?: string
-          id?: string
-          new_password: string
-          token?: string
-          used?: boolean
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          expires_at?: string
-          id?: string
-          new_password?: string
-          token?: string
-          used?: boolean
-        }
-        Relationships: []
-      }
       price_history: {
         Row: {
           created_at: string
