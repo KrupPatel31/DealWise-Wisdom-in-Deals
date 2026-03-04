@@ -2,54 +2,16 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
-
-function validateConfig(): string | null {
-  if (!SUPABASE_URL) {
-    return 'VITE_SUPABASE_URL is not set. Create a .env file with VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY, then restart the dev server.';
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: {
+    storage: localStorage,
+    persistSession: true,
+    autoRefreshToken: true,
   }
-
-  try {
-    const url = new URL(SUPABASE_URL);
-    if (!url.hostname.endsWith('.supabase.co')) {
-      return `VITE_SUPABASE_URL ("${SUPABASE_URL}") does not look like a Supabase project URL (expected https://<project>.supabase.co).`;
-    }
-  } catch {
-    return `VITE_SUPABASE_URL ("${SUPABASE_URL}") is not a valid URL.`;
-  }
-
-  if (!SUPABASE_PUBLISHABLE_KEY) {
-    return 'VITE_SUPABASE_PUBLISHABLE_KEY is not set. Create a .env file with VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY, then restart the dev server.';
-  }
-
-  // A valid Supabase anon key is a JWT: three dot-separated base64url segments, the first starting with "eyJ".
-  const keyParts = SUPABASE_PUBLISHABLE_KEY.split('.');
-  if (keyParts.length !== 3 || !keyParts[0].startsWith('eyJ')) {
-    return 'VITE_SUPABASE_PUBLISHABLE_KEY does not look like a valid Supabase anon key (expected a JWT whose header starts with "eyJ").';
-  }
-
-  return null;
-}
-
-/** Non-null when Supabase env vars are missing or invalid. The UI can read this to show an actionable error. */
-export const supabaseConfigError: string | null = validateConfig();
-
-if (supabaseConfigError) {
-  console.error('[DealWise] Supabase configuration error:', supabaseConfigError);
-}
-
-export const supabase = createClient<Database>(
-  SUPABASE_URL ?? 'https://placeholder.supabase.co',
-  SUPABASE_PUBLISHABLE_KEY ?? 'placeholder.placeholder.placeholder',
-  {
-    auth: {
-      storage: localStorage,
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  }
-);
+});

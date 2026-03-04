@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import { supabase, supabaseConfigError } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
@@ -9,19 +9,6 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-}
-
-function mapAuthError(error: unknown): Error {
-  if (supabaseConfigError) {
-    return new Error(`Supabase is not configured. ${supabaseConfigError}`);
-  }
-  if (error instanceof TypeError && error.name === 'TypeError') {
-    return new Error(
-      'Cannot reach Supabase. Check that VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY are correct, verify your internet connection, and ensure adblock/VPN tools are not blocking *.supabase.co requests.'
-    );
-  }
-  if (error instanceof Error) return error;
-  return new Error(String(error));
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -53,41 +40,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    if (supabaseConfigError) {
-      return { error: new Error(`Supabase is not configured. ${supabaseConfigError}`) };
-    }
     const redirectUrl = `${window.location.origin}/`;
     
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: fullName
-          }
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          full_name: fullName
         }
-      });
-      return { error: error ? mapAuthError(error) : null };
-    } catch (err) {
-      return { error: mapAuthError(err) };
-    }
+      }
+    });
+
+    return { error };
   };
 
   const signIn = async (email: string, password: string) => {
-    if (supabaseConfigError) {
-      return { error: new Error(`Supabase is not configured. ${supabaseConfigError}`) };
-    }
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      return { error: error ? mapAuthError(error) : null };
-    } catch (err) {
-      return { error: mapAuthError(err) };
-    }
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    return { error };
   };
 
   const signOut = async () => {
