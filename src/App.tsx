@@ -20,6 +20,7 @@ import Orders from "./pages/Orders";
 import NotFound from "./pages/NotFound";
 import Search from "./pages/Search";
 import ComparePrices from "./pages/ComparePrices";
+import VisualSearch from "./pages/VisualSearch";
 
 const queryClient = new QueryClient();
 
