@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, ShoppingCart, User, LogOut, Menu, Mail, Package } from "lucide-react";
+import { TrendingUp, ShoppingCart, User, LogOut, Menu, Mail, Package, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
