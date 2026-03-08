@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, Truck, Shield, Award, BarChart3 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { SuccessOverlay } from "@/components/SuccessOverlay";
 interface DealCardProps {
   image: string;
   title: string;
@@ -33,7 +35,11 @@ export const DealCard = ({
   warranty = "1 year warranty",
   availability = "In stock"
 }: DealCardProps) => {
-  return <Card className="bg-deal border-deal-border overflow-hidden hover-lift hover-glow group animate-fade-up h-full flex flex-col">
+  const [showDealOverlay, setShowDealOverlay] = useState(false);
+  const navigate = useNavigate();
+  const dealUrl = `/compare-prices?name=${encodeURIComponent(title)}&price=${parseInt(currentPrice.replace(/[₹,]/g, ""))}&image=${encodeURIComponent(image)}&store=${encodeURIComponent(store)}`;
+
+  return <><Card className="bg-deal border-deal-border overflow-hidden hover-lift hover-glow group animate-fade-up h-full flex flex-col">
       <div className="relative overflow-hidden flex-shrink-0">
         <img src={image} alt={title} className="w-full h-40 sm:h-48 lg:h-56 object-cover group-hover:scale-110 transition-transform duration-500" />
 
@@ -113,13 +119,23 @@ export const DealCard = ({
 
         {/* Action Button - Always at bottom */}
         <div className="mt-auto pt-3 sm:pt-4 flex-shrink-0">
-          <Link to={`/compare-prices?name=${encodeURIComponent(title)}&price=${parseInt(currentPrice.replace(/[₹,]/g, ""))}&image=${encodeURIComponent(image)}&store=${encodeURIComponent(store)}`} className="block">
-            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm sm:text-base py-2 sm:py-2.5">
-              <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-              Compare Prices
-            </Button>
-          </Link>
+          <Button
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-sm sm:text-base py-2 sm:py-2.5"
+            onClick={() => setShowDealOverlay(true)}
+          >
+            <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+            Compare Prices
+          </Button>
         </div>
       </div>
-    </Card>;
+    </Card>
+    <SuccessOverlay
+      show={showDealOverlay}
+      onClose={() => {
+        setShowDealOverlay(false);
+        navigate(dealUrl);
+      }}
+      variant="deal"
+    />
+  </>;
 };

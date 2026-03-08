@@ -12,11 +12,13 @@ import { Label } from "@/components/ui/label";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { TrendingUp, Eye, EyeOff, Check, X } from "lucide-react";
+import { SuccessOverlay } from "@/components/SuccessOverlay";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -68,10 +70,7 @@ const SignUp = () => {
         variant: "destructive",
       });
     } else {
-      toast({
-        title: "Verify your email",
-        description: "Check your inbox for a confirmation link. Once you confirm your email, we'll sign you in automatically.",
-      });
+      setShowSuccess(true);
     }
     
     setLoading(false);
@@ -290,6 +289,7 @@ const SignUp = () => {
       </main>
       
       <Footer />
+      <SuccessOverlay show={showSuccess} onClose={() => setShowSuccess(false)} variant="signup" />
     </div>
   );
 };

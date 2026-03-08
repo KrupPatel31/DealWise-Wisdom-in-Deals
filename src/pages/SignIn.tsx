@@ -9,12 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { TrendingUp, Eye, EyeOff } from "lucide-react";
+import { SuccessOverlay } from "@/components/SuccessOverlay";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   
   const { signIn, user } = useAuth();
   const navigate = useNavigate();
@@ -49,10 +51,7 @@ const SignIn = () => {
         variant: "destructive",
       });
     } else {
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
-      });
+      setShowSuccess(true);
     }
     
     setLoading(false);
@@ -152,6 +151,7 @@ const SignIn = () => {
       </main>
       
       <Footer />
+      <SuccessOverlay show={showSuccess} onClose={() => setShowSuccess(false)} variant="login" />
     </div>
   );
 };
