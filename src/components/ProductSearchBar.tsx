@@ -471,15 +471,22 @@ export const ProductSearchBar = () => {
                               </div>
                             )}
 
-                            {/* Store */}
-                            {product.store && (
-                              <div className="flex items-center gap-1">
-                                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">
-                                  {product.store}
-                                </span>
-                              </div>
-                            )}
+                            {/* Store & Source */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {product.store && (
+                                <div className="flex items-center gap-1">
+                                  <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                                  <span className="text-sm text-muted-foreground">
+                                    {product.store}
+                                  </span>
+                                </div>
+                              )}
+                              {(product as any).source && (
+                                <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                                  {(product as any).source}
+                                </Badge>
+                              )}
+                            </div>
 
                             {/* Description */}
                             {product.description && (
