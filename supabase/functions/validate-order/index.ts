@@ -265,7 +265,7 @@ serve(async (req) => {
     }
 
     // Earn coins from order total
-    const coinsEarned = Math.floor(total * COIN_EARN_RATE);
+    const coinsEarned = Math.min(Math.floor(total * COIN_EARN_RATE), MAX_COINS_PER_ORDER);
     if (coinsEarned > 0) {
       const { data: existingCoins } = await supabaseAdmin
         .from('deal_coins')
