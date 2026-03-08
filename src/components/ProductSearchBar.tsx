@@ -146,12 +146,16 @@ export const ProductSearchBar = () => {
           category: p.category,
           description: p.description,
           image: p.image,
-          link: p.link
+          link: p.link,
+          source: p.source,
         }));
         
         setProducts(transformedProducts);
         setFilteredProducts(transformedProducts);
-        toast.success(`Found ${transformedProducts.length} products`);
+        
+        const sources = data.sources;
+        const sourceInfo = sources ? ` (${sources.realTime + sources.googleShopping + sources.offers} from ${Object.values(sources).filter((v: any) => v > 0).length} sources)` : '';
+        toast.success(`Found ${transformedProducts.length} products${sourceInfo}`);
       } else {
         toast.info('No products found, showing local results');
       }
@@ -467,15 +471,22 @@ export const ProductSearchBar = () => {
                               </div>
                             )}
 
-                            {/* Store */}
-                            {product.store && (
-                              <div className="flex items-center gap-1">
-                                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">
-                                  {product.store}
-                                </span>
-                              </div>
-                            )}
+                            {/* Store & Source */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {product.store && (
+                                <div className="flex items-center gap-1">
+                                  <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                                  <span className="text-sm text-muted-foreground">
+                                    {product.store}
+                                  </span>
+                                </div>
+                              )}
+                              {(product as any).source && (
+                                <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                                  {(product as any).source}
+                                </Badge>
+                              )}
+                            </div>
 
                             {/* Description */}
                             {product.description && (
