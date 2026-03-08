@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { GalaxyButton } from "@/components/ui/galaxy-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -495,15 +496,13 @@ const ComparePrices = () => {
                             
                             <div className="flex flex-col gap-2">
                               {quantity === 0 ? (
-                                <Button 
-                                  size="sm"
+                                <GalaxyButton 
                                   disabled={!storePrice.inStock}
-                                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
                                   onClick={() => handleAddToCart(storePrice)}
                                 >
                                   <ShoppingCart className="h-4 w-4 mr-1" />
                                   Add to Cart
-                                </Button>
+                                </GalaxyButton>
                               ) : (
                                 <div className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 rounded-md">
                                   <Button 
