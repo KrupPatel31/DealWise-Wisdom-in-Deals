@@ -11,6 +11,8 @@ export interface ProductData {
   ratingCount?: number;
   description?: string;
   category?: string;
+  link?: string;
+  source?: string;
 }
 
 export class ProductSearchService {
