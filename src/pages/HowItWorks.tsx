@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Eye, ShoppingCart, TrendingUp } from "lucide-react";
@@ -49,47 +50,47 @@ const HowItWorks = () => {
     <div className="min-h-screen dark">
       <Header />
 
-      <main className="container mx-auto px-6 py-20">
-        <div className="text-center space-y-6 mb-20">
-          <Badge className="bg-accent text-accent-foreground text-lg px-6 py-2">
+      <main className="container mx-auto px-4 sm:px-6 py-10 sm:py-16 lg:py-20">
+        <div className="text-center space-y-4 sm:space-y-6 mb-10 sm:mb-16 lg:mb-20">
+          <Badge className="bg-accent text-accent-foreground text-sm sm:text-lg px-4 sm:px-6 py-1.5 sm:py-2">
             HOW IT WORKS
           </Badge>
-          <h1 className="text-5xl font-bold">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
             <span className="text-primary">SMART SHOPPING</span>{" "}
             <span className="hero-gradient">MADE SIMPLE</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
             Save money in 4 easy steps with our intelligent price comparison
             platform
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
-          <div className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-10 sm:mb-16 lg:mb-20">
+          <div className="space-y-4 sm:space-y-6 lg:space-y-8">
             {steps.map((step, index) => (
               <Card
                 key={index}
-                className="p-8 bg-deal border-deal-border hover:border-accent/50 transition-all duration-300 group"
+                className="p-4 sm:p-6 lg:p-8 bg-deal border-deal-border hover:border-accent/50 transition-all duration-300 group"
               >
-                <div className="flex items-start gap-6">
+                <div className="flex items-start gap-4 sm:gap-6">
                   <div className="flex-shrink-0">
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <step.icon className="h-8 w-8 text-white" />
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <step.icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
                     </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4 mb-3">
-                      <span className="text-3xl font-bold text-accent">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
+                      <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-accent">
                         {step.number}
                       </span>
-                      <h3 className="text-2xl font-bold text-foreground">
+                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
                         {step.title}
                       </h3>
                     </div>
-                    <p className="text-lg text-muted-foreground mb-3">
+                    <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-2 sm:mb-3">
                       {step.description}
                     </p>
-                    <p className="text-sm text-accent">{step.details}</p>
+                    <p className="text-xs sm:text-sm text-accent">{step.details}</p>
                   </div>
                 </div>
               </Card>
@@ -97,18 +98,18 @@ const HowItWorks = () => {
           </div>
 
           <div className="space-y-8">
-            <Card className="p-8 bg-gradient-to-br from-card via-card to-muted border-deal-border">
-              <div className="text-center space-y-6">
-                <div className="w-32 h-32 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center glow">
-                  <TrendingUp className="h-16 w-16 text-white" />
+            <Card className="p-6 sm:p-8 bg-gradient-to-br from-card via-card to-muted border-deal-border">
+              <div className="text-center space-y-4 sm:space-y-6">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center glow">
+                  <TrendingUp className="h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 text-white" />
                 </div>
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-bold">
+                <div className="space-y-3 sm:space-y-4">
+                  <h3 className="text-xl sm:text-2xl font-bold">
                     <span className="text-primary">SAVE UP TO</span>
                     <br />
-                    <span className="hero-gradient text-4xl">50%</span>
+                    <span className="hero-gradient text-3xl sm:text-4xl">50%</span>
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-sm sm:text-base text-muted-foreground">
                     Average savings across all categories
                   </p>
                 </div>
@@ -117,11 +118,11 @@ const HowItWorks = () => {
           </div>
         </div>
 
-        <Card className="p-12 bg-gradient-to-br from-primary/10 to-accent/10 border-accent/20 text-center">
-          <h2 className="text-3xl font-bold mb-4">
+        <Card className="p-6 sm:p-8 lg:p-12 bg-gradient-to-br from-primary/10 to-accent/10 border-accent/20 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
             <span className="text-primary">Try it now - it's free!</span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8">
             Start saving money today with intelligent price comparison
           </p>
           <div className="flex justify-center gap-4">
@@ -137,6 +138,8 @@ const HowItWorks = () => {
           </div>
         </Card>
       </main>
+
+      <Footer />
     </div>
   );
 };
