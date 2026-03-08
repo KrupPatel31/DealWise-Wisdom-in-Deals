@@ -67,26 +67,46 @@ serve(async (req) => {
     );
 
     const body = await req.json();
-    const { items, discountCode, coinsToUse, shippingAddress, paymentMethod, notes } = body;
+    const { discountCode, coinsToUse, shippingAddress, paymentMethod, notes } = body;
 
-    // Validate items array
-    if (!Array.isArray(items) || items.length === 0) {
+    // Read cart items from the database (server-side truth, not client-supplied)
+    const { data: dbCartItems, error: cartError } = await supabaseAdmin
+      .from('cart_items')
+      .select('*')
+      .eq('user_id', userId);
+
+    if (cartError) {
+      console.error('Error reading cart:', cartError);
       return new Response(
-        JSON.stringify({ error: 'Cart items are required' }),
+        JSON.stringify({ error: 'Failed to read cart items' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!dbCartItems || dbCartItems.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Cart is empty' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    // Map DB cart items to the expected format
+    const items: CartItem[] = dbCartItems.map((row) => ({
+      id: row.product_id,
+      name: row.name,
+      price: Number(row.price),
+      originalPrice: Number(row.original_price),
+      quantity: row.quantity,
+      image: row.image || undefined,
+      store: row.store || undefined,
+      discount: Number(row.discount) || 0,
+    }));
+
+    // Validate DB items have sane values
     for (const item of items) {
-      if (!item.id || !item.name || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-        return new Response(
-          JSON.stringify({ error: 'Invalid cart item structure' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
       if (item.price < 0 || item.quantity < 1) {
         return new Response(
-          JSON.stringify({ error: 'Invalid price or quantity' }),
+          JSON.stringify({ error: 'Invalid price or quantity in cart' }),
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
