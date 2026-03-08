@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, ShoppingCart, User, LogOut, Menu, Mail, Package } from "lucide-react";
+import { TrendingUp, ShoppingCart, User, LogOut, Menu, Mail, Package, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
@@ -103,6 +103,12 @@ export const Header = () => {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/change-password" className="flex items-center">
+                        <Lock className="h-4 w-4 mr-2" />
+                        Change Password
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
@@ -191,6 +197,15 @@ export const Header = () => {
                           <p className="text-sm font-medium">{displayName}</p>
                           <p className="text-xs text-muted-foreground">{displayEmail}</p>
                         </div>
+                        <Link to="/change-password" onClick={() => setIsOpen(false)}>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start mb-2"
+                          >
+                            <Lock className="h-4 w-4 mr-2" />
+                            Change Password
+                          </Button>
+                        </Link>
                         <Button
                           variant="outline"
                           className="w-full justify-start"
