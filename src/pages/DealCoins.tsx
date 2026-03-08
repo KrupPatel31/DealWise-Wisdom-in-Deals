@@ -183,12 +183,12 @@ const DealCoins = () => {
               Earn coins by shopping and redeem them for exclusive rewards.
             </p>
           </div>
-          <div className="flex flex-col items-center gap-6 mb-12">
+          <div className="flex flex-col items-center gap-4 sm:gap-6 mb-8 sm:mb-12">
             <SpinningCoin />
             <div className="text-center">
-              <p className="text-muted-foreground text-sm uppercase tracking-widest mb-1">Your Balance</p>
-              <p className="text-5xl md:text-6xl font-extrabold text-amber-400 drop-shadow-[0_0_24px_rgba(251,191,36,0.4)]">
-                <AnimatedCounter target={balance} /> <span className="text-3xl">🪙</span>
+              <p className="text-muted-foreground text-xs sm:text-sm uppercase tracking-widest mb-1">Your Balance</p>
+              <p className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-amber-400 drop-shadow-[0_0_24px_rgba(251,191,36,0.4)]">
+                <AnimatedCounter target={balance} /> <span className="text-2xl sm:text-3xl">🪙</span>
               </p>
             </div>
           </div>
