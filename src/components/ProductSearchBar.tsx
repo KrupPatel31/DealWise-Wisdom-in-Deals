@@ -279,7 +279,7 @@ export const ProductSearchBar = () => {
               className="h-10 sm:h-12 px-4 sm:px-6 bg-primary hover:bg-primary/90"
             >
               {isSearchingApi ? (
-                <div className="product-loader scale-75" />
+                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
               ) : (
                 <>
                   <Search className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2" />
