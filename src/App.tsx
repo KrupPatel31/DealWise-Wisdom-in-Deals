@@ -24,6 +24,7 @@ import ComparePrices from "./pages/ComparePrices";
 import VisualSearch from "./pages/VisualSearch";
 import ProductDetail from "./pages/ProductDetail";
 import DealCoins from "./pages/DealCoins";
+import BarcodeScanner from "./pages/BarcodeScanner";
 
 const queryClient = new QueryClient();
 
