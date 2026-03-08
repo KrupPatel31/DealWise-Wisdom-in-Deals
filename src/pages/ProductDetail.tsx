@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Star, ShoppingCart, BarChart3, ArrowLeft, Tag, Plus, Minus } from "lucide-react";
 import { GalaxyButton } from "@/components/ui/galaxy-button";
+import { ShareDeal } from "@/components/ShareDeal";
 import { ProductData, ProductSearchService } from "@/utils/ProductSearchService";
 import { useFakeStoreProducts } from "@/hooks/useFakeStoreProducts";
 import { useAuth } from "@/hooks/useAuth";
