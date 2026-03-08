@@ -204,7 +204,7 @@ const Contact = () => {
         </div>
 
         {/* FAQ Section */}
-        <Card className="p-8 bg-deal border-deal-border mb-12">
+        <Card className="p-6 sm:p-8 bg-deal border-deal-border mb-12">
           <h2 className="text-2xl font-bold text-center mb-8">
             <span className="text-primary">Frequently Asked Questions</span>
           </h2>
