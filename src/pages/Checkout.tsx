@@ -242,7 +242,10 @@ const Checkout = () => {
         throw new Error(data?.error || 'Failed to place order');
       }
 
-      // Coins are now deducted server-side in validate-order to prevent race conditions
+      // Handle coins - spend coins if used
+      if (useCoins && coinDiscount > 0) {
+        await spendCoins(coinDiscount, data.order.id);
+      }
 
       // Earn coins from this order
       const coinsEarned = await earnCoins(data.order.total, data.order.id);

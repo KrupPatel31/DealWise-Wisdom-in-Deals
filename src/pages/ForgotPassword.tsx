@@ -1,58 +1,43 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, ArrowLeft, CheckCircle, Mail } from "lucide-react";
+import { TrendingUp, ArrowLeft, Mail, CheckCircle } from "lucide-react";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const { toast } = useToast();
+  const { resetPassword } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!email.trim()) {
-      toast({
-        title: "Email required",
-        description: "Please enter your email address.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
 
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/reset-callback`,
-      });
+    const { error } = await resetPassword(email);
 
-      if (error) {
-        toast({
-          title: "Error",
-          description: "Unable to send reset email. Please try again.",
-          variant: "destructive",
-        });
-      } else {
-        setEmailSent(true);
-      }
-    } catch {
+    if (error) {
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: "Request failed",
+        description: error.message || "Please try again later.",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
+    } else {
+      setEmailSent(true);
+      toast({
+        title: "Check your email",
+        description: "If an account exists, you'll receive a password reset link.",
+      });
     }
+
+    setLoading(false);
   };
 
   return (
@@ -66,7 +51,7 @@ const ForgotPassword = () => {
               <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               <span className="text-xl sm:text-2xl font-bold text-primary">DEALWISE</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Forgot Password</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Reset Password</h1>
             <p className="text-sm sm:text-base text-muted-foreground">
               Enter your email to receive a password reset link
             </p>
@@ -74,9 +59,9 @@ const ForgotPassword = () => {
 
           <Card className="border-border bg-card/50 backdrop-blur-sm">
             <CardHeader className="text-center">
-              <CardTitle className="text-xl text-foreground">Reset Your Password</CardTitle>
+              <CardTitle className="text-xl text-foreground">Forgot Password</CardTitle>
               <CardDescription>
-                We'll send you a secure link to reset your password
+                We'll send you instructions to reset your password
               </CardDescription>
             </CardHeader>
             
@@ -89,31 +74,26 @@ const ForgotPassword = () => {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Check Your Email!</h3>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Check your inbox</h3>
                     <p className="text-muted-foreground text-sm">
                       If an account with <span className="font-medium text-foreground">{email}</span> exists, 
-                      we've sent a password reset link. Click the link in the email to set your new password.
+                      you'll receive a password reset link shortly.
                     </p>
-                    <div className="mt-4 p-3 bg-muted/30 rounded-lg">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Mail className="h-4 w-4" />
-                        <span>The link expires in 1 hour for security.</span>
-                      </div>
-                    </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="pt-4 space-y-3">
                     <Button 
                       variant="outline" 
                       className="w-full"
-                      onClick={() => {
-                        setEmailSent(false);
-                        setEmail("");
-                      }}
+                      onClick={() => setEmailSent(false)}
                     >
-                      Send Another Link
+                      <Mail className="h-4 w-4 mr-2" />
+                      Try a different email
                     </Button>
                     <Link to="/sign-in" className="block">
-                      <Button className="w-full">Back to Sign In</Button>
+                      <Button variant="ghost" className="w-full">
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Back to Sign In
+                      </Button>
                     </Link>
                   </div>
                 </div>
@@ -124,7 +104,7 @@ const ForgotPassword = () => {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Enter your registered email"
+                      placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="bg-input border-border focus:border-primary"
