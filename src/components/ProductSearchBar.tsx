@@ -146,12 +146,16 @@ export const ProductSearchBar = () => {
           category: p.category,
           description: p.description,
           image: p.image,
-          link: p.link
+          link: p.link,
+          source: p.source,
         }));
         
         setProducts(transformedProducts);
         setFilteredProducts(transformedProducts);
-        toast.success(`Found ${transformedProducts.length} products`);
+        
+        const sources = data.sources;
+        const sourceInfo = sources ? ` (${sources.realTime + sources.googleShopping + sources.offers} from ${Object.values(sources).filter((v: any) => v > 0).length} sources)` : '';
+        toast.success(`Found ${transformedProducts.length} products${sourceInfo}`);
       } else {
         toast.info('No products found, showing local results');
       }
