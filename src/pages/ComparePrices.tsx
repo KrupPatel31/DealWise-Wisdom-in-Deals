@@ -384,11 +384,11 @@ const ComparePrices = () => {
               <span className="text-sm text-muted-foreground">4.2 (2,456 reviews)</span>
             </div>
             {lowestPrice && (
-              <div className="flex items-center gap-4">
-                <span className="text-3xl font-bold text-primary">
+              <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                <span className="text-2xl sm:text-3xl font-bold text-primary">
                   ₹{lowestPrice.price.toLocaleString()}
                 </span>
-                <span className="text-lg text-muted-foreground line-through">
+                <span className="text-base sm:text-lg text-muted-foreground line-through">
                   ₹{lowestPrice.originalPrice.toLocaleString()}
                 </span>
                 <Badge className="bg-green-500 text-white">
@@ -397,7 +397,7 @@ const ComparePrices = () => {
               </div>
             )}
             {savings > 0 && (
-              <p className="text-green-500 mt-2">
+              <p className="text-green-500 mt-2 text-sm sm:text-base">
                 You save ₹{savings.toLocaleString()} with the best deal!
               </p>
             )}
