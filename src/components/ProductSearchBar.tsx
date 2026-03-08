@@ -161,12 +161,13 @@ export const ProductSearchBar = () => {
     }
   }, [user, navigate]);
 
-  // Load mock products initially
+  // Merge mock + Fake Store products
   useEffect(() => {
     const mockProducts = ProductSearchService.getMockProducts();
-    setProducts(mockProducts);
-    setFilteredProducts(mockProducts);
-  }, []);
+    const merged = [...mockProducts, ...fakeStoreProducts];
+    setProducts(merged);
+    setFilteredProducts(merged);
+  }, [fakeStoreProducts]);
 
   // Handle search button click
   const handleSearch = () => {
