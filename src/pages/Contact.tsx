@@ -71,9 +71,9 @@ const Contact = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-16 mb-20">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-16 mb-12 sm:mb-20">
           {/* Contact Form */}
-          <Card className="p-8 bg-deal border-deal-border">
+          <Card className="p-6 sm:p-8 bg-deal border-deal-border">
             <h2 className="text-2xl font-bold mb-6">
               <span className="text-primary">Send us a message</span>
             </h2>
