@@ -172,13 +172,13 @@ const DealCoins = () => {
       <Header />
 
       {/* Hero / Balance */}
-      <section className="relative overflow-hidden pt-24 pb-16">
+      <section className="relative overflow-hidden pt-12 sm:pt-24 pb-10 sm:pb-16">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-amber-500/10 blur-[120px]" />
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] sm:w-[600px] h-[200px] sm:h-[400px] rounded-full bg-amber-500/10 blur-[120px]" />
         </div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">Deal Coins Wallet</h1>
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3">Deal Coins Wallet</h1>
             <p className="text-muted-foreground text-lg max-w-xl mx-auto">
               Earn coins by shopping and redeem them for exclusive rewards.
             </p>
