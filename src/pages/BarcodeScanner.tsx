@@ -165,15 +165,15 @@ const BarcodeScanner = () => {
       <Header />
       <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl">
         {/* Title */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
-            <ScanLine className="h-5 w-5" />
-            <span className="font-semibold">Barcode & QR Scanner</span>
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4">
+            <ScanLine className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="font-semibold text-sm sm:text-base">Barcode & QR Scanner</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
             Scan to Compare Prices
           </h1>
-          <p className="text-muted-foreground max-w-lg mx-auto">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
             Scan any product barcode or QR code to instantly find and compare prices across stores
           </p>
         </div>
