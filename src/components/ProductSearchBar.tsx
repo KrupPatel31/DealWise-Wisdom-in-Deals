@@ -444,9 +444,9 @@ export const ProductSearchBar = () => {
                                   {product.rating}
                                 </span>
                                 <span className="text-xs text-muted-foreground">/5</span>
-                                {(product as any).ratingCount && (
+                                {product.ratingCount && (
                                   <span className="text-xs text-muted-foreground">
-                                    ({(product as any).ratingCount})
+                                    ({product.ratingCount})
                                   </span>
                                 )}
                               </div>

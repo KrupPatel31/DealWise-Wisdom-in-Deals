@@ -148,9 +148,9 @@ const ProductDetail = () => {
                       ))}
                     </div>
                     <span className="text-sm font-medium">{product.rating}/5</span>
-                    {(product as any).ratingCount && (
+                    {product.ratingCount && (
                       <span className="text-sm text-muted-foreground">
-                        ({(product as any).ratingCount} reviews)
+                        ({product.ratingCount} reviews)
                       </span>
                     )}
                   </div>
