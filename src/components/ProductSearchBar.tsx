@@ -275,10 +275,18 @@ export const ProductSearchBar = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Search products..."
-                className="pl-10 sm:pl-12 h-10 sm:h-12 text-base sm:text-lg"
+                placeholder={isListening ? "Listening..." : "Search products..."}
+                className={`pl-10 sm:pl-12 h-10 sm:h-12 text-base sm:text-lg ${isListening ? "ring-2 ring-red-500/50" : ""}`}
               />
             </div>
+            <Button
+              variant={isListening ? "destructive" : "outline"}
+              onClick={toggleVoiceSearch}
+              className="h-10 sm:h-12 px-3"
+              title={isListening ? "Stop listening" : "Voice search"}
+            >
+              {isListening ? <MicOff className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" /> : <Mic className="h-4 w-4 sm:h-5 sm:w-5" />}
+            </Button>
             <GalaxyButton 
               onClick={handleSearch}
               disabled={isSearchingApi}
