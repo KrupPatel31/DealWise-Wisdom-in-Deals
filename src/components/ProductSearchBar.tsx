@@ -489,14 +489,13 @@ export const ProductSearchBar = () => {
                             </div>
                             
                             {quantity === 0 ? (
-                              <Button 
-                                size="sm" 
-                                className="w-full text-xs px-2 bg-emerald-600 hover:bg-emerald-700 text-primary-foreground border-0"
+                              <GalaxyButton 
+                                className="w-full text-xs px-2 text-sm"
                                 onClick={() => handleAddToCart(product)}
                               >
                                 <Plus className="h-4 w-4 mr-1" />
                                 Add to Cart
-                              </Button>
+                              </GalaxyButton>
                             ) : (
                               <div className="flex items-center justify-center gap-1 bg-emerald-600 rounded-md">
                                 <Button 
