@@ -187,15 +187,15 @@ const BarcodeScanner = () => {
             />
 
             {!isScanning && !scannedBarcode && (
-              <div className="flex flex-col items-center justify-center py-16 px-6 gap-4">
-                <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                  <ScanLine className="h-12 w-12 text-primary" />
+              <div className="flex flex-col items-center justify-center py-10 sm:py-16 px-4 sm:px-6 gap-3 sm:gap-4">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                  <ScanLine className="h-10 w-10 sm:h-12 sm:w-12 text-primary" />
                 </div>
-                <GalaxyButton onClick={startScanner} className="px-8 py-3 text-lg">
-                  <Camera className="h-5 w-5 mr-2" />
+                <GalaxyButton onClick={startScanner} className="px-6 sm:px-8 py-2.5 sm:py-3 text-base sm:text-lg">
+                  <Camera className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Start Camera Scanner
                 </GalaxyButton>
-                <Button variant="outline" onClick={() => setShowManual(!showManual)}>
+                <Button variant="outline" size="sm" onClick={() => setShowManual(!showManual)}>
                   <Keyboard className="h-4 w-4 mr-2" />
                   Enter Barcode Manually
                 </Button>
