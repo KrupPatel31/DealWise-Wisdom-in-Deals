@@ -177,9 +177,9 @@ const ProductDetail = () => {
                   </Link>
 
                   {qty === 0 ? (
-                    <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-primary-foreground border-0" onClick={handleAddToCart}>
+                    <GalaxyButton onClick={handleAddToCart}>
                       <Plus className="h-4 w-4 mr-2" /> Add to Cart
-                    </Button>
+                    </GalaxyButton>
                   ) : (
                     <div className="flex items-center gap-1 bg-emerald-600 rounded-md">
                       <Button size="sm" variant="ghost" className="h-10 w-10 p-0 text-primary-foreground hover:bg-primary-foreground/20" onClick={() => updateQuantity(product.id, qty - 1)}>
