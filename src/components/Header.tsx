@@ -61,7 +61,7 @@ export const Header = () => {
           <div className="hidden lg:flex items-center gap-3">
             {user ? (
               <>
-                <DealCoinsDisplay />
+                <Link to="/deal-coins"><DealCoinsDisplay /></Link>
                 
                 <Link to="/cart">
                   <Button variant="ghost" size="sm" className="relative">
