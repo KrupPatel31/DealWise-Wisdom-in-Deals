@@ -312,13 +312,13 @@
   /* 3D Spinning Coin */
   .deal-coin-purse {
     --coin-diam: 160px;
-    --coin-depth: 16px;
-    --spin-speed: 2s;
+    --coin-depth: 24px;
+    --spin-speed: 2.5s;
     height: var(--coin-diam);
     width: var(--coin-diam);
     position: relative;
     margin: auto;
-    perspective: 1000px;
+    perspective: 800px;
   }
 
   .deal-coin {
@@ -338,7 +338,6 @@
     background: linear-gradient(145deg, #f6d365, #fda085);
     background-size: cover;
     background-position: center;
-    backface-visibility: hidden;
   }
 
   .deal-coin-front {
@@ -357,35 +356,36 @@
     position: absolute;
     height: 100%;
     width: 100%;
+    transform-style: preserve-3d;
   }
 
   .deal-coin-spoke {
     position: absolute;
     width: var(--coin-diam);
-    height: var(--coin-depth);
-    background: linear-gradient(to right, #d4a030, #f0c850, #d4a030);
-    top: calc(50% - var(--coin-depth) / 2);
+    height: var(--coin-diam);
+    border-radius: 50%;
+    background: linear-gradient(145deg, #d4a030, #f0c850, #c8962a);
     left: 0;
-    transform-style: preserve-3d;
-    transform: rotateY(calc(var(--spoke-index, 0) * 22.5deg));
+    top: 0;
   }
 
-  .deal-coin-spoke:nth-child(1)  { --spoke-index: 0; }
-  .deal-coin-spoke:nth-child(2)  { --spoke-index: 1; }
-  .deal-coin-spoke:nth-child(3)  { --spoke-index: 2; }
-  .deal-coin-spoke:nth-child(4)  { --spoke-index: 3; }
-  .deal-coin-spoke:nth-child(5)  { --spoke-index: 4; }
-  .deal-coin-spoke:nth-child(6)  { --spoke-index: 5; }
-  .deal-coin-spoke:nth-child(7)  { --spoke-index: 6; }
-  .deal-coin-spoke:nth-child(8)  { --spoke-index: 7; }
-  .deal-coin-spoke:nth-child(9)  { --spoke-index: 8; }
-  .deal-coin-spoke:nth-child(10) { --spoke-index: 9; }
-  .deal-coin-spoke:nth-child(11) { --spoke-index: 10; }
-  .deal-coin-spoke:nth-child(12) { --spoke-index: 11; }
-  .deal-coin-spoke:nth-child(13) { --spoke-index: 12; }
-  .deal-coin-spoke:nth-child(14) { --spoke-index: 13; }
-  .deal-coin-spoke:nth-child(15) { --spoke-index: 14; }
-  .deal-coin-spoke:nth-child(16) { --spoke-index: 15; }
+  /* Position each spoke as a thin slice along the Z axis to form a solid edge */
+  .deal-coin-spoke:nth-child(1)  { transform: translateZ(11px); }
+  .deal-coin-spoke:nth-child(2)  { transform: translateZ(9.5px); }
+  .deal-coin-spoke:nth-child(3)  { transform: translateZ(8px); }
+  .deal-coin-spoke:nth-child(4)  { transform: translateZ(6.5px); }
+  .deal-coin-spoke:nth-child(5)  { transform: translateZ(5px); }
+  .deal-coin-spoke:nth-child(6)  { transform: translateZ(3.5px); }
+  .deal-coin-spoke:nth-child(7)  { transform: translateZ(2px); }
+  .deal-coin-spoke:nth-child(8)  { transform: translateZ(0.5px); }
+  .deal-coin-spoke:nth-child(9)  { transform: translateZ(-0.5px); }
+  .deal-coin-spoke:nth-child(10) { transform: translateZ(-2px); }
+  .deal-coin-spoke:nth-child(11) { transform: translateZ(-3.5px); }
+  .deal-coin-spoke:nth-child(12) { transform: translateZ(-5px); }
+  .deal-coin-spoke:nth-child(13) { transform: translateZ(-6.5px); }
+  .deal-coin-spoke:nth-child(14) { transform: translateZ(-8px); }
+  .deal-coin-spoke:nth-child(15) { transform: translateZ(-9.5px); }
+  .deal-coin-spoke:nth-child(16) { transform: translateZ(-11px); }
 
   @keyframes deal-coin-spin {
     from { transform: rotateY(0deg); }
