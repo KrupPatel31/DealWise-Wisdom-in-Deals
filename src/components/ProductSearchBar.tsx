@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, BarChart3 } from "lucide-react";
+import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2, BarChart3 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -279,7 +279,7 @@ export const ProductSearchBar = () => {
               className="h-10 sm:h-12 px-4 sm:px-6 bg-primary hover:bg-primary/90"
             >
               {isSearchingApi ? (
-                <div className="product-loader scale-75" />
+                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
               ) : (
                 <>
                   <Search className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2" />
