@@ -103,6 +103,12 @@ export const Header = () => {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/change-password" className="flex items-center">
+                        <Lock className="h-4 w-4 mr-2" />
+                        Change Password
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => signOut()}>
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
