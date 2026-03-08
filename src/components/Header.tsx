@@ -142,7 +142,7 @@ export const Header = () => {
 
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center gap-2">
-            {user && (
+            {!authLoading && user && (
               <>
                 <Link to="/deal-coins"><DealCoinsDisplay /></Link>
                 <Link to="/cart">
