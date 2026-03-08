@@ -116,7 +116,7 @@ const About = () => {
             {team.map((member, index) => (
               <Card
                 key={index}
-                className="p-8 bg-deal border-deal-border text-center hover:border-accent/50 transition-all duration-300"
+                className="p-6 sm:p-8 bg-deal border-deal-border text-center hover:border-accent/50 transition-all duration-300"
               >
                 <img
                   src={member.image}
