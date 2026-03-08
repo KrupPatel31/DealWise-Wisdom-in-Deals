@@ -25,6 +25,7 @@ import VisualSearch from "./pages/VisualSearch";
 import ProductDetail from "./pages/ProductDetail";
 import DealCoins from "./pages/DealCoins";
 import BarcodeScanner from "./pages/BarcodeScanner";
+import Coupons from "./pages/Coupons";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ const App = () => (
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/deal-coins" element={<DealCoins />} />
               <Route path="/scan" element={<BarcodeScanner />} />
+              <Route path="/coupons" element={<Coupons />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

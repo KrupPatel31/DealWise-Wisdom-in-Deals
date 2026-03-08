@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2, BarChart3, ScanLine } from "lucide-react";
+import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2, BarChart3, ScanLine, Mic, MicOff } from "lucide-react";
 import { GalaxyButton } from "@/components/ui/galaxy-button";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,11 +33,64 @@ export const ProductSearchBar = () => {
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchingApi, setIsSearchingApi] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   
   const { user } = useAuth();
   const { addToCart, cartItems, updateQuantity } = useCart();
   const { products: fakeStoreProducts, isLoading: isFakeStoreLoading } = useFakeStoreProducts();
   const navigate = useNavigate();
+
+  // Voice search using Web Speech API
+  const toggleVoiceSearch = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      toast.error("Voice search is not supported in your browser");
+      return;
+    }
+
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-IN";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setSearchQuery(transcript);
+      setIsListening(false);
+      toast.success(`Heard: "${transcript}"`);
+      // Auto-search after voice input
+      setTimeout(() => {
+        if (transcript.trim().length >= 2) {
+          fetchProductsFromApi(transcript);
+        }
+      }, 300);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech error:", event.error);
+      setIsListening(false);
+      if (event.error === "not-allowed") {
+        toast.error("Microphone access denied. Please allow microphone permission.");
+      } else {
+        toast.error("Voice search failed. Please try again.");
+      }
+    };
+
+    recognition.onend = () => setIsListening(false);
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsListening(true);
+    toast.info("Listening... Speak the product name");
+  };
 
   const parsePrice = (priceStr: string): number => {
     const numStr = priceStr.replace(/[₹,]/g, "");
@@ -275,10 +328,18 @@ export const ProductSearchBar = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Search products..."
-                className="pl-10 sm:pl-12 h-10 sm:h-12 text-base sm:text-lg"
+                placeholder={isListening ? "Listening..." : "Search products..."}
+                className={`pl-10 sm:pl-12 h-10 sm:h-12 text-base sm:text-lg ${isListening ? "ring-2 ring-red-500/50" : ""}`}
               />
             </div>
+            <Button
+              variant={isListening ? "destructive" : "outline"}
+              onClick={toggleVoiceSearch}
+              className="h-10 sm:h-12 px-3"
+              title={isListening ? "Stop listening" : "Voice search"}
+            >
+              {isListening ? <MicOff className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" /> : <Mic className="h-4 w-4 sm:h-5 sm:w-5" />}
+            </Button>
             <GalaxyButton 
               onClick={handleSearch}
               disabled={isSearchingApi}
