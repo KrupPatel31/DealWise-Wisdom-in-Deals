@@ -197,6 +197,15 @@ export const Header = () => {
                           <p className="text-sm font-medium">{displayName}</p>
                           <p className="text-xs text-muted-foreground">{displayEmail}</p>
                         </div>
+                        <Link to="/change-password" onClick={() => setIsOpen(false)}>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start mb-2"
+                          >
+                            <Lock className="h-4 w-4 mr-2" />
+                            Change Password
+                          </Button>
+                        </Link>
                         <Button
                           variant="outline"
                           className="w-full justify-start"
