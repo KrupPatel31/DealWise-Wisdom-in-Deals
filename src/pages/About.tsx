@@ -86,7 +86,7 @@ const About = () => {
                 deals with no hidden agenda.
               </p>
             </Card>
-            <Card className="p-8 bg-deal border-deal-border text-center">
+            <Card className="p-6 sm:p-8 bg-deal border-deal-border text-center">
               <h3 className="text-xl font-bold text-foreground mb-4">
                 Innovation
               </h3>
