@@ -2,9 +2,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
+import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index";
 import Features from "./pages/Features";
 import HowItWorks from "./pages/HowItWorks";
@@ -14,7 +16,6 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import ChangePassword from "./pages/ChangePassword";
-
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
@@ -29,6 +30,37 @@ import Coupons from "./pages/Coupons";
 
 const queryClient = new QueryClient();
 
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+        <Route path="/features" element={<PageTransition><Features /></PageTransition>} />
+        <Route path="/how-it-works" element={<PageTransition><HowItWorks /></PageTransition>} />
+        <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+        <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+        <Route path="/sign-in" element={<PageTransition><SignIn /></PageTransition>} />
+        <Route path="/sign-up" element={<PageTransition><SignUp /></PageTransition>} />
+        <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
+        <Route path="/change-password" element={<PageTransition><ChangePassword /></PageTransition>} />
+        <Route path="/cart" element={<PageTransition><Cart /></PageTransition>} />
+        <Route path="/checkout" element={<PageTransition><Checkout /></PageTransition>} />
+        <Route path="/orders" element={<PageTransition><Orders /></PageTransition>} />
+        <Route path="/search" element={<PageTransition><Search /></PageTransition>} />
+        <Route path="/compare-prices" element={<PageTransition><ComparePrices /></PageTransition>} />
+        <Route path="/visual-search" element={<PageTransition><VisualSearch /></PageTransition>} />
+        <Route path="/product/:id" element={<PageTransition><ProductDetail /></PageTransition>} />
+        <Route path="/deal-coins" element={<PageTransition><DealCoins /></PageTransition>} />
+        <Route path="/scan" element={<PageTransition><BarcodeScanner /></PageTransition>} />
+        <Route path="/coupons" element={<PageTransition><Coupons /></PageTransition>} />
+        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -37,31 +69,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/features" element={<Features />} />
-              <Route path="/how-it-works" element={<HowItWorks />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/change-password" element={<ChangePassword />} />
-              
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/orders" element={<Orders />} />
-
-              <Route path="/search" element={<Search />} />
-              <Route path="/compare-prices" element={<ComparePrices />} />
-              <Route path="/visual-search" element={<VisualSearch />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/deal-coins" element={<DealCoins />} />
-              <Route path="/scan" element={<BarcodeScanner />} />
-              <Route path="/coupons" element={<Coupons />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AnimatedRoutes />
           </BrowserRouter>
         </TooltipProvider>
       </CartProvider>
