@@ -124,6 +124,78 @@ async function lookupWithUPCItemDB(barcode: string): Promise<any | null> {
   }
 }
 
+// Source 4: Open Beauty Facts (free, cosmetics/personal care)
+async function lookupWithOpenBeautyFacts(barcode: string): Promise<any | null> {
+  try {
+    const response = await fetch(`https://world.openbeautyfacts.org/api/v0/product/${barcode}.json`);
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (data.status === 1 && data.product) {
+      const p = data.product;
+      return {
+        products: [{
+          id: `barcode-obf-${barcode}`,
+          name: p.product_name || p.generic_name || `Product ${barcode}`,
+          price: 0,
+          originalPrice: 0,
+          discount: 0,
+          rating: null,
+          store: p.stores || p.brands || 'Unknown',
+          category: p.categories?.split(',')[0]?.trim() || 'Beauty & Personal Care',
+          description: (p.ingredients_text || '').substring(0, 200),
+          image: p.image_url || p.image_front_url || null,
+          link: `https://world.openbeautyfacts.org/product/${barcode}`,
+          source: 'openbeautyfacts',
+          brand: p.brands || null,
+        }],
+        barcode,
+        productName: p.product_name || p.generic_name || `Product ${barcode}`,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Open Beauty Facts lookup error:', error);
+    return null;
+  }
+}
+
+// Source 5: Open Pet Food Facts (free, pet products)
+async function lookupWithOpenPetFoodFacts(barcode: string): Promise<any | null> {
+  try {
+    const response = await fetch(`https://world.openpetfoodfacts.org/api/v0/product/${barcode}.json`);
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (data.status === 1 && data.product) {
+      const p = data.product;
+      return {
+        products: [{
+          id: `barcode-opf-${barcode}`,
+          name: p.product_name || p.generic_name || `Product ${barcode}`,
+          price: 0,
+          originalPrice: 0,
+          discount: 0,
+          rating: null,
+          store: p.stores || p.brands || 'Unknown',
+          category: p.categories?.split(',')[0]?.trim() || 'Pet Supplies',
+          description: (p.ingredients_text || '').substring(0, 200),
+          image: p.image_url || p.image_front_url || null,
+          link: `https://world.openpetfoodfacts.org/product/${barcode}`,
+          source: 'openpetfoodfacts',
+          brand: p.brands || null,
+        }],
+        barcode,
+        productName: p.product_name || p.generic_name || `Product ${barcode}`,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Open Pet Food Facts lookup error:', error);
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -154,23 +226,37 @@ Deno.serve(async (req) => {
     }
 
     const cleanBarcode = barcode.replace(/[^0-9a-zA-Z]/g, '');
-
-    // Try RapidAPI first
     const rapidApiKey = Deno.env.get('RAPIDAPI_KEY');
-    let result = null;
 
-    if (rapidApiKey) {
-      result = await lookupWithRapidAPI(cleanBarcode, rapidApiKey);
-    }
+    // Fire ALL sources in parallel for maximum speed
+    const [rapidResult, offResult, upcResult, beautyResult, petResult] = await Promise.all([
+      rapidApiKey ? lookupWithRapidAPI(cleanBarcode, rapidApiKey) : Promise.resolve(null),
+      lookupWithOpenFoodFacts(cleanBarcode),
+      lookupWithUPCItemDB(cleanBarcode),
+      lookupWithOpenBeautyFacts(cleanBarcode),
+      lookupWithOpenPetFoodFacts(cleanBarcode),
+    ]);
 
-    // Fallback to Open Food Facts
-    if (!result) {
-      result = await lookupWithOpenFoodFacts(cleanBarcode);
-    }
+    // Pick the best result (first non-null with products)
+    const result = rapidResult || offResult || upcResult || beautyResult || petResult;
 
-    // Fallback to UPCItemDB
-    if (!result) {
-      result = await lookupWithUPCItemDB(cleanBarcode);
+    // If RapidAPI found results but free DBs also found product info, merge product name
+    if (result && !rapidResult && result.products?.[0]?.price === 0) {
+      // For free DB results with no price, try to search RapidAPI by product name
+      if (rapidApiKey && result.productName) {
+        const searchResult = await lookupWithRapidAPI(result.productName, rapidApiKey);
+        if (searchResult) {
+          // Merge: use RapidAPI products but keep free DB metadata
+          return new Response(JSON.stringify({
+            ...searchResult,
+            barcode: cleanBarcode,
+            productName: result.productName,
+          }), { 
+            status: 200, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          });
+        }
+      }
     }
 
     if (!result) {
