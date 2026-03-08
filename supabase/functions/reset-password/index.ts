@@ -6,6 +6,12 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function secureRandInt(max: number): number {
+  const arr = new Uint32Array(1);
+  crypto.getRandomValues(arr);
+  return arr[0] % max;
+}
+
 function generateSecurePassword(): string {
   const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const lowercase = "abcdefghijklmnopqrstuvwxyz";
@@ -13,22 +19,20 @@ function generateSecurePassword(): string {
   const special = "!@#$%^&*";
   const all = uppercase + lowercase + digits + special;
 
-  // Ensure at least one of each required type
   const password: string[] = [
-    uppercase[Math.floor(Math.random() * uppercase.length)],
-    lowercase[Math.floor(Math.random() * lowercase.length)],
-    digits[Math.floor(Math.random() * digits.length)],
-    special[Math.floor(Math.random() * special.length)],
+    uppercase[secureRandInt(uppercase.length)],
+    lowercase[secureRandInt(lowercase.length)],
+    digits[secureRandInt(digits.length)],
+    special[secureRandInt(special.length)],
   ];
 
-  // Fill remaining 4 characters randomly
   for (let i = 0; i < 4; i++) {
-    password.push(all[Math.floor(Math.random() * all.length)]);
+    password.push(all[secureRandInt(all.length)]);
   }
 
-  // Shuffle the array
+  // Fisher-Yates shuffle with CSPRNG
   for (let i = password.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = secureRandInt(i + 1);
     [password[i], password[j]] = [password[j], password[i]];
   }
 
@@ -50,53 +54,96 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email) || email.length > 255) {
+      return new Response(
+        JSON.stringify({ error: "Valid email is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
-    if (!supabaseUrl || !serviceRoleKey) {
-      throw new Error("Supabase configuration missing");
-    }
-    if (!resendApiKey) {
-      throw new Error("RESEND_API_KEY is not configured");
+    if (!supabaseUrl || !serviceRoleKey || !resendApiKey) {
+      console.error("Missing required configuration");
+      return new Response(
+        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    // Find user by email using admin API
+    // Rate limiting: max 3 attempts per email per hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const { data: recentAttempts, error: rateError } = await supabase
+      .from("password_reset_attempts")
+      .select("id")
+      .eq("email", normalizedEmail)
+      .gte("attempted_at", oneHourAgo);
+
+    if (rateError) {
+      console.error("Rate limit check failed:", rateError);
+      return new Response(
+        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (recentAttempts && recentAttempts.length >= 3) {
+      return new Response(
+        JSON.stringify({ error: "Too many reset attempts. Please try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Record this attempt
+    await supabase.from("password_reset_attempts").insert({ email: normalizedEmail });
+
+    // Find user by email
     const { data: usersData, error: listError } = await supabase.auth.admin.listUsers();
 
     if (listError) {
-      throw new Error(`Failed to query users: ${listError.message}`);
+      console.error("Failed to query users:", listError);
+      return new Response(
+        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const user = usersData.users.find(
-      (u: any) => u.email?.toLowerCase() === email.toLowerCase()
+      (u: any) => u.email?.toLowerCase() === normalizedEmail
     );
 
     if (!user) {
-      // Return success even if user not found (security: don't reveal if email exists)
+      // Don't reveal if email exists
       return new Response(
         JSON.stringify({ success: true, message: "If an account exists, a new password has been sent." }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Generate secure password
     const newPassword = generateSecurePassword();
 
-    // Update user's password via admin API (Supabase handles hashing internally)
     const { error: updateError } = await supabase.auth.admin.updateUserById(user.id, {
       password: newPassword,
     });
 
     if (updateError) {
-      throw new Error(`Failed to update password: ${updateError.message}`);
+      console.error("Failed to update password:", updateError);
+      return new Response(
+        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Send email via Resend
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -135,7 +182,11 @@ Deno.serve(async (req) => {
 
     if (!emailResponse.ok) {
       const errBody = await emailResponse.text();
-      throw new Error(`Failed to send email [${emailResponse.status}]: ${errBody}`);
+      console.error("Failed to send email:", errBody);
+      return new Response(
+        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     return new Response(
@@ -144,9 +195,8 @@ Deno.serve(async (req) => {
     );
   } catch (error) {
     console.error("Reset password error:", error);
-    const message = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ error: message }),
+      JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
