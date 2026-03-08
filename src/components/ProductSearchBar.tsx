@@ -33,11 +33,64 @@ export const ProductSearchBar = () => {
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchingApi, setIsSearchingApi] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   
   const { user } = useAuth();
   const { addToCart, cartItems, updateQuantity } = useCart();
   const { products: fakeStoreProducts, isLoading: isFakeStoreLoading } = useFakeStoreProducts();
   const navigate = useNavigate();
+
+  // Voice search using Web Speech API
+  const toggleVoiceSearch = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      toast.error("Voice search is not supported in your browser");
+      return;
+    }
+
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-IN";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setSearchQuery(transcript);
+      setIsListening(false);
+      toast.success(`Heard: "${transcript}"`);
+      // Auto-search after voice input
+      setTimeout(() => {
+        if (transcript.trim().length >= 2) {
+          fetchProductsFromApi(transcript);
+        }
+      }, 300);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech error:", event.error);
+      setIsListening(false);
+      if (event.error === "not-allowed") {
+        toast.error("Microphone access denied. Please allow microphone permission.");
+      } else {
+        toast.error("Voice search failed. Please try again.");
+      }
+    };
+
+    recognition.onend = () => setIsListening(false);
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsListening(true);
+    toast.info("Listening... Speak the product name");
+  };
 
   const parsePrice = (priceStr: string): number => {
     const numStr = priceStr.replace(/[₹,]/g, "");
