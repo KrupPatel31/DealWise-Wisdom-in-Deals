@@ -273,10 +273,10 @@ export const ProductSearchBar = () => {
                 className="pl-10 sm:pl-12 h-10 sm:h-12 text-base sm:text-lg"
               />
             </div>
-            <Button 
+            <GalaxyButton 
               onClick={handleSearch}
               disabled={isSearchingApi}
-              className="h-10 sm:h-12 px-4 sm:px-6 bg-primary hover:bg-primary/90"
+              className="h-10 sm:h-12 px-4 sm:px-6"
             >
               {isSearchingApi ? (
                 <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
@@ -286,7 +286,7 @@ export const ProductSearchBar = () => {
                   <span className="hidden sm:inline">Search</span>
                 </>
               )}
-            </Button>
+            </GalaxyButton>
           </div>
 
           {/* Filters */}
