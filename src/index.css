@@ -152,6 +152,133 @@
     background-clip: text;
   }
 
+  /* Galaxy 3D Button */
+  .galaxy-btn {
+    --cut: 0.1em;
+    --active: 0;
+    --hue: 245;
+    --bg:
+      radial-gradient(
+        120% 120% at 126% 126%,
+        hsl(var(--hue) calc(var(--active) * 97%) 98% / calc(var(--active) * 0.9)) 40%,
+        transparent 50%
+      ) calc(100px - (var(--active) * 100px)) 0 / 100% 100% no-repeat, 
+      radial-gradient(
+        120% 120% at 120% 120%,
+        hsl(var(--hue) calc(var(--active) * 97%) 70% / calc(var(--active) * 1)) 30%,
+        transparent 70%
+      ) calc(100px - (var(--active) * 100px)) 0 / 100% 100% no-repeat,
+      hsl(var(--hue) calc(var(--active) * 100%) calc(12% - (var(--active) * 8%)));
+    background: var(--bg);
+    font-size: 1rem;
+    font-weight: 500;
+    border: 0;
+    cursor: pointer;
+    padding: 0.7em 1.2em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25em;
+    border-radius: 2rem;
+    position: relative;
+    box-shadow:
+      0 0 calc(var(--active) * 6em) calc(var(--active) * 3em) hsl(var(--hue) 97% 61% / 0.5),
+      0 0.05em 0 0 hsl(var(--hue) calc(var(--active) * 97%) calc((var(--active) * 50%) + 30%)) inset,
+      0 -0.05em 0 0 hsl(var(--hue) calc(var(--active) * 97%) calc(var(--active) * 10%)) inset;
+    transition: box-shadow 0.25s, scale 0.25s, background 0.25s;
+    scale: calc(1 + (var(--active) * 0.1));
+    overflow: hidden;
+  }
+
+  .galaxy-btn:hover {
+    --active: 1;
+  }
+
+  .galaxy-btn:active {
+    scale: 1;
+  }
+
+  .galaxy-btn:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .galaxy-star {
+    height: calc(var(--size) * 1px);
+    aspect-ratio: 1;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    opacity: var(--alpha);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(10deg) rotate(0deg) translateY(calc(var(--distance) * 1px));
+    animation: galaxy-orbit calc(var(--duration) * 1s) calc(var(--delay) * -1s) infinite linear;
+  }
+
+  @keyframes galaxy-orbit {
+    to {
+      transform: translate(-50%, -50%) rotate(10deg) rotate(360deg) translateY(calc(var(--distance) * 1px));
+    }
+  }
+
+  .galaxy-galaxy {
+    position: absolute;
+    width: 100%;
+    aspect-ratio: 1;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    overflow: hidden;
+    opacity: var(--active);
+    transition: opacity 0.25s;
+    pointer-events: none;
+  }
+
+  .galaxy-ring {
+    height: 200%;
+    width: 200%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    transform: translate(-28%, -40%) rotateX(-24deg) rotateY(-30deg) rotateX(90deg);
+    transform-style: preserve-3d;
+  }
+
+  .galaxy-spark {
+    position: absolute;
+    inset: 0;
+    border-radius: 2rem;
+    overflow: hidden;
+    mask: linear-gradient(white, transparent 50%);
+    animation: galaxy-flip 3.6s infinite steps(2, end);
+    pointer-events: none;
+  }
+
+  @keyframes galaxy-flip {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  .galaxy-backdrop {
+    position: absolute;
+    inset: 0.1em;
+    background: var(--bg);
+    border-radius: 2rem;
+    pointer-events: none;
+  }
+
+  .galaxy-text {
+    color: hsl(0 0% calc(60% + (var(--active) * 26%)));
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+  }
+
   /* Product search loader */
   .product-loader {
     width: 40px;
