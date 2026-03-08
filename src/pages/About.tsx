@@ -108,11 +108,11 @@ const About = () => {
         </div>
 
         {/* Team */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold text-center mb-12">
+        <div className="mb-12 sm:mb-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">
             <span className="text-primary">Meet Our Team</span>
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
             {team.map((member, index) => (
               <Card
                 key={index}
