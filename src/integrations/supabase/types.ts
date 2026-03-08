@@ -436,7 +436,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      my_referrals: {
+        Row: {
+          coins_awarded: number | null
+          created_at: string | null
+          id: string | null
+          referral_code: string | null
+          referrer_id: string | null
+          status: string | null
+        }
+        Insert: {
+          coins_awarded?: number | null
+          created_at?: string | null
+          id?: string | null
+          referral_code?: string | null
+          referrer_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          coins_awarded?: number | null
+          created_at?: string | null
+          id?: string | null
+          referral_code?: string | null
+          referrer_id?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_or_create_deal_coins:
