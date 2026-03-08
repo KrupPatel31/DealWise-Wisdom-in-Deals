@@ -28,6 +28,7 @@ export const Header = () => {
     { name: "Search", href: "/search" },
     { name: "Visual Search", href: "/visual-search" },
     { name: "Scan", href: "/scan" },
+    { name: "Coupons", href: "/coupons" },
     { name: "How It Works", href: "/how-it-works" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
