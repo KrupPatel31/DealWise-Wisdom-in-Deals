@@ -54,7 +54,7 @@ const validateTextField = (value: string, maxLength: number): boolean => {
 const Checkout = () => {
   const { user } = useAuth();
   const { cartItems, clearCart } = useCart();
-  const { coins, spendCoins, earnCoins, refetchCoins } = useDealCoins();
+  const { coins, refetchCoins } = useDealCoins();
   const navigate = useNavigate();
   
   const [isProcessing, setIsProcessing] = useState(false);
