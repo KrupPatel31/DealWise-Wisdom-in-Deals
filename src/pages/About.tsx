@@ -155,6 +155,7 @@ const About = () => {
           </div>
         </Card>
       </main>
+      <Footer />
     </div>
   );
 };
