@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -7,15 +6,182 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// Source 1: Real-Time Product Search (existing)
+async function searchRealTimeProducts(query: string, rapidApiKey: string): Promise<any[]> {
+  try {
+    const url = `https://real-time-product-search.p.rapidapi.com/search-v2?q=${encodeURIComponent(query)}&country=in&language=en&limit=20`;
+    const response = await fetch(url, {
+      headers: {
+        'X-RapidAPI-Key': rapidApiKey,
+        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
+      },
+    });
 
-serve(async (req) => {
-  // Handle CORS preflight requests
+    if (!response.ok) {
+      console.error('Real-Time Product Search error:', response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    const items = data?.data?.products || data?.data || data?.products || [];
+    if (!Array.isArray(items)) return [];
+
+    return items.map((item: any, index: number) => {
+      const offerPriceStr = item.offer?.price ?? item.price ?? '';
+      const typicalHighStr = item.typical_price_range?.[1] ?? item.typical_price_range?.[0] ?? '';
+      const price = parseFloat(String(offerPriceStr).replace(/[^0-9.]/g, '')) || 0;
+      const originalPrice = parseFloat(String(typicalHighStr).replace(/[^0-9.]/g, '')) || price;
+
+      return {
+        id: item.product_id || `rtp-${index}`,
+        name: item.product_title || item.title || 'Unknown Product',
+        price,
+        originalPrice,
+        discount: item.offer?.discount || 0,
+        rating: parseFloat(item.product_rating) || parseFloat(item.rating) || 0,
+        reviews: parseInt(item.product_num_reviews) || 0,
+        store: item.offer?.store_name || item.product_source || 'Online Store',
+        category: item.product_category || 'General',
+        description: item.product_description || item.description || '',
+        image: item.product_photos?.[0] || item.product_photo || item.image || '',
+        link: item.offer?.offer_page_url || item.product_page_url || '#',
+        source: 'Google Shopping',
+      };
+    });
+  } catch (e) {
+    console.error('Real-Time Product Search failed:', e);
+    return [];
+  }
+}
+
+// Source 2: Google Shopping via Shopping Search API
+async function searchGoogleShopping(query: string, rapidApiKey: string): Promise<any[]> {
+  try {
+    const url = `https://real-time-product-search.p.rapidapi.com/search?q=${encodeURIComponent(query)}&country=in&language=en&limit=15&sort_by=BEST_MATCH`;
+    const response = await fetch(url, {
+      headers: {
+        'X-RapidAPI-Key': rapidApiKey,
+        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
+      },
+    });
+
+    if (!response.ok) {
+      console.error('Google Shopping Search error:', response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    const items = data?.data || [];
+    if (!Array.isArray(items)) return [];
+
+    return items.map((item: any, index: number) => {
+      const price = parseFloat(String(item.offer?.price || item.price || '0').replace(/[^0-9.]/g, '')) || 0;
+      const originalPrice = parseFloat(String(item.offer?.original_price || '0').replace(/[^0-9.]/g, '')) || price;
+      const discount = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
+
+      return {
+        id: item.product_id || `gs-${index}`,
+        name: item.product_title || 'Unknown Product',
+        price,
+        originalPrice,
+        discount,
+        rating: parseFloat(item.product_rating) || 0,
+        reviews: parseInt(item.product_num_reviews) || 0,
+        store: item.offer?.store_name || 'Google Shopping',
+        category: item.product_category || 'General',
+        description: item.product_description?.substring(0, 300) || '',
+        image: item.product_photos?.[0] || item.product_photo || '',
+        link: item.offer?.offer_page_url || item.product_page_url || '#',
+        source: 'Google',
+      };
+    });
+  } catch (e) {
+    console.error('Google Shopping Search failed:', e);
+    return [];
+  }
+}
+
+// Source 3: Google Shopping offers/deals for a specific product
+async function searchProductOffers(query: string, rapidApiKey: string): Promise<any[]> {
+  try {
+    // First get a product ID from search
+    const searchUrl = `https://real-time-product-search.p.rapidapi.com/search?q=${encodeURIComponent(query)}&country=in&language=en&limit=3`;
+    const searchResponse = await fetch(searchUrl, {
+      headers: {
+        'X-RapidAPI-Key': rapidApiKey,
+        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
+      },
+    });
+
+    if (!searchResponse.ok) return [];
+    const searchData = await searchResponse.json();
+    const firstProduct = searchData?.data?.[0];
+    if (!firstProduct?.product_id) return [];
+
+    // Now get offers for this product
+    const offersUrl = `https://real-time-product-search.p.rapidapi.com/product-offers?product_id=${encodeURIComponent(firstProduct.product_id)}&country=in&language=en`;
+    const offersResponse = await fetch(offersUrl, {
+      headers: {
+        'X-RapidAPI-Key': rapidApiKey,
+        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
+      },
+    });
+
+    if (!offersResponse.ok) return [];
+    const offersData = await offersResponse.json();
+    const offers = offersData?.data || [];
+    if (!Array.isArray(offers)) return [];
+
+    return offers.slice(0, 10).map((offer: any, index: number) => {
+      const price = parseFloat(String(offer.price || '0').replace(/[^0-9.]/g, '')) || 0;
+      const originalPrice = parseFloat(String(offer.original_price || '0').replace(/[^0-9.]/g, '')) || price;
+      const discount = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
+
+      return {
+        id: `offer-${index}`,
+        name: firstProduct.product_title || query,
+        price,
+        originalPrice,
+        discount,
+        rating: parseFloat(firstProduct.product_rating) || 0,
+        reviews: parseInt(firstProduct.product_num_reviews) || 0,
+        store: offer.store_name || offer.merchant || 'Store',
+        category: firstProduct.product_category || 'General',
+        description: offer.delivery_info || '',
+        image: firstProduct.product_photos?.[0] || '',
+        link: offer.offer_page_url || '#',
+        source: 'Google Offers',
+      };
+    });
+  } catch (e) {
+    console.error('Product Offers search failed:', e);
+    return [];
+  }
+}
+
+// Deduplicate products by store+name similarity
+function deduplicateProducts(products: any[]): any[] {
+  const seen = new Map<string, any>();
+  
+  for (const product of products) {
+    const key = `${product.store.toLowerCase()}-${product.name.toLowerCase().substring(0, 50)}`;
+    const existing = seen.get(key);
+    
+    if (!existing || (product.price > 0 && product.price < (existing.price || Infinity))) {
+      seen.set(key, product);
+    }
+  }
+  
+  return Array.from(seen.values());
+}
+
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Verify authentication
+    // Auth
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(
@@ -24,7 +190,6 @@ serve(async (req) => {
       );
     }
 
-    // Verify JWT token using getClaims
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -41,16 +206,13 @@ serve(async (req) => {
     }
 
     const { query } = await req.json();
-    
-    // Validate query input
     if (!query || typeof query !== 'string') {
       return new Response(
         JSON.stringify({ error: 'Invalid query parameter' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-    
-    // Limit query length to prevent abuse
+
     const sanitizedQuery = query.trim().slice(0, 200);
     if (sanitizedQuery.length === 0) {
       return new Response(
@@ -60,86 +222,49 @@ serve(async (req) => {
     }
 
     const rapidApiKey = Deno.env.get('RAPIDAPI_KEY');
-
     if (!rapidApiKey) {
-      console.error('RAPIDAPI_KEY not configured');
       return new Response(
         JSON.stringify({ error: 'API key not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Searching for products:', sanitizedQuery, 'by user:', claimsData.claims.sub);
+    console.log('Multi-source search for:', sanitizedQuery, 'by user:', claimsData.claims.sub);
 
-    // Using Real-Time Product Search API from RapidAPI
-    // NOTE: API uses versioned endpoints (v2)
-    const url = `https://real-time-product-search.p.rapidapi.com/search-v2?q=${encodeURIComponent(sanitizedQuery)}&country=in&language=en&limit=30`;
+    // Fire all sources in parallel
+    const [realTimeResults, googleShoppingResults, offerResults] = await Promise.all([
+      searchRealTimeProducts(sanitizedQuery, rapidApiKey),
+      searchGoogleShopping(sanitizedQuery, rapidApiKey),
+      searchProductOffers(sanitizedQuery, rapidApiKey),
+    ]);
 
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': rapidApiKey,
-        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
-      },
-    });
+    console.log(`Results: RealTime=${realTimeResults.length}, GoogleShopping=${googleShoppingResults.length}, Offers=${offerResults.length}`);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('RapidAPI error:', response.status, errorText);
+    // Merge and deduplicate
+    const allProducts = [...realTimeResults, ...googleShoppingResults, ...offerResults];
+    const products = deduplicateProducts(allProducts);
 
-      // Return empty products so frontend can fall back to local data
-      return new Response(
-        JSON.stringify({
-          products: [],
-          fallback: true,
-          message: `RapidAPI error ${response.status}`,
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Filter out zero-price items and sort by relevance
+    const validProducts = products
+      .filter(p => p.price > 0)
+      .sort((a, b) => {
+        // Prioritize products with images and ratings
+        const scoreA = (a.image ? 2 : 0) + (a.rating > 0 ? 1 : 0) + (a.discount > 0 ? 1 : 0);
+        const scoreB = (b.image ? 2 : 0) + (b.rating > 0 ? 1 : 0) + (b.discount > 0 ? 1 : 0);
+        return scoreB - scoreA;
+      });
 
-    const data = await response.json();
-
-    const rawItems =
-      data?.data?.products || // search-v2 typical shape
-      data?.data ||
-      data?.products ||
-      [];
-
-    const items = Array.isArray(rawItems) ? rawItems : [];
-    console.log('Products fetched successfully:', items.length, 'items');
-
-    // Transform the data to match our product structure
-    const products = items.map((item: any, index: number) => {
-      const offerPriceStr = item.offer?.price ?? item.price ?? '';
-      const typicalHighStr = item.typical_price_range?.[1] ?? item.typical_price_range?.[0] ?? '';
-
-      const price = parseFloat(String(offerPriceStr).replace(/[^0-9.]/g, '')) || 0;
-      const originalPrice =
-        parseFloat(String(typicalHighStr).replace(/[^0-9.]/g, '')) || price;
-
-      return {
-        id: item.product_id || item.id || `product-${index}`,
-        name: item.product_title || item.title || item.name || 'Unknown Product',
-        price,
-        originalPrice,
-        discount: item.offer?.discount || item.discount || 0,
-        rating: parseFloat(item.product_rating) || parseFloat(item.rating) || 4.0,
-        reviews: parseInt(item.product_num_reviews) || parseInt(item.reviews) || 0,
-        store: item.offer?.store_name || item.product_source || item.store || 'Online Store',
-        category: item.product_category || item.category || 'General',
-        description: item.product_description || item.description || '',
-        image:
-          item.product_photos?.[0] ||
-          item.product_photo ||
-          item.image ||
-          'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
-        link: item.offer?.offer_page_url || item.product_page_url || item.link || '#',
-      };
-    });
+    console.log('Final products after dedup:', validProducts.length);
 
     return new Response(
-      JSON.stringify({ products }),
+      JSON.stringify({ 
+        products: validProducts,
+        sources: {
+          realTime: realTimeResults.length,
+          googleShopping: googleShoppingResults.length,
+          offers: offerResults.length,
+        }
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
