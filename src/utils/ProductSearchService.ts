@@ -8,6 +8,7 @@ export interface ProductData {
   url?: string;
   store?: string;
   rating?: string;
+  ratingCount?: number;
   description?: string;
   category?: string;
 }
