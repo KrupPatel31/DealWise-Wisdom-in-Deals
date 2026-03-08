@@ -210,12 +210,12 @@ const DealCoins = () => {
       </section>
 
       {/* Earning Methods — Interactive */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-10 sm:py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-2">How to Earn</h2>
-          <p className="text-muted-foreground text-center mb-10">Multiple ways to stack your coins</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-2">How to Earn</h2>
+          <p className="text-muted-foreground text-center mb-6 sm:mb-10">Multiple ways to stack your coins</p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
             {/* Shop Products */}
             <Card className="group bg-card/50 backdrop-blur-md border-border/30 hover:border-amber-500/40 transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6 flex flex-col items-start gap-4">
