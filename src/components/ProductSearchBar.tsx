@@ -23,6 +23,7 @@ import { useFakeStoreProducts } from "@/hooks/useFakeStoreProducts";
 import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { ShareDeal } from "@/components/ShareDeal";
 
 export const ProductSearchBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -412,11 +413,20 @@ export const ProductSearchBar = () => {
 
                           {/* Product Info */}
                           <div className="flex-1 space-y-2">
+                          <div className="flex items-start justify-between gap-1">
                             <Link to={`/product/${encodeURIComponent(product.id)}`}>
                               <h3 className="font-semibold line-clamp-2 text-sm leading-tight hover:text-primary transition-colors">
                                 {product.title}
                               </h3>
                             </Link>
+                            <ShareDeal
+                              title={product.title}
+                              price={product.price}
+                              store={product.store}
+                              url={`${window.location.origin}/product/${encodeURIComponent(product.id)}`}
+                              variant="icon"
+                            />
+                          </div>
 
                             {/* Price */}
                             <div className="flex items-center gap-2 flex-wrap">

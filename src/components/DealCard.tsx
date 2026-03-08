@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Star, Truck, Shield, Award, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
+import { ShareDeal } from "@/components/ShareDeal";
 interface DealCardProps {
   image: string;
   title: string;
@@ -74,10 +75,17 @@ export const DealCard = ({
             </Badge>}
         </div>
 
-        {/* Product Title - Fixed height */}
-        <h3 className="font-display font-semibold text-base sm:text-lg text-foreground line-clamp-2 leading-snug mt-3 sm:mt-4 h-12 sm:h-14 flex-shrink-0">
-          {title}
-        </h3>
+        <div className="flex items-start justify-between gap-2 mt-3 sm:mt-4">
+          <h3 className="font-display font-semibold text-base sm:text-lg text-foreground line-clamp-2 leading-snug h-12 sm:h-14 flex-shrink-0">
+            {title}
+          </h3>
+          <ShareDeal
+            title={title}
+            price={currentPrice}
+            store={store}
+            variant="icon"
+          />
+        </div>
 
         {/* Key Features - Fixed height */}
         <div className="flex flex-wrap gap-1 mt-2 sm:mt-3 h-8 sm:h-9 flex-shrink-0 overflow-hidden">
