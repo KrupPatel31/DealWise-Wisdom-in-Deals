@@ -70,10 +70,7 @@ const SignUp = () => {
         variant: "destructive",
       });
     } else {
-      toast({
-        title: "Verify your email",
-        description: "Check your inbox for a confirmation link. Once you confirm your email, we'll sign you in automatically.",
-      });
+      setShowSuccess(true);
     }
     
     setLoading(false);
