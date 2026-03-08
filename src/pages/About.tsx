@@ -60,7 +60,7 @@ const About = () => {
                 <TrendingUp className="h-8 w-8 sm:h-12 sm:w-12 text-white" />
               </div>
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-primary">Our Mission</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-primary">Our Mission</h3>
                 <p className="text-muted-foreground">
                   To make smart shopping accessible to everyone by providing the
                   most accurate, comprehensive, and user-friendly price
