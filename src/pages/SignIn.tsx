@@ -51,10 +51,7 @@ const SignIn = () => {
         variant: "destructive",
       });
     } else {
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
-      });
+      setShowSuccess(true);
     }
     
     setLoading(false);
