@@ -22,15 +22,15 @@ const ChangePassword = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const validation = validatePassword(newPassword);
+  const strength = getPasswordStrength(newPassword);
+  const passwordsMatch = newPassword === confirmPassword && confirmPassword.length > 0;
+
   // Redirect if not logged in
   if (!user) {
     navigate("/sign-in");
     return null;
   }
-
-  const validation = validatePassword(newPassword);
-  const strength = getPasswordStrength(newPassword);
-  const passwordsMatch = newPassword === confirmPassword && confirmPassword.length > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
