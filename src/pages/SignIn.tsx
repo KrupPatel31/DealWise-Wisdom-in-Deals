@@ -151,6 +151,7 @@ const SignIn = () => {
       </main>
       
       <Footer />
+      <SuccessOverlay show={showSuccess} onClose={() => setShowSuccess(false)} variant="login" />
     </div>
   );
 };

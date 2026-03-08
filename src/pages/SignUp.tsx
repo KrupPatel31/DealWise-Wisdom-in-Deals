@@ -289,6 +289,7 @@ const SignUp = () => {
       </main>
       
       <Footer />
+      <SuccessOverlay show={showSuccess} onClose={() => setShowSuccess(false)} variant="signup" />
     </div>
   );
 };
