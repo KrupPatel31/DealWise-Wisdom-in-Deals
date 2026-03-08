@@ -47,9 +47,9 @@ const About = () => {
         </div>
 
         {/* Our Story */}
-        <div className="grid lg:grid-cols-1 gap-16 items-center mb-20">
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold">
+        <div className="grid lg:grid-cols-1 gap-8 sm:gap-16 items-center mb-12 sm:mb-20">
+          <div className="space-y-4 sm:space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-bold">
               <span className="text-primary">Our Story</span>
             </h2>
           </div>
