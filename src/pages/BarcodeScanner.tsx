@@ -79,7 +79,7 @@ const BarcodeScanner = () => {
 
       await html5QrCode.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 280, height: 150 }, aspectRatio: 1.777 },
+        { fps: 10, qrbox: { width: Math.min(280, window.innerWidth - 80), height: 150 }, aspectRatio: 1.777 },
         (decodedText) => {
           handleBarcodeScan(decodedText);
           stopScanner();
