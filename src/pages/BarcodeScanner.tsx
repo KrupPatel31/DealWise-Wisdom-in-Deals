@@ -332,12 +332,12 @@ const BarcodeScanner = () => {
                           <Badge variant="outline" className="text-[10px]">{product.source}</Badge>
                         </div>
 
-                        <div className="flex gap-2 pt-2">
-                          <Button size="sm" className="text-xs" onClick={() => handleCompare(product)}>
+                        <div className="flex gap-2 pt-2 flex-wrap">
+                          <Button size="sm" className="text-xs flex-1 sm:flex-none" onClick={() => handleCompare(product)}>
                             <BarChart3 className="h-3 w-3 mr-1" />Compare
                           </Button>
                           {product.link && (
-                            <Button size="sm" variant="outline" className="text-xs" asChild>
+                            <Button size="sm" variant="outline" className="text-xs flex-1 sm:flex-none" asChild>
                               <a href={product.link} target="_blank" rel="noopener noreferrer">
                                 <ExternalLink className="h-3 w-3 mr-1" />Visit
                               </a>
