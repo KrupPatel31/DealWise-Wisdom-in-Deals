@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2, BarChart3 } from "lucide-react";
+import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2, BarChart3, ScanLine } from "lucide-react";
 import { GalaxyButton } from "@/components/ui/galaxy-button";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -288,6 +288,11 @@ export const ProductSearchBar = () => {
                 </>
               )}
             </GalaxyButton>
+            <Link to="/scan">
+              <Button variant="outline" className="h-10 sm:h-12 px-3" title="Scan Barcode">
+                <ScanLine className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            </Link>
           </div>
 
           {/* Filters */}
