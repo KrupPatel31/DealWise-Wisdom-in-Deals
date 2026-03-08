@@ -29,13 +29,13 @@ const About = () => {
     <div className="min-h-screen dark">
       <Header />
 
-      <main className="container mx-auto px-6 py-20">
+      <main className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
         {/* Hero Section */}
-        <div className="text-center space-y-6 mb-20">
-          <Badge className="bg-accent text-accent-foreground text-lg px-6 py-2">
+        <div className="text-center space-y-4 sm:space-y-6 mb-12 sm:mb-20">
+          <Badge className="bg-accent text-accent-foreground text-sm sm:text-lg px-4 sm:px-6 py-1.5 sm:py-2">
             ABOUT US
           </Badge>
-          <h1 className="text-5xl font-bold">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
             <span className="text-primary">EMPOWERING</span>{" "}
             <span className="hero-gradient">SMART SHOPPING</span>
           </h1>
