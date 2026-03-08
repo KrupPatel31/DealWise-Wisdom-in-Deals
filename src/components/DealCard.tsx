@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Star, Truck, Shield, Award, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
+import { ShareDeal } from "@/components/ShareDeal";
 interface DealCardProps {
   image: string;
   title: string;
