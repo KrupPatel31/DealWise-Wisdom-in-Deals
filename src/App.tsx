@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import Search from "./pages/Search";
 import ComparePrices from "./pages/ComparePrices";
 import VisualSearch from "./pages/VisualSearch";
+import ProductDetail from "./pages/ProductDetail";
 
 const queryClient = new QueryClient();
 
