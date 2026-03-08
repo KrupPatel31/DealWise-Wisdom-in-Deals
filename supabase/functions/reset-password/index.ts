@@ -104,13 +104,13 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "DealWise <onboarding@resend.dev>",
+        from: "DealWise Wisdom in Deals <onboarding@resend.dev>",
         to: [email],
-        subject: "Your Password Has Been Reset - DealWise",
+        subject: "Your Password Has Been Reset - DealWise Wisdom in Deals",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #16a34a; font-size: 24px;">DEALWISE</h1>
+              <h1 style="color: #16a34a; font-size: 24px;">DealWise Wisdom in Deals</h1>
             </div>
             <div style="background-color: #f9fafb; border-radius: 8px; padding: 30px; margin-bottom: 20px;">
               <h2 style="color: #111827; margin-top: 0;">Password Reset Successful</h2>
@@ -121,12 +121,12 @@ Deno.serve(async (req) => {
                 ${newPassword}
               </div>
               <p style="color: #4b5563; line-height: 1.6;">
-                You can now log in using this password. We strongly recommend changing your password after logging in.
+                You can now log in using this new password.😊
               </p>
             </div>
             <div style="text-align: center; color: #9ca3af; font-size: 12px;">
               <p>If you did not request this password reset, please contact support immediately.</p>
-              <p>&copy; ${new Date().getFullYear()} DealWise. All rights reserved.</p>
+              <p>&copy; ${new Date().getFullYear()} DealWise Wisdom in Deals. All rights reserved.</p>
             </div>
           </div>
         `,
