@@ -293,6 +293,7 @@ const Contact = () => {
           </div>
         </Card>
       </main>
+      <Footer />
     </div>
   );
 };
