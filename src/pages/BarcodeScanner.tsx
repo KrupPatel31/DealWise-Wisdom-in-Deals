@@ -163,7 +163,7 @@ const BarcodeScanner = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl">
         {/* Title */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
