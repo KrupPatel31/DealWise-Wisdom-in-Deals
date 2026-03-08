@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { TrendingUp, Eye, EyeOff } from "lucide-react";
+import { SuccessOverlay } from "@/components/SuccessOverlay";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
