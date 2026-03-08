@@ -18,6 +18,8 @@ import {
 } from "@/utils/ProductSearchService";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
+import { useFakeStoreProducts } from "@/hooks/useFakeStoreProducts";
+import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -32,6 +34,7 @@ export const ProductSearchBar = () => {
   
   const { user } = useAuth();
   const { addToCart, cartItems, updateQuantity } = useCart();
+  const { products: fakeStoreProducts, isLoading: isFakeStoreLoading } = useFakeStoreProducts();
   const navigate = useNavigate();
 
   const parsePrice = (priceStr: string): number => {
@@ -158,12 +161,13 @@ export const ProductSearchBar = () => {
     }
   }, [user, navigate]);
 
-  // Load mock products initially
+  // Merge mock + Fake Store products
   useEffect(() => {
     const mockProducts = ProductSearchService.getMockProducts();
-    setProducts(mockProducts);
-    setFilteredProducts(mockProducts);
-  }, []);
+    const merged = [...mockProducts, ...fakeStoreProducts];
+    setProducts(merged);
+    setFilteredProducts(merged);
+  }, [fakeStoreProducts]);
 
   // Handle search button click
   const handleSearch = () => {
@@ -352,6 +356,11 @@ export const ProductSearchBar = () => {
         )}
       </div>
 
+      {/* Skeleton Loader */}
+      {isFakeStoreLoading && products.length === 0 && (
+        <ProductGridSkeleton count={8} />
+      )}
+
       {/* Products by Category */}
       {Object.keys(productsByCategory).length > 0 ? (
         <div className="space-y-8">
@@ -382,22 +391,26 @@ export const ProductSearchBar = () => {
                       <CardContent className="p-4 flex-1 flex flex-col">
                         <div className="flex flex-col h-full">
                           {/* Product Image */}
-                          <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3">
-                            <img
-                              src={product.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"}
-                              alt={product.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              onError={(e) => {
-                                e.currentTarget.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400";
-                              }}
-                            />
-                          </div>
+                          <Link to={`/product/${encodeURIComponent(product.id)}`}>
+                            <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3 cursor-pointer">
+                              <img
+                                src={product.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"}
+                                alt={product.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                onError={(e) => {
+                                  e.currentTarget.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400";
+                                }}
+                              />
+                            </div>
+                          </Link>
 
                           {/* Product Info */}
                           <div className="flex-1 space-y-2">
-                            <h3 className="font-semibold line-clamp-2 text-sm leading-tight">
-                              {product.title}
-                            </h3>
+                            <Link to={`/product/${encodeURIComponent(product.id)}`}>
+                              <h3 className="font-semibold line-clamp-2 text-sm leading-tight hover:text-primary transition-colors">
+                                {product.title}
+                              </h3>
+                            </Link>
 
                             {/* Price */}
                             <div className="flex items-center gap-2 flex-wrap">
@@ -430,6 +443,11 @@ export const ProductSearchBar = () => {
                                   {product.rating}
                                 </span>
                                 <span className="text-xs text-muted-foreground">/5</span>
+                                {(product as any).ratingCount && (
+                                  <span className="text-xs text-muted-foreground">
+                                    ({(product as any).ratingCount})
+                                  </span>
+                                )}
                               </div>
                             )}
 
@@ -452,28 +470,35 @@ export const ProductSearchBar = () => {
                           </div>
 
                           {/* Action Buttons */}
-                          <div className="flex gap-2 mt-auto pt-4">
-                            <Link 
-                              to={`/compare-prices?name=${encodeURIComponent(product.title)}&price=${parsePrice(product.price)}&image=${encodeURIComponent(product.image || '')}&store=${encodeURIComponent(product.store || '')}`}
-                              className="flex-1"
-                            >
-                              <Button className="w-full text-xs px-2" size="sm">
-                                <BarChart3 className="h-3 w-3 mr-1" />
-                                Compare Prices
-                              </Button>
-                            </Link>
+                          <div className="flex flex-col gap-2 mt-auto pt-4">
+                            <div className="flex gap-2">
+                              <Link 
+                                to={`/compare-prices?name=${encodeURIComponent(product.title)}&price=${parsePrice(product.price)}&image=${encodeURIComponent(product.image || '')}&store=${encodeURIComponent(product.store || '')}`}
+                                className="flex-1"
+                              >
+                                <Button className="w-full text-xs px-2" size="sm">
+                                  <BarChart3 className="h-3 w-3 mr-1" />
+                                  Compare
+                                </Button>
+                              </Link>
+                              <Link to={`/product/${encodeURIComponent(product.id)}`} className="flex-1">
+                                <Button variant="outline" className="w-full text-xs px-2" size="sm">
+                                  View Details
+                                </Button>
+                              </Link>
+                            </div>
                             
                             {quantity === 0 ? (
                               <Button 
                                 size="sm" 
-                                className="flex-1 text-xs px-2 bg-emerald-600 hover:bg-emerald-700 text-primary-foreground border-0"
+                                className="w-full text-xs px-2 bg-emerald-600 hover:bg-emerald-700 text-primary-foreground border-0"
                                 onClick={() => handleAddToCart(product)}
                               >
                                 <Plus className="h-4 w-4 mr-1" />
                                 Add to Cart
                               </Button>
                             ) : (
-                              <div className="flex items-center gap-1 bg-emerald-600 rounded-md">
+                              <div className="flex items-center justify-center gap-1 bg-emerald-600 rounded-md">
                                 <Button 
                                   size="sm" 
                                   variant="ghost"
@@ -506,7 +531,7 @@ export const ProductSearchBar = () => {
           ))}
         </div>
       ) : (
-        !isLoading && (
+        !isLoading && !isFakeStoreLoading && (
           <div className="text-center py-12">
             <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No products found</h3>
