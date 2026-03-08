@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star, Truck, Shield, Award, BarChart3 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { SuccessOverlay } from "@/components/SuccessOverlay";
 interface DealCardProps {
   image: string;
   title: string;
