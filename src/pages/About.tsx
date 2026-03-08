@@ -56,7 +56,7 @@ const About = () => {
 
           <Card className="p-6 sm:p-8 bg-gradient-to-br from-card via-card to-muted border-deal-border">
             <div className="text-center space-y-6">
-              <div className="w-24 h-24 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center glow">
+              <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center glow">
                 <TrendingUp className="h-12 w-12 text-white" />
               </div>
               <div className="space-y-4">
