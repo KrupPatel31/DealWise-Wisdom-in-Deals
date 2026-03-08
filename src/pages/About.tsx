@@ -72,12 +72,12 @@ const About = () => {
         </div>
 
         {/* Our Values */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold text-center mb-12">
+        <div className="mb-12 sm:mb-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">
             <span className="text-primary">Our Values</span>
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="p-8 bg-deal border-deal-border text-center">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
+            <Card className="p-6 sm:p-8 bg-deal border-deal-border text-center">
               <h3 className="text-xl font-bold text-foreground mb-4">
                 Transparency
               </h3>
