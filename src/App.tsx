@@ -56,6 +56,7 @@ const App = () => (
               <Route path="/visual-search" element={<VisualSearch />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/deal-coins" element={<DealCoins />} />
+              <Route path="/scan" element={<BarcodeScanner />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

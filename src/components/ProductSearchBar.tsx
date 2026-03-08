@@ -288,6 +288,11 @@ export const ProductSearchBar = () => {
                 </>
               )}
             </GalaxyButton>
+            <Link to="/scan">
+              <Button variant="outline" className="h-10 sm:h-12 px-3" title="Scan Barcode">
+                <ScanLine className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            </Link>
           </div>
 
           {/* Filters */}
