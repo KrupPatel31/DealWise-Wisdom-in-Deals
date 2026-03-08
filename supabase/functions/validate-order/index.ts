@@ -144,7 +144,19 @@ serve(async (req) => {
       );
     }
 
-    // Calculate totals server-side
+    // Calculate totals server-side with price guards
+    const MAX_ITEM_PRICE = 500000; // ₹5,00,000 max per item
+    const MAX_COINS_PER_ORDER = 500; // Cap earned coins per order
+
+    for (const item of items) {
+      if (item.price > MAX_ITEM_PRICE) {
+        return new Response(
+          JSON.stringify({ error: 'Item price exceeds maximum allowed value' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     const subtotal = items.reduce((sum: number, item: CartItem) => sum + (item.price * item.quantity), 0);
     const shipping = subtotal > 500 ? 0 : 50;
 
@@ -253,7 +265,7 @@ serve(async (req) => {
     }
 
     // Earn coins from order total
-    const coinsEarned = Math.floor(total * COIN_EARN_RATE);
+    const coinsEarned = Math.min(Math.floor(total * COIN_EARN_RATE), MAX_COINS_PER_ORDER);
     if (coinsEarned > 0) {
       const { data: existingCoins } = await supabaseAdmin
         .from('deal_coins')

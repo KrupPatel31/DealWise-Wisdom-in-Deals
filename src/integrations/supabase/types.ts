@@ -221,6 +221,24 @@ export type Database = {
         }
         Relationships: []
       }
+      password_reset_attempts: {
+        Row: {
+          attempted_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          attempted_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          attempted_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       price_history: {
         Row: {
           created_at: string
@@ -310,7 +328,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_or_create_deal_coins: { Args: { p_user_id: string }; Returns: number }
+      get_or_create_deal_coins:
+        | { Args: never; Returns: number }
+        | { Args: { p_user_id: string }; Returns: number }
       increment_view_count: { Args: { page?: string }; Returns: number }
     }
     Enums: {
