@@ -34,6 +34,7 @@ export const ProductSearchBar = () => {
   
   const { user } = useAuth();
   const { addToCart, cartItems, updateQuantity } = useCart();
+  const { products: fakeStoreProducts, isLoading: isFakeStoreLoading } = useFakeStoreProducts();
   const navigate = useNavigate();
 
   const parsePrice = (priceStr: string): number => {
