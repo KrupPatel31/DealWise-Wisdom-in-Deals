@@ -331,11 +331,11 @@ const DealCoins = () => {
       </section>
 
       {/* Redemption Options */}
-      <section className="py-16">
+      <section className="py-10 sm:py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-2">Redeem Your Coins</h2>
-          <p className="text-muted-foreground text-center mb-10">Turn coins into real value</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-2">Redeem Your Coins</h2>
+          <p className="text-muted-foreground text-center mb-6 sm:mb-10">Turn coins into real value</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
             {redemptionOptions.map((r) => (
               <Card key={r.title} className="bg-gradient-to-br from-card to-card/60 border-border/30 hover:border-amber-500/30 transition-all duration-300 group">
                 <CardContent className="p-6 text-center flex flex-col items-center gap-3">
