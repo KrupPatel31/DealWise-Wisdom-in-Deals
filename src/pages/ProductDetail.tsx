@@ -117,10 +117,21 @@ const ProductDetail = () => {
 
               {/* Details */}
               <div className="space-y-4">
-                {product.category && (
-                  <Badge variant="secondary">{product.category}</Badge>
-                )}
-                <h1 className="text-2xl font-bold text-foreground">{product.title}</h1>
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    {product.category && (
+                      <Badge variant="secondary">{product.category}</Badge>
+                    )}
+                    <h1 className="text-2xl font-bold text-foreground mt-1">{product.title}</h1>
+                  </div>
+                  <ShareDeal
+                    title={product.title}
+                    price={product.price}
+                    store={product.store}
+                    url={window.location.href}
+                    variant="button"
+                  />
+                </div>
 
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-3xl font-bold text-primary">{product.price}</span>
