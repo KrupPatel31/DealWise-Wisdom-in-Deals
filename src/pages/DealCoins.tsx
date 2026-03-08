@@ -355,10 +355,10 @@ const DealCoins = () => {
       </section>
 
       {/* Transaction History */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-10 sm:py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-2">Coin History</h2>
-          <p className="text-muted-foreground text-center mb-10">Your recent transactions</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-2">Coin History</h2>
+          <p className="text-muted-foreground text-center mb-6 sm:mb-10">Your recent transactions</p>
           <div className="max-w-2xl mx-auto space-y-3">
             {displayTransactions.map((t) => (
               <Card key={t.id} className="bg-card/50 backdrop-blur-md border-border/30">

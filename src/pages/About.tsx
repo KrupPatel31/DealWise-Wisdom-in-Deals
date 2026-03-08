@@ -133,11 +133,11 @@ const About = () => {
         </div>
 
         {/* Call to Action */}
-        <Card className="p-12 bg-gradient-to-br from-primary/10 to-accent/10 border-accent/20 text-center">
-          <h2 className="text-3xl font-bold mb-4">
+        <Card className="p-6 sm:p-12 bg-gradient-to-br from-primary/10 to-accent/10 border-accent/20 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
             <span className="text-primary">Join the DealWise Community</span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8">
             Start saving money today with intelligent price comparison and deal
             discovery
           </p>
