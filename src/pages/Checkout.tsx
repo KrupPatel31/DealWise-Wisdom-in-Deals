@@ -214,18 +214,9 @@ const Checkout = () => {
     
     try {
       // Call server-side order validation function
+      // Server reads cart items directly from DB for price integrity
       const { data, error } = await supabase.functions.invoke('validate-order', {
         body: {
-          items: cartItems.map(item => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            originalPrice: item.originalPrice,
-            quantity: item.quantity,
-            image: item.image,
-            store: item.store,
-            discount: item.discount
-          })),
           discountCode: discountApplied ? discountCode : null,
           coinsToUse: useCoins ? coinDiscount : 0,
           shippingAddress,
