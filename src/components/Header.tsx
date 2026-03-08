@@ -17,7 +17,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const Header = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading: authLoading } = useAuth();
   const { cartCount } = useCart();
   const { profile } = useProfile();
   const [isOpen, setIsOpen] = useState(false);
@@ -60,8 +60,10 @@ export const Header = () => {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center gap-3">
-            {user ? (
+          <div className="hidden lg:flex items-center gap-3 min-w-[200px] justify-end">
+            {authLoading ? (
+              <div className="h-9 w-[200px]" />
+            ) : user ? (
               <>
                 <Link to="/deal-coins"><DealCoinsDisplay /></Link>
                 
@@ -140,7 +142,7 @@ export const Header = () => {
 
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center gap-2">
-            {user && (
+            {!authLoading && user && (
               <>
                 <Link to="/deal-coins"><DealCoinsDisplay /></Link>
                 <Link to="/cart">
