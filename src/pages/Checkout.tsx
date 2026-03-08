@@ -54,7 +54,7 @@ const validateTextField = (value: string, maxLength: number): boolean => {
 const Checkout = () => {
   const { user } = useAuth();
   const { cartItems, clearCart } = useCart();
-  const { coins, spendCoins, earnCoins, refetchCoins } = useDealCoins();
+  const { coins, refetchCoins } = useDealCoins();
   const navigate = useNavigate();
   
   const [isProcessing, setIsProcessing] = useState(false);
@@ -242,14 +242,8 @@ const Checkout = () => {
         throw new Error(data?.error || 'Failed to place order');
       }
 
-      // Handle coins - spend coins if used
-      if (useCoins && coinDiscount > 0) {
-        await spendCoins(coinDiscount, data.order.id);
-      }
-
-      // Earn coins from this order
-      const coinsEarned = await earnCoins(data.order.total, data.order.id);
-      setEarnedCoins(coinsEarned);
+      // Coins are handled server-side in the edge function
+      setEarnedCoins(data.order.coinsEarned || 0);
 
       // Store completed order data for invoice
       const orderData = {

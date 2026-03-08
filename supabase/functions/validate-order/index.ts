@@ -7,12 +7,14 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-
 // Valid discount codes with their logic
 const DISCOUNT_CODES: Record<string, { type: 'percentage' | 'fixed'; value: number }> = {
   'DEALWISE10': { type: 'percentage', value: 10 },
   'FIRST50': { type: 'fixed', value: 50 },
 };
+
+// Earn rate: 2% of order total as coins (1 coin = 1 rupee)
+const COIN_EARN_RATE = 0.02;
 
 interface CartItem {
   id: string;
@@ -25,19 +27,7 @@ interface CartItem {
   discount?: number;
 }
 
-interface ShippingAddress {
-  fullName: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  pincode: string;
-  landmark?: string;
-}
-
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -52,15 +42,15 @@ serve(async (req) => {
       );
     }
 
-    // Verify JWT token
-    const supabase = createClient(
+    // Create user-scoped client for auth verification
+    const supabaseUser = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       { global: { headers: { Authorization: authHeader } } }
     );
 
     const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: authError } = await supabase.auth.getClaims(token);
+    const { data: claimsData, error: authError } = await supabaseUser.auth.getClaims(token);
     if (authError || !claimsData?.claims) {
       return new Response(
         JSON.stringify({ error: 'Invalid or expired token' }),
@@ -69,6 +59,13 @@ serve(async (req) => {
     }
 
     const userId = claimsData.claims.sub;
+
+    // Service role client for privileged operations (coin mutations)
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
     const body = await req.json();
     const { items, discountCode, coinsToUse, shippingAddress, paymentMethod, notes } = body;
 
@@ -80,7 +77,6 @@ serve(async (req) => {
       );
     }
 
-    // Validate each item
     for (const item of items) {
       if (!item.id || !item.name || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
         return new Response(
@@ -114,7 +110,6 @@ serve(async (req) => {
       }
     }
 
-    // Validate phone and pincode format
     if (!/^\d{10}$/.test(shippingAddress.phone)) {
       return new Response(
         JSON.stringify({ error: 'Invalid phone number format' }),
@@ -128,16 +123,10 @@ serve(async (req) => {
       );
     }
 
-    // Validate text field lengths and characters (prevent unusual input)
     const textFieldLimits: Record<string, number> = {
-      fullName: 100,
-      addressLine1: 200,
-      addressLine2: 200,
-      city: 100,
-      state: 100,
-      landmark: 200,
+      fullName: 100, addressLine1: 200, addressLine2: 200,
+      city: 100, state: 100, landmark: 200,
     };
-
     for (const [field, maxLength] of Object.entries(textFieldLimits)) {
       if (shippingAddress[field] && shippingAddress[field].length > maxLength) {
         return new Response(
@@ -147,7 +136,6 @@ serve(async (req) => {
       }
     }
 
-    // Validate payment method
     const validPaymentMethods = ['cod', 'upi', 'card'];
     if (!paymentMethod || !validPaymentMethods.includes(paymentMethod)) {
       return new Response(
@@ -160,55 +148,46 @@ serve(async (req) => {
     const subtotal = items.reduce((sum: number, item: CartItem) => sum + (item.price * item.quantity), 0);
     const shipping = subtotal > 500 ? 0 : 50;
 
-    // Validate and apply discount server-side
+    // Validate and apply discount
     let discountAmount = 0;
     let validatedDiscountCode: string | null = null;
-
     if (discountCode && typeof discountCode === 'string') {
       const code = discountCode.toUpperCase().trim();
       const discountConfig = DISCOUNT_CODES[code];
-      
       if (discountConfig) {
-        if (discountConfig.type === 'percentage') {
-          discountAmount = Math.round(subtotal * (discountConfig.value / 100));
-        } else {
-          discountAmount = discountConfig.value;
-        }
+        discountAmount = discountConfig.type === 'percentage'
+          ? Math.round(subtotal * (discountConfig.value / 100))
+          : discountConfig.value;
         validatedDiscountCode = code;
       }
-      // Silently ignore invalid codes - don't apply discount
     }
 
-    // Validate and apply coins
+    // Validate and apply coins server-side
     let coinDiscount = 0;
     if (coinsToUse && typeof coinsToUse === 'number' && coinsToUse > 0) {
-      // Verify user has enough coins
-      const { data: userCoins } = await supabase
+      const { data: userCoins } = await supabaseAdmin
         .from('deal_coins')
         .select('balance')
         .eq('user_id', userId)
         .single();
 
       if (userCoins && userCoins.balance >= coinsToUse) {
-        // Cap at subtotal to prevent negative totals
         coinDiscount = Math.min(coinsToUse, subtotal);
       }
     }
 
     const total = Math.max(0, subtotal + shipping - discountAmount - coinDiscount);
-
-    // Generate order number
     const orderNumber = `DW${Date.now().toString().slice(-8)}`;
 
-    // Create order with server-validated data
-    const { data: order, error: insertError } = await supabase
+    // Create order using admin client
+    const { data: order, error: insertError } = await supabaseAdmin
       .from('orders')
       .insert({
         user_id: userId,
         order_number: orderNumber,
         items: items.map((item: CartItem) => ({
           id: item.id,
-          name: item.name.slice(0, 200), // Limit name length
+          name: item.name.slice(0, 200),
           price: item.price,
           originalPrice: item.originalPrice,
           quantity: item.quantity,
@@ -244,8 +223,74 @@ serve(async (req) => {
       );
     }
 
-    // Clear user's cart after successful order
-    await supabase.from('cart_items').delete().eq('user_id', userId);
+    // === COIN MUTATIONS (server-side only, using admin client) ===
+
+    // Spend coins if applicable
+    if (coinDiscount > 0) {
+      const { data: currentCoins } = await supabaseAdmin
+        .from('deal_coins')
+        .select('balance, total_spent')
+        .eq('user_id', userId)
+        .single();
+
+      if (currentCoins) {
+        await supabaseAdmin
+          .from('deal_coins')
+          .update({
+            balance: currentCoins.balance - coinDiscount,
+            total_spent: currentCoins.total_spent + coinDiscount,
+          })
+          .eq('user_id', userId);
+
+        await supabaseAdmin.from('deal_coins_transactions').insert({
+          user_id: userId,
+          amount: -coinDiscount,
+          type: 'spent',
+          description: 'Used at checkout',
+          order_id: order.id,
+        });
+      }
+    }
+
+    // Earn coins from order total
+    const coinsEarned = Math.floor(total * COIN_EARN_RATE);
+    if (coinsEarned > 0) {
+      const { data: existingCoins } = await supabaseAdmin
+        .from('deal_coins')
+        .select('balance, total_earned')
+        .eq('user_id', userId)
+        .single();
+
+      if (existingCoins) {
+        await supabaseAdmin
+          .from('deal_coins')
+          .update({
+            balance: existingCoins.balance + coinsEarned,
+            total_earned: existingCoins.total_earned + coinsEarned,
+          })
+          .eq('user_id', userId);
+      } else {
+        await supabaseAdmin
+          .from('deal_coins')
+          .insert({
+            user_id: userId,
+            balance: coinsEarned,
+            total_earned: coinsEarned,
+            total_spent: 0,
+          });
+      }
+
+      await supabaseAdmin.from('deal_coins_transactions').insert({
+        user_id: userId,
+        amount: coinsEarned,
+        type: 'earned',
+        description: 'Earned from order',
+        order_id: order.id,
+      });
+    }
+
+    // Clear user's cart
+    await supabaseAdmin.from('cart_items').delete().eq('user_id', userId);
 
     return new Response(
       JSON.stringify({
@@ -257,6 +302,7 @@ serve(async (req) => {
           shipping,
           discount: discountAmount,
           coinDiscount,
+          coinsEarned,
           total,
           discountCode: validatedDiscountCode,
         },
