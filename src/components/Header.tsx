@@ -134,7 +134,7 @@ export const Header = () => {
           <div className="lg:hidden flex items-center gap-2">
             {user && (
               <>
-                <DealCoinsDisplay />
+                <Link to="/deal-coins"><DealCoinsDisplay /></Link>
                 <Link to="/cart">
                   <Button variant="ghost" size="sm" className="relative">
                     <ShoppingCart className="h-4 w-4" />
