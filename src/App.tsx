@@ -25,6 +25,7 @@ import VisualSearch from "./pages/VisualSearch";
 import ProductDetail from "./pages/ProductDetail";
 import DealCoins from "./pages/DealCoins";
 import BarcodeScanner from "./pages/BarcodeScanner";
+import Coupons from "./pages/Coupons";
 
 const queryClient = new QueryClient();
 
