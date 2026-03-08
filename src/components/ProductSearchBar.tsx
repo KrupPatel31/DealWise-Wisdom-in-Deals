@@ -23,6 +23,7 @@ import { useFakeStoreProducts } from "@/hooks/useFakeStoreProducts";
 import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { ShareDeal } from "@/components/ShareDeal";
 
 export const ProductSearchBar = () => {
   const [searchQuery, setSearchQuery] = useState("");
