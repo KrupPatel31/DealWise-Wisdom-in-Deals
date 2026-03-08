@@ -38,7 +38,6 @@ export const useDealCoins = () => {
     }
 
     try {
-      // Get or create user's coin balance
       const { data, error } = await supabase
         .from('deal_coins')
         .select('*')
@@ -56,21 +55,6 @@ export const useDealCoins = () => {
           totalEarned: data.total_earned,
           totalSpent: data.total_spent,
         });
-      } else {
-        // Create initial record for user
-        const { error: insertError } = await supabase
-          .from('deal_coins')
-          .insert({
-            user_id: user.id,
-            balance: 0,
-            total_earned: 0,
-            total_spent: 0,
-          });
-
-        if (insertError && insertError.code !== '23505') {
-          // Ignore duplicate key error
-          console.error('Error creating coins record:', insertError);
-        }
       }
     } catch (error) {
       console.error('Error in fetchCoins:', error);
@@ -109,129 +93,10 @@ export const useDealCoins = () => {
     fetchTransactions();
   }, [fetchCoins, fetchTransactions]);
 
-  // Function to spend coins (returns the updated balance after spending)
-  const spendCoins = async (amount: number, orderId: string): Promise<boolean> => {
-    if (!user || amount <= 0 || amount > coins.balance) {
-      return false;
-    }
-
-    try {
-      // Update balance
-      const newBalance = coins.balance - amount;
-      const newTotalSpent = coins.totalSpent + amount;
-
-      const { error: updateError } = await supabase
-        .from('deal_coins')
-        .update({
-          balance: newBalance,
-          total_spent: newTotalSpent,
-        })
-        .eq('user_id', user.id);
-
-      if (updateError) {
-        console.error('Error spending coins:', updateError);
-        return false;
-      }
-
-      // Record transaction
-      await supabase.from('deal_coins_transactions').insert({
-        user_id: user.id,
-        amount: -amount,
-        type: 'spent',
-        description: 'Used at checkout',
-        order_id: orderId,
-      });
-
-      // Update local state
-      setCoins({
-        balance: newBalance,
-        totalEarned: coins.totalEarned,
-        totalSpent: newTotalSpent,
-      });
-
-      return true;
-    } catch (error) {
-      console.error('Error in spendCoins:', error);
-      return false;
-    }
-  };
-
-  // Function to earn coins (called after successful order)
-  const earnCoins = async (orderTotal: number, orderId: string): Promise<number> => {
-    if (!user || orderTotal <= 0) {
-      return 0;
-    }
-
-    const coinsToEarn = Math.floor(orderTotal * COIN_EARN_RATE);
-    if (coinsToEarn <= 0) return 0;
-
-    try {
-      // First ensure user has a coins record
-      const { data: existingData } = await supabase
-        .from('deal_coins')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (!existingData) {
-        // Create initial record
-        const { error: insertError } = await supabase
-          .from('deal_coins')
-          .insert({
-            user_id: user.id,
-            balance: coinsToEarn,
-            total_earned: coinsToEarn,
-            total_spent: 0,
-          });
-
-        if (insertError) {
-          console.error('Error creating coins with earning:', insertError);
-          return 0;
-        }
-      } else {
-        // Update existing balance
-        const newBalance = existingData.balance + coinsToEarn;
-        const newTotalEarned = existingData.total_earned + coinsToEarn;
-
-        const { error: updateError } = await supabase
-          .from('deal_coins')
-          .update({
-            balance: newBalance,
-            total_earned: newTotalEarned,
-          })
-          .eq('user_id', user.id);
-
-        if (updateError) {
-          console.error('Error earning coins:', updateError);
-          return 0;
-        }
-      }
-
-      // Record transaction
-      await supabase.from('deal_coins_transactions').insert({
-        user_id: user.id,
-        amount: coinsToEarn,
-        type: 'earned',
-        description: `Earned from order`,
-        order_id: orderId,
-      });
-
-      // Refresh local state
-      await fetchCoins();
-
-      return coinsToEarn;
-    } catch (error) {
-      console.error('Error in earnCoins:', error);
-      return 0;
-    }
-  };
-
   return {
     coins,
     transactions,
     isLoading,
-    spendCoins,
-    earnCoins,
     refetchCoins: fetchCoins,
   };
 };
