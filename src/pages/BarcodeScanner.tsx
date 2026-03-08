@@ -235,8 +235,8 @@ const BarcodeScanner = () => {
 
         {/* Scanned Barcode Display */}
         {scannedBarcode && (
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Badge variant="secondary" className="text-base px-4 py-1.5">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-6">
+            <Badge variant="secondary" className="text-sm sm:text-base px-3 sm:px-4 py-1 sm:py-1.5">
               Barcode: {scannedBarcode}
             </Badge>
             <Button variant="ghost" size="sm" onClick={() => { 
