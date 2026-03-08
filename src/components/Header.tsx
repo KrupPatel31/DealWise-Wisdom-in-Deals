@@ -60,8 +60,10 @@ export const Header = () => {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center gap-3">
-            {user ? (
+          <div className="hidden lg:flex items-center gap-3 min-w-[200px] justify-end">
+            {authLoading ? (
+              <div className="h-9 w-[200px]" />
+            ) : user ? (
               <>
                 <Link to="/deal-coins"><DealCoinsDisplay /></Link>
                 
