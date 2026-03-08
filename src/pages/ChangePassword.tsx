@@ -33,6 +33,11 @@ const ChangePassword = () => {
     }
   }, [user, authLoading, navigate]);
 
+  // Show nothing while checking auth
+  if (authLoading || !user) {
+    return null;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
