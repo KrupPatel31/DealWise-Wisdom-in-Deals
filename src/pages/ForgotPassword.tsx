@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -15,25 +14,38 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const { toast } = useToast();
-  const { resetPassword } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await resetPassword(email);
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/reset-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
 
-    if (error) {
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      setEmailSent(true);
+      toast({
+        title: "Check your email",
+        description: "If an account exists, you'll receive a new password shortly.",
+      });
+    } catch (error: any) {
       toast({
         title: "Request failed",
         description: error.message || "Please try again later.",
         variant: "destructive",
-      });
-    } else {
-      setEmailSent(true);
-      toast({
-        title: "Check your email",
-        description: "If an account exists, you'll receive a password reset link.",
       });
     }
 
@@ -53,7 +65,7 @@ const ForgotPassword = () => {
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Reset Password</h1>
             <p className="text-sm sm:text-base text-muted-foreground">
-              Enter your email to receive a password reset link
+              Enter your email to receive a new password
             </p>
           </div>
 
@@ -61,7 +73,7 @@ const ForgotPassword = () => {
             <CardHeader className="text-center">
               <CardTitle className="text-xl text-foreground">Forgot Password</CardTitle>
               <CardDescription>
-                We'll send you instructions to reset your password
+                We'll generate a new password and send it to your email
               </CardDescription>
             </CardHeader>
             
@@ -77,7 +89,7 @@ const ForgotPassword = () => {
                     <h3 className="text-lg font-semibold text-foreground mb-2">Check your inbox</h3>
                     <p className="text-muted-foreground text-sm">
                       If an account with <span className="font-medium text-foreground">{email}</span> exists, 
-                      you'll receive a password reset link shortly.
+                      you'll receive your new password shortly.
                     </p>
                   </div>
                   <div className="pt-4 space-y-3">
@@ -117,7 +129,7 @@ const ForgotPassword = () => {
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                     disabled={loading}
                   >
-                    {loading ? "Sending..." : "Send Reset Link"}
+                    {loading ? "Sending..." : "Reset Password"}
                   </Button>
 
                   <Link to="/sign-in" className="block">

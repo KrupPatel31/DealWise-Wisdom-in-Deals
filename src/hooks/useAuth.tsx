@@ -75,9 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       loading,
       signUp,
       signIn,
-      signOut,
-      resetPassword,
-      updatePassword
+      signOut
     }}>
       {children}
     </AuthContext.Provider>
