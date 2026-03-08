@@ -384,11 +384,11 @@ const ComparePrices = () => {
               <span className="text-sm text-muted-foreground">4.2 (2,456 reviews)</span>
             </div>
             {lowestPrice && (
-              <div className="flex items-center gap-4">
-                <span className="text-3xl font-bold text-primary">
+              <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                <span className="text-2xl sm:text-3xl font-bold text-primary">
                   ₹{lowestPrice.price.toLocaleString()}
                 </span>
-                <span className="text-lg text-muted-foreground line-through">
+                <span className="text-base sm:text-lg text-muted-foreground line-through">
                   ₹{lowestPrice.originalPrice.toLocaleString()}
                 </span>
                 <Badge className="bg-green-500 text-white">
@@ -397,7 +397,7 @@ const ComparePrices = () => {
               </div>
             )}
             {savings > 0 && (
-              <p className="text-green-500 mt-2">
+              <p className="text-green-500 mt-2 text-sm sm:text-base">
                 You save ₹{savings.toLocaleString()} with the best deal!
               </p>
             )}
@@ -481,12 +481,12 @@ const ComparePrices = () => {
                             </div>
                           </div>
                           
-                          <div className="flex items-center gap-4">
-                            <div className="text-right">
-                              <div className="text-2xl font-bold text-foreground">
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                            <div className="text-left sm:text-right">
+                              <div className="text-xl sm:text-2xl font-bold text-foreground">
                                 ₹{storePrice.price.toLocaleString()}
                               </div>
-                              <div className="text-sm text-muted-foreground line-through">
+                              <div className="text-xs sm:text-sm text-muted-foreground line-through">
                                 ₹{storePrice.originalPrice.toLocaleString()}
                               </div>
                               <Badge className="bg-red-500 text-white text-xs mt-1">
@@ -494,13 +494,14 @@ const ComparePrices = () => {
                               </Badge>
                             </div>
                             
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
                               {quantity === 0 ? (
                                 <GalaxyButton 
                                   disabled={!storePrice.inStock}
                                   onClick={() => handleAddToCart(storePrice)}
+                                  className="flex-1 sm:flex-none text-xs sm:text-sm"
                                 >
-                                  <ShoppingCart className="h-4 w-4 mr-1" />
+                                  <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                   Add to Cart
                                 </GalaxyButton>
                               ) : (
@@ -529,7 +530,7 @@ const ComparePrices = () => {
                               <Button 
                                 size="sm" 
                                 variant="outline"
-                                className="text-xs"
+                                className="text-xs flex-1 sm:flex-none"
                                 onClick={() => window.open(storePrice.link, '_blank', 'noopener,noreferrer')}
                               >
                                 <ExternalLink className="h-3 w-3 mr-1" />

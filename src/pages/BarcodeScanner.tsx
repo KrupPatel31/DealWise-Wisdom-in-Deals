@@ -79,7 +79,7 @@ const BarcodeScanner = () => {
 
       await html5QrCode.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 280, height: 150 }, aspectRatio: 1.777 },
+        { fps: 10, qrbox: { width: Math.min(280, window.innerWidth - 80), height: 150 }, aspectRatio: 1.777 },
         (decodedText) => {
           handleBarcodeScan(decodedText);
           stopScanner();
@@ -163,17 +163,17 @@ const BarcodeScanner = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl">
         {/* Title */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
-            <ScanLine className="h-5 w-5" />
-            <span className="font-semibold">Barcode & QR Scanner</span>
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4">
+            <ScanLine className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="font-semibold text-sm sm:text-base">Barcode & QR Scanner</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
             Scan to Compare Prices
           </h1>
-          <p className="text-muted-foreground max-w-lg mx-auto">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
             Scan any product barcode or QR code to instantly find and compare prices across stores
           </p>
         </div>
@@ -187,15 +187,15 @@ const BarcodeScanner = () => {
             />
 
             {!isScanning && !scannedBarcode && (
-              <div className="flex flex-col items-center justify-center py-16 px-6 gap-4">
-                <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-2">
-                  <ScanLine className="h-12 w-12 text-primary" />
+              <div className="flex flex-col items-center justify-center py-10 sm:py-16 px-4 sm:px-6 gap-3 sm:gap-4">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                  <ScanLine className="h-10 w-10 sm:h-12 sm:w-12 text-primary" />
                 </div>
-                <GalaxyButton onClick={startScanner} className="px-8 py-3 text-lg">
-                  <Camera className="h-5 w-5 mr-2" />
+                <GalaxyButton onClick={startScanner} className="px-6 sm:px-8 py-2.5 sm:py-3 text-base sm:text-lg">
+                  <Camera className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Start Camera Scanner
                 </GalaxyButton>
-                <Button variant="outline" onClick={() => setShowManual(!showManual)}>
+                <Button variant="outline" size="sm" onClick={() => setShowManual(!showManual)}>
                   <Keyboard className="h-4 w-4 mr-2" />
                   Enter Barcode Manually
                 </Button>
@@ -235,8 +235,8 @@ const BarcodeScanner = () => {
 
         {/* Scanned Barcode Display */}
         {scannedBarcode && (
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Badge variant="secondary" className="text-base px-4 py-1.5">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-6">
+            <Badge variant="secondary" className="text-sm sm:text-base px-3 sm:px-4 py-1 sm:py-1.5">
               Barcode: {scannedBarcode}
             </Badge>
             <Button variant="ghost" size="sm" onClick={() => { 
@@ -281,16 +281,16 @@ const BarcodeScanner = () => {
             <h2 className="text-xl font-bold text-foreground">
               Results ({products.length})
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {products.map((product) => (
                 <Card key={product.id} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex gap-4">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex gap-3 sm:gap-4">
                       {product.image && (
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="w-24 h-24 object-cover rounded-lg bg-muted shrink-0"
+                          className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg bg-muted shrink-0"
                           onError={(e) => { e.currentTarget.style.display = 'none'; }}
                         />
                       )}
@@ -332,12 +332,12 @@ const BarcodeScanner = () => {
                           <Badge variant="outline" className="text-[10px]">{product.source}</Badge>
                         </div>
 
-                        <div className="flex gap-2 pt-2">
-                          <Button size="sm" className="text-xs" onClick={() => handleCompare(product)}>
+                        <div className="flex gap-2 pt-2 flex-wrap">
+                          <Button size="sm" className="text-xs flex-1 sm:flex-none" onClick={() => handleCompare(product)}>
                             <BarChart3 className="h-3 w-3 mr-1" />Compare
                           </Button>
                           {product.link && (
-                            <Button size="sm" variant="outline" className="text-xs" asChild>
+                            <Button size="sm" variant="outline" className="text-xs flex-1 sm:flex-none" asChild>
                               <a href={product.link} target="_blank" rel="noopener noreferrer">
                                 <ExternalLink className="h-3 w-3 mr-1" />Visit
                               </a>
