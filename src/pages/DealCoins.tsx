@@ -172,23 +172,23 @@ const DealCoins = () => {
       <Header />
 
       {/* Hero / Balance */}
-      <section className="relative overflow-hidden pt-24 pb-16">
+      <section className="relative overflow-hidden pt-12 sm:pt-24 pb-10 sm:pb-16">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-amber-500/10 blur-[120px]" />
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] sm:w-[600px] h-[200px] sm:h-[400px] rounded-full bg-amber-500/10 blur-[120px]" />
         </div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-3">Deal Coins Wallet</h1>
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-3">Deal Coins Wallet</h1>
             <p className="text-muted-foreground text-lg max-w-xl mx-auto">
               Earn coins by shopping and redeem them for exclusive rewards.
             </p>
           </div>
-          <div className="flex flex-col items-center gap-6 mb-12">
+          <div className="flex flex-col items-center gap-4 sm:gap-6 mb-8 sm:mb-12">
             <SpinningCoin />
             <div className="text-center">
-              <p className="text-muted-foreground text-sm uppercase tracking-widest mb-1">Your Balance</p>
-              <p className="text-5xl md:text-6xl font-extrabold text-amber-400 drop-shadow-[0_0_24px_rgba(251,191,36,0.4)]">
-                <AnimatedCounter target={balance} /> <span className="text-3xl">🪙</span>
+              <p className="text-muted-foreground text-xs sm:text-sm uppercase tracking-widest mb-1">Your Balance</p>
+              <p className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-amber-400 drop-shadow-[0_0_24px_rgba(251,191,36,0.4)]">
+                <AnimatedCounter target={balance} /> <span className="text-2xl sm:text-3xl">🪙</span>
               </p>
             </div>
           </div>
@@ -210,12 +210,12 @@ const DealCoins = () => {
       </section>
 
       {/* Earning Methods — Interactive */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-10 sm:py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-2">How to Earn</h2>
-          <p className="text-muted-foreground text-center mb-10">Multiple ways to stack your coins</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-2">How to Earn</h2>
+          <p className="text-muted-foreground text-center mb-6 sm:mb-10">Multiple ways to stack your coins</p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
             {/* Shop Products */}
             <Card className="group bg-card/50 backdrop-blur-md border-border/30 hover:border-amber-500/40 transition-all duration-300 hover:-translate-y-1">
               <CardContent className="p-6 flex flex-col items-start gap-4">
@@ -331,11 +331,11 @@ const DealCoins = () => {
       </section>
 
       {/* Redemption Options */}
-      <section className="py-16">
+      <section className="py-10 sm:py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-2">Redeem Your Coins</h2>
-          <p className="text-muted-foreground text-center mb-10">Turn coins into real value</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-2">Redeem Your Coins</h2>
+          <p className="text-muted-foreground text-center mb-6 sm:mb-10">Turn coins into real value</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
             {redemptionOptions.map((r) => (
               <Card key={r.title} className="bg-gradient-to-br from-card to-card/60 border-border/30 hover:border-amber-500/30 transition-all duration-300 group">
                 <CardContent className="p-6 text-center flex flex-col items-center gap-3">
@@ -355,10 +355,10 @@ const DealCoins = () => {
       </section>
 
       {/* Transaction History */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-10 sm:py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-2">Coin History</h2>
-          <p className="text-muted-foreground text-center mb-10">Your recent transactions</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-2">Coin History</h2>
+          <p className="text-muted-foreground text-center mb-6 sm:mb-10">Your recent transactions</p>
           <div className="max-w-2xl mx-auto space-y-3">
             {displayTransactions.map((t) => (
               <Card key={t.id} className="bg-card/50 backdrop-blur-md border-border/30">

@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users } from "lucide-react";
@@ -29,17 +30,17 @@ const About = () => {
     <div className="min-h-screen dark">
       <Header />
 
-      <main className="container mx-auto px-6 py-20">
+      <main className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
         {/* Hero Section */}
-        <div className="text-center space-y-6 mb-20">
-          <Badge className="bg-accent text-accent-foreground text-lg px-6 py-2">
+        <div className="text-center space-y-4 sm:space-y-6 mb-12 sm:mb-20">
+          <Badge className="bg-accent text-accent-foreground text-sm sm:text-lg px-4 sm:px-6 py-1.5 sm:py-2">
             ABOUT US
           </Badge>
-          <h1 className="text-5xl font-bold">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
             <span className="text-primary">EMPOWERING</span>{" "}
             <span className="hero-gradient">SMART SHOPPING</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto">
             We believe everyone deserves access to the best deals. That's why we
             built DealWise - to democratize smart shopping and help consumers
             save money effortlessly.
@@ -47,20 +48,20 @@ const About = () => {
         </div>
 
         {/* Our Story */}
-        <div className="grid lg:grid-cols-1 gap-16 items-center mb-20">
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold">
+        <div className="grid lg:grid-cols-1 gap-8 sm:gap-16 items-center mb-12 sm:mb-20">
+          <div className="space-y-4 sm:space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-bold">
               <span className="text-primary">Our Story</span>
             </h2>
           </div>
 
-          <Card className="p-8 bg-gradient-to-br from-card via-card to-muted border-deal-border">
+          <Card className="p-6 sm:p-8 bg-gradient-to-br from-card via-card to-muted border-deal-border">
             <div className="text-center space-y-6">
-              <div className="w-24 h-24 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center glow">
-                <TrendingUp className="h-12 w-12 text-white" />
+              <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center glow">
+                <TrendingUp className="h-8 w-8 sm:h-12 sm:w-12 text-white" />
               </div>
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-primary">Our Mission</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-primary">Our Mission</h3>
                 <p className="text-muted-foreground">
                   To make smart shopping accessible to everyone by providing the
                   most accurate, comprehensive, and user-friendly price
@@ -72,12 +73,12 @@ const About = () => {
         </div>
 
         {/* Our Values */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold text-center mb-12">
+        <div className="mb-12 sm:mb-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">
             <span className="text-primary">Our Values</span>
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="p-8 bg-deal border-deal-border text-center">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
+            <Card className="p-6 sm:p-8 bg-deal border-deal-border text-center">
               <h3 className="text-xl font-bold text-foreground mb-4">
                 Transparency
               </h3>
@@ -86,7 +87,7 @@ const About = () => {
                 deals with no hidden agenda.
               </p>
             </Card>
-            <Card className="p-8 bg-deal border-deal-border text-center">
+            <Card className="p-6 sm:p-8 bg-deal border-deal-border text-center">
               <h3 className="text-xl font-bold text-foreground mb-4">
                 Innovation
               </h3>
@@ -95,7 +96,7 @@ const About = () => {
                 accurate price comparisons.
               </p>
             </Card>
-            <Card className="p-8 bg-deal border-deal-border text-center">
+            <Card className="p-6 sm:p-8 bg-deal border-deal-border text-center">
               <h3 className="text-xl font-bold text-foreground mb-4">
                 Customer First
               </h3>
@@ -108,15 +109,15 @@ const About = () => {
         </div>
 
         {/* Team */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold text-center mb-12">
+        <div className="mb-12 sm:mb-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">
             <span className="text-primary">Meet Our Team</span>
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
             {team.map((member, index) => (
               <Card
                 key={index}
-                className="p-8 bg-deal border-deal-border text-center hover:border-accent/50 transition-all duration-300"
+                className="p-6 sm:p-8 bg-deal border-deal-border text-center hover:border-accent/50 transition-all duration-300"
               >
                 <img
                   src={member.image}
@@ -133,11 +134,11 @@ const About = () => {
         </div>
 
         {/* Call to Action */}
-        <Card className="p-12 bg-gradient-to-br from-primary/10 to-accent/10 border-accent/20 text-center">
-          <h2 className="text-3xl font-bold mb-4">
+        <Card className="p-6 sm:p-12 bg-gradient-to-br from-primary/10 to-accent/10 border-accent/20 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
             <span className="text-primary">Join the DealWise Community</span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8">
             Start saving money today with intelligent price comparison and deal
             discovery
           </p>
@@ -154,6 +155,7 @@ const About = () => {
           </div>
         </Card>
       </main>
+      <Footer />
     </div>
   );
 };

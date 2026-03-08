@@ -1,4 +1,5 @@
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -55,25 +56,25 @@ const Contact = () => {
     <div className="min-h-screen dark">
       <Header />
 
-      <main className="container mx-auto px-6 py-20">
+      <main className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
         {/* Hero Section */}
-        <div className="text-center space-y-6 mb-20">
-          <Badge className="bg-accent text-accent-foreground text-lg px-6 py-2">
+        <div className="text-center space-y-4 sm:space-y-6 mb-12 sm:mb-20">
+          <Badge className="bg-accent text-accent-foreground text-sm sm:text-lg px-4 sm:px-6 py-1.5 sm:py-2">
             CONTACT US
           </Badge>
-          <h1 className="text-5xl font-bold">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
             <span className="text-primary">GET IN</span>{" "}
             <span className="hero-gradient">TOUCH</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto">
             Have questions about DealWise? Need support? Want to partner with
             us? We'd love to hear from you!
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-16 mb-20">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-16 mb-12 sm:mb-20">
           {/* Contact Form */}
-          <Card className="p-8 bg-deal border-deal-border">
+          <Card className="p-6 sm:p-8 bg-deal border-deal-border">
             <h2 className="text-2xl font-bold mb-6">
               <span className="text-primary">Send us a message</span>
             </h2>
@@ -204,7 +205,7 @@ const Contact = () => {
         </div>
 
         {/* FAQ Section */}
-        <Card className="p-8 bg-deal border-deal-border mb-12">
+        <Card className="p-6 sm:p-8 bg-deal border-deal-border mb-12">
           <h2 className="text-2xl font-bold text-center mb-8">
             <span className="text-primary">Frequently Asked Questions</span>
           </h2>
@@ -271,11 +272,11 @@ const Contact = () => {
         </Card>
 
         {/* Call to Action */}
-        <Card className="p-12 bg-gradient-to-br from-primary/10 to-accent/10 border-accent/20 text-center">
-          <h2 className="text-3xl font-bold mb-4">
+        <Card className="p-6 sm:p-12 bg-gradient-to-br from-primary/10 to-accent/10 border-accent/20 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4">
             <span className="text-primary">Start saving money today</span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8">
             Join millions of smart shoppers who use DealWise to find the best
             deals
           </p>
@@ -292,6 +293,7 @@ const Contact = () => {
           </div>
         </Card>
       </main>
+      <Footer />
     </div>
   );
 };
