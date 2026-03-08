@@ -90,19 +90,55 @@ serve(async (req) => {
       );
     }
 
-    // Map DB cart items to the expected format
-    const items: CartItem[] = dbCartItems.map((row) => ({
-      id: row.product_id,
-      name: row.name,
-      price: Number(row.price),
-      originalPrice: Number(row.original_price),
-      quantity: row.quantity,
-      image: row.image || undefined,
-      store: row.store || undefined,
-      discount: Number(row.discount) || 0,
-    }));
+    // === SERVER-SIDE PRICE VERIFICATION ===
+    // Fetch authoritative prices from FakeStore API to prevent price manipulation
+    const fakeStoreItems = dbCartItems.filter((row) => row.product_id.startsWith('fakestore-'));
+    const otherItems = dbCartItems.filter((row) => !row.product_id.startsWith('fakestore-'));
 
-    // Validate DB items have sane values
+    let trustedPrices: Record<string, number> = {};
+
+    if (fakeStoreItems.length > 0) {
+      try {
+        const apiRes = await fetch('https://fakestoreapi.com/products');
+        if (!apiRes.ok) {
+          console.error('FakeStore API error:', apiRes.status);
+          return new Response(
+            JSON.stringify({ error: 'Unable to verify product prices. Please try again.' }),
+            { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        const apiProducts: Array<{ id: number; price: number }> = await apiRes.json();
+        for (const p of apiProducts) {
+          // Same INR conversion as client: Math.round(price * 83)
+          trustedPrices[`fakestore-${p.id}`] = Math.round(p.price * 83);
+        }
+      } catch (fetchErr) {
+        console.error('Failed to fetch FakeStore prices:', fetchErr);
+        return new Response(
+          JSON.stringify({ error: 'Unable to verify product prices. Please try again.' }),
+          { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // Build items with server-verified prices
+    const items: CartItem[] = dbCartItems.map((row) => {
+      const verifiedPrice = trustedPrices[row.product_id];
+      // Use verified price for fakestore products; fall back to DB price for others
+      const price = verifiedPrice !== undefined ? verifiedPrice : Number(row.price);
+      return {
+        id: row.product_id,
+        name: row.name,
+        price,
+        originalPrice: verifiedPrice !== undefined ? Math.round(price * 1.15) : Number(row.original_price),
+        quantity: row.quantity,
+        image: row.image || undefined,
+        store: row.store || undefined,
+        discount: Number(row.discount) || 0,
+      };
+    });
+
+    // Validate items have sane values
     for (const item of items) {
       if (item.price < 0 || item.quantity < 1) {
         return new Response(
