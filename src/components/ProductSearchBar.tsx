@@ -336,7 +336,7 @@ export const ProductSearchBar = () => {
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {isSearchingApi && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isSearchingApi && <div className="product-loader scale-75" />}
           <p className="text-muted-foreground">
             {isSearchingApi
               ? "Searching live products..."
