@@ -309,83 +309,92 @@
     100% { transform: rotate(360deg); }
   }
 
-  /* 3D Spinning Coin */
+  /* 3D Spinning Coin — based on codepen.io/jasonhibbs/pen/DePMBb */
   .deal-coin-purse {
-    --coin-diam: 160px;
-    --coin-depth: 24px;
-    --spin-speed: 2.5s;
-    height: var(--coin-diam);
-    width: var(--coin-diam);
+    height: 160px;
+    width: 160px;
     position: relative;
     margin: auto;
-    perspective: 800px;
+    perspective: 1000px;
+    -webkit-box-reflect: below 0 linear-gradient(hsla(0,0%,100%,0), hsla(0,0%,100%,0) 45%, hsla(0,0%,100%,0.2));
+    filter: saturate(1.45) hue-rotate(2deg);
   }
 
   .deal-coin {
-    height: var(--coin-diam);
-    width: var(--coin-diam);
-    position: relative;
+    height: 160px;
+    width: 160px;
+    position: absolute;
     transform-style: preserve-3d;
-    animation: deal-coin-spin var(--spin-speed) linear infinite;
+    transform-origin: 50%;
+    animation: deal-coin-spin 2s infinite linear;
   }
 
   .deal-coin-front,
   .deal-coin-back {
     position: absolute;
-    height: var(--coin-diam);
-    width: var(--coin-diam);
+    height: 160px;
+    width: 160px;
     border-radius: 50%;
-    background: linear-gradient(145deg, #f6d365, #fda085);
     background-size: cover;
     background-position: center;
   }
 
   .deal-coin-front {
-    transform: translateZ(calc(var(--coin-depth) / 2));
+    transform: translateZ(8px);
     background-image: url('/images/coin-front.jpg');
-    background-size: cover;
   }
 
   .deal-coin-back {
-    transform: translateZ(calc(var(--coin-depth) / -2)) rotateY(180deg);
+    transform: translateZ(-8px) rotateY(180deg);
     background-image: url('/images/coin-back.jpg');
-    background-size: cover;
   }
 
   .deal-coin-side {
-    position: absolute;
-    height: 100%;
-    width: 100%;
+    transform: translateX(72px);
     transform-style: preserve-3d;
+    backface-visibility: hidden;
   }
 
   .deal-coin-spoke {
+    height: 160px;
+    width: 16px;
     position: absolute;
-    width: var(--coin-diam);
-    height: var(--coin-diam);
-    border-radius: 50%;
-    background: linear-gradient(145deg, #d4a030, #f0c850, #c8962a);
-    left: 0;
-    top: 0;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
   }
 
-  /* Position each spoke as a thin slice along the Z axis to form a solid edge */
-  .deal-coin-spoke:nth-child(1)  { transform: translateZ(11px); }
-  .deal-coin-spoke:nth-child(2)  { transform: translateZ(9.5px); }
-  .deal-coin-spoke:nth-child(3)  { transform: translateZ(8px); }
-  .deal-coin-spoke:nth-child(4)  { transform: translateZ(6.5px); }
-  .deal-coin-spoke:nth-child(5)  { transform: translateZ(5px); }
-  .deal-coin-spoke:nth-child(6)  { transform: translateZ(3.5px); }
-  .deal-coin-spoke:nth-child(7)  { transform: translateZ(2px); }
-  .deal-coin-spoke:nth-child(8)  { transform: translateZ(0.5px); }
-  .deal-coin-spoke:nth-child(9)  { transform: translateZ(-0.5px); }
-  .deal-coin-spoke:nth-child(10) { transform: translateZ(-2px); }
-  .deal-coin-spoke:nth-child(11) { transform: translateZ(-3.5px); }
-  .deal-coin-spoke:nth-child(12) { transform: translateZ(-5px); }
-  .deal-coin-spoke:nth-child(13) { transform: translateZ(-6.5px); }
-  .deal-coin-spoke:nth-child(14) { transform: translateZ(-8px); }
-  .deal-coin-spoke:nth-child(15) { transform: translateZ(-9.5px); }
-  .deal-coin-spoke:nth-child(16) { transform: translateZ(-11px); }
+  .deal-coin-spoke::before,
+  .deal-coin-spoke::after {
+    content: '';
+    display: block;
+    height: 15.68px;
+    width: 16px;
+    position: absolute;
+    transform: rotateX(84.375deg);
+    background: hsl(42, 52%, 68%);
+    background: linear-gradient(to bottom, hsl(42,60%,75%) 0%, hsl(42,60%,75%) 74%, hsl(42,40%,60%) 75%, hsl(42,40%,60%) 100%);
+    background-size: 100% 3.49px;
+  }
+
+  .deal-coin-spoke::before { transform-origin: top center; }
+  .deal-coin-spoke::after  { bottom: 0; transform-origin: center bottom; }
+
+  .deal-coin-spoke:nth-child(1)  { transform: rotateY(90deg) rotateX(11.25deg); }
+  .deal-coin-spoke:nth-child(2)  { transform: rotateY(90deg) rotateX(22.5deg); }
+  .deal-coin-spoke:nth-child(3)  { transform: rotateY(90deg) rotateX(33.75deg); }
+  .deal-coin-spoke:nth-child(4)  { transform: rotateY(90deg) rotateX(45deg); }
+  .deal-coin-spoke:nth-child(5)  { transform: rotateY(90deg) rotateX(56.25deg); }
+  .deal-coin-spoke:nth-child(6)  { transform: rotateY(90deg) rotateX(67.5deg); }
+  .deal-coin-spoke:nth-child(7)  { transform: rotateY(90deg) rotateX(78.75deg); }
+  .deal-coin-spoke:nth-child(8)  { transform: rotateY(90deg) rotateX(90deg); }
+  .deal-coin-spoke:nth-child(9)  { transform: rotateY(90deg) rotateX(101.25deg); }
+  .deal-coin-spoke:nth-child(10) { transform: rotateY(90deg) rotateX(112.5deg); }
+  .deal-coin-spoke:nth-child(11) { transform: rotateY(90deg) rotateX(123.75deg); }
+  .deal-coin-spoke:nth-child(12) { transform: rotateY(90deg) rotateX(135deg); }
+  .deal-coin-spoke:nth-child(13) { transform: rotateY(90deg) rotateX(146.25deg); }
+  .deal-coin-spoke:nth-child(14) { transform: rotateY(90deg) rotateX(157.5deg); }
+  .deal-coin-spoke:nth-child(15) { transform: rotateY(90deg) rotateX(168.75deg); }
+  .deal-coin-spoke:nth-child(16) { transform: rotateY(90deg) rotateX(180deg); }
 
   @keyframes deal-coin-spin {
     from { transform: rotateY(0deg); }
