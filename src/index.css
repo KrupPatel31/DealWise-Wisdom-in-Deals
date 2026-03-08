@@ -367,13 +367,19 @@
   .deal-coin-spoke::after {
     content: '';
     display: block;
-    height: 15.68px;
+    height: 15.68274245px;
     width: 16px;
     position: absolute;
     transform: rotateX(84.375deg);
     background: hsl(42, 52%, 68%);
-    background: linear-gradient(to bottom, hsl(42,60%,75%) 0%, hsl(42,60%,75%) 74%, hsl(42,40%,60%) 75%, hsl(42,40%,60%) 100%);
-    background-size: 100% 3.49px;
+    background: linear-gradient(
+      to bottom,
+      hsl(42, 60%, 75%) 0%,
+      hsl(42, 60%, 75%) 74%,
+      hsl(42, 40%, 60%) 75%,
+      hsl(42, 40%, 60%) 100%
+    );
+    background-size: 100% 3.48505388px;
   }
 
   .deal-coin-spoke::before { transform-origin: top center; }
