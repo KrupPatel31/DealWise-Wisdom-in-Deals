@@ -35,7 +35,11 @@ export const DealCard = ({
   warranty = "1 year warranty",
   availability = "In stock"
 }: DealCardProps) => {
-  return <Card className="bg-deal border-deal-border overflow-hidden hover-lift hover-glow group animate-fade-up h-full flex flex-col">
+  const [showDealOverlay, setShowDealOverlay] = useState(false);
+  const navigate = useNavigate();
+  const dealUrl = `/compare-prices?name=${encodeURIComponent(title)}&price=${parseInt(currentPrice.replace(/[₹,]/g, ""))}&image=${encodeURIComponent(image)}&store=${encodeURIComponent(store)}`;
+
+  return <><Card className="bg-deal border-deal-border overflow-hidden hover-lift hover-glow group animate-fade-up h-full flex flex-col">
       <div className="relative overflow-hidden flex-shrink-0">
         <img src={image} alt={title} className="w-full h-40 sm:h-48 lg:h-56 object-cover group-hover:scale-110 transition-transform duration-500" />
 
