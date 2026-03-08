@@ -281,11 +281,11 @@ const BarcodeScanner = () => {
             <h2 className="text-xl font-bold text-foreground">
               Results ({products.length})
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {products.map((product) => (
                 <Card key={product.id} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex gap-4">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex gap-3 sm:gap-4">
                       {product.image && (
                         <img
                           src={product.image}
