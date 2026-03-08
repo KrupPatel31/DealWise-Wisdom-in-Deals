@@ -22,6 +22,7 @@ import Search from "./pages/Search";
 import ComparePrices from "./pages/ComparePrices";
 import VisualSearch from "./pages/VisualSearch";
 import ProductDetail from "./pages/ProductDetail";
+import DealCoins from "./pages/DealCoins";
 
 const queryClient = new QueryClient();
 
