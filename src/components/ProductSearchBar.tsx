@@ -18,6 +18,8 @@ import {
 } from "@/utils/ProductSearchService";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
+import { useFakeStoreProducts } from "@/hooks/useFakeStoreProducts";
+import { ProductGridSkeleton } from "@/components/ProductCardSkeleton";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 

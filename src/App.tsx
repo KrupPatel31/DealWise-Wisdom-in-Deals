@@ -50,6 +50,7 @@ const App = () => (
               <Route path="/search" element={<Search />} />
               <Route path="/compare-prices" element={<ComparePrices />} />
               <Route path="/visual-search" element={<VisualSearch />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
