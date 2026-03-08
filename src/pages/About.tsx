@@ -39,7 +39,7 @@ const About = () => {
             <span className="text-primary">EMPOWERING</span>{" "}
             <span className="hero-gradient">SMART SHOPPING</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-3xl mx-auto">
             We believe everyone deserves access to the best deals. That's why we
             built DealWise - to democratize smart shopping and help consumers
             save money effortlessly.
