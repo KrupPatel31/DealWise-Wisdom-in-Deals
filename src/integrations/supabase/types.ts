@@ -113,6 +113,30 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_login_claims: {
+        Row: {
+          claimed_date: string
+          coins_awarded: number
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          claimed_date?: string
+          coins_awarded?: number
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          claimed_date?: string
+          coins_awarded?: number
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       deal_coins: {
         Row: {
           balance: number
@@ -266,6 +290,39 @@ export type Database = {
         }
         Relationships: []
       }
+      product_reviews: {
+        Row: {
+          coins_awarded: number
+          created_at: string
+          id: string
+          product_id: string
+          product_name: string
+          rating: number
+          review_text: string | null
+          user_id: string
+        }
+        Insert: {
+          coins_awarded?: number
+          created_at?: string
+          id?: string
+          product_id: string
+          product_name: string
+          rating: number
+          review_text?: string | null
+          user_id: string
+        }
+        Update: {
+          coins_awarded?: number
+          created_at?: string
+          id?: string
+          product_id?: string
+          product_name?: string
+          rating?: number
+          review_text?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -274,6 +331,7 @@ export type Database = {
           full_name: string | null
           id: string
           is_active: boolean
+          referral_code: string | null
           updated_at: string
           user_id: string
         }
@@ -284,6 +342,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_active?: boolean
+          referral_code?: string | null
           updated_at?: string
           user_id: string
         }
@@ -294,8 +353,60 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_active?: boolean
+          referral_code?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          coins_awarded: number
+          created_at: string
+          id: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          coins_awarded?: number
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          coins_awarded?: number
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_id?: string
+          referrer_id?: string
+          status?: string
         }
         Relationships: []
       }
