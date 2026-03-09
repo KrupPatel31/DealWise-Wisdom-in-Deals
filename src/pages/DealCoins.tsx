@@ -123,12 +123,12 @@ const DealCoins = () => {
   };
 
   const handleGetReferralCode = async () => {
-    if (!user) { toast({ title: "Please sign in", variant: "destructive" }); return; }
+    if (!user) { toast.error("Please sign in"); return; }
     setReferralLoading(true);
     try {
       const res = await callEarnCoins({ action: 'claim_referral_code' });
       if (res.success) setReferralCode(res.code);
-    } catch { toast({ title: "Error", variant: "destructive" }); }
+    } catch { toast.error("Error"); }
     setReferralLoading(false);
   };
 
