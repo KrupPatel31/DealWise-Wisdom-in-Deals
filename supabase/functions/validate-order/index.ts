@@ -7,12 +7,6 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-// Valid discount codes with their logic
-const DISCOUNT_CODES: Record<string, { type: 'percentage' | 'fixed'; value: number }> = {
-  'DEALWISE10': { type: 'percentage', value: 10 },
-  'FIRST50': { type: 'fixed', value: 50 },
-};
-
 // Earn rate: 2% of order total as coins (1 coin = 1 rupee)
 const COIN_EARN_RATE = 0.02;
 
