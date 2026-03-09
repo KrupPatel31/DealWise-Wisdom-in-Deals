@@ -32,11 +32,7 @@ const SignIn = () => {
     e.preventDefault();
     
     if (!email || !password) {
-      toast({
-        title: "Missing credentials",
-        description: "Please enter both email and password.",
-        variant: "destructive",
-      });
+      toast.error("Please enter both email and password.");
       return;
     }
     
