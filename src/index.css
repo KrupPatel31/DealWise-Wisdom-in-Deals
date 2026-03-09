@@ -407,3 +407,36 @@
     to { transform: rotateY(360deg); }
   }
 }
+
+/* Barcode Scanner - ensure live camera feed is visible */
+.barcode-scanner-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.barcode-scanner-container video {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 300px;
+  object-fit: cover;
+  display: block !important;
+}
+
+.barcode-scanner-container img {
+  display: none !important;
+}
+
+#barcode-reader__scan_region {
+  overflow: hidden;
+}
+
+#barcode-reader__dashboard {
+  display: none !important;
+}
+
+#barcode-reader__scan_region video {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
