@@ -47,11 +47,7 @@ const ChangePassword = () => {
     }
 
     if (newPassword !== confirmPassword) {
-      toast({
-        title: "Passwords don't match",
-        description: "Please make sure both passwords are the same",
-        variant: "destructive",
-      });
+      toast.error("Please make sure both passwords are the same");
       return;
     }
 
