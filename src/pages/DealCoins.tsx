@@ -133,19 +133,19 @@ const DealCoins = () => {
   };
 
   const handleUseReferral = async () => {
-    if (!user) { toast({ title: "Please sign in", variant: "destructive" }); return; }
+    if (!user) { toast.error("Please sign in"); return; }
     if (!referralInput.trim()) return;
     setUseReferralLoading(true);
     try {
       const res = await callEarnCoins({ action: 'use_referral', code: referralInput.trim() });
       if (res.success) {
-        toast({ title: "🪙 +25 Coins!", description: res.message });
+        toast.success(`🪙 +25 Coins! ${res.message}`);
         setReferralInput("");
         refetchCoins();
       } else {
-        toast({ title: "Failed", description: res.message, variant: "destructive" });
+        toast.error(res.message || "Failed");
       }
-    } catch { toast({ title: "Error", variant: "destructive" }); }
+    } catch { toast.error("Error"); }
     setUseReferralLoading(false);
   };
 
