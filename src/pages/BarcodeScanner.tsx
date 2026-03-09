@@ -351,10 +351,16 @@ const BarcodeScanner = () => {
                               {product.rating}
                             </span>
                           )}
-                          {product.store && (
+                          {product.store && product.store !== 'Unknown' && (
                             <span className="flex items-center gap-1">
                               <ShoppingCart className="h-3 w-3" />
                               {product.store}
+                            </span>
+                          )}
+                          {product.brand && (
+                            <span className="flex items-center gap-1">
+                              <Tag className="h-3 w-3" />
+                              {product.brand}
                             </span>
                           )}
                           <Badge variant="outline" className="text-[10px]">{product.source}</Badge>
