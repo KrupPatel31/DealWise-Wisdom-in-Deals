@@ -41,11 +41,7 @@ const SignUp = () => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Password mismatch",
-        description: "Passwords do not match. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Passwords do not match. Please try again.");
       return;
     }
 
