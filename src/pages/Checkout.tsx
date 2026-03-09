@@ -91,6 +91,8 @@ const Checkout = () => {
   const [discountCode, setDiscountCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState<CheckoutCoupon | null>(null);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [coinsToUse, setCoinsToUse] = useState(0);
   const [useCoins, setUseCoins] = useState(false);
   
