@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useDealCoins } from "@/hooks/useDealCoins";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import {
   ShoppingBag, CalendarCheck, Users, Star, Zap, Gift,
   ArrowRight, Clock, TrendingUp, Coins, Copy, Check, Loader2,
