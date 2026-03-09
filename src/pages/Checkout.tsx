@@ -51,6 +51,33 @@ const validateTextField = (value: string, maxLength: number): boolean => {
   return value.length === 0 || validPattern.test(value);
 };
 
+interface CheckoutCoupon {
+  id: string;
+  code: string;
+  coupon_type: "percentage" | "flat" | "cashback" | "freeShipping";
+  discount_type: "percentage" | "fixed" | "none";
+  discount_value: number;
+  min_purchase: number;
+  max_discount: number | null;
+}
+
+const calculateCouponDiscount = (coupon: CheckoutCoupon, subtotal: number, shipping: number) => {
+  if (coupon.coupon_type === "freeShipping") {
+    return shipping;
+  }
+
+  let discount =
+    coupon.discount_type === "percentage"
+      ? Math.round(subtotal * (Number(coupon.discount_value) / 100))
+      : Number(coupon.discount_value);
+
+  if (coupon.max_discount !== null) {
+    discount = Math.min(discount, Number(coupon.max_discount));
+  }
+
+  return Math.min(discount, subtotal);
+};
+
 const Checkout = () => {
   const { user } = useAuth();
   const { cartItems, clearCart } = useCart();

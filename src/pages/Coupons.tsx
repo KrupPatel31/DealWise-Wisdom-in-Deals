@@ -90,7 +90,7 @@ const Coupons = () => {
       if (error) {
         toast.error("Failed to load coupons");
       } else {
-        setCoupons((data || []) as Coupon[]);
+        setCoupons((data || []) as unknown as Coupon[]);
       }
       setIsLoading(false);
     };
