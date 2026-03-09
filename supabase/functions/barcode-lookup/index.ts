@@ -240,15 +240,28 @@ Deno.serve(async (req) => {
     // Pick the best result (first non-null with products)
     const result = rapidResult || offResult || upcResult || beautyResult || petResult;
 
-    // If RapidAPI found results but free DBs also found product info, merge product name
-    if (result && !rapidResult && result.products?.[0]?.price === 0) {
-      // For free DB results with no price, try to search RapidAPI by product name
+    // If free DB found info but no prices, try enriching with RapidAPI search by product name
+    if (result && !rapidResult && result.products?.some((p: any) => p.price === 0)) {
       if (rapidApiKey && result.productName) {
         const searchResult = await lookupWithRapidAPI(result.productName, rapidApiKey);
-        if (searchResult) {
-          // Merge: use RapidAPI products but keep free DB metadata
+        if (searchResult?.products?.length > 0) {
+          // Merge: keep original product info + append RapidAPI priced results
+          const freeProduct = result.products[0];
+          const enrichedProducts = [
+            // Original product with metadata from free DB
+            {
+              ...freeProduct,
+              price: searchResult.products[0]?.price || freeProduct.price,
+              originalPrice: searchResult.products[0]?.originalPrice || freeProduct.originalPrice,
+              store: freeProduct.store !== 'Unknown' ? freeProduct.store : (searchResult.products[0]?.store || 'Unknown'),
+              discount: searchResult.products[0]?.discount || freeProduct.discount,
+            },
+            // Additional priced results from RapidAPI (skip first since merged above)
+            ...searchResult.products.slice(1).filter((p: any) => p.price > 0),
+          ];
+
           return new Response(JSON.stringify({
-            ...searchResult,
+            products: enrichedProducts,
             barcode: cleanBarcode,
             productName: result.productName,
           }), { 

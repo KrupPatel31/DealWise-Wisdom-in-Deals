@@ -319,18 +319,24 @@ const BarcodeScanner = () => {
                       <div className="flex-1 min-w-0 space-y-2">
                         <h3 className="font-semibold text-sm line-clamp-2">{product.name}</h3>
 
-                        {product.price > 0 && (
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-lg font-bold text-primary">
-                              ₹{product.price.toLocaleString('en-IN')}
-                            </span>
-                            {product.originalPrice > product.price && (
-                              <span className="text-sm text-muted-foreground line-through">
-                                ₹{product.originalPrice.toLocaleString('en-IN')}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {product.price > 0 ? (
+                            <>
+                              <span className="text-lg font-bold text-primary">
+                                ₹{product.price.toLocaleString('en-IN')}
                               </span>
-                            )}
-                          </div>
-                        )}
+                              {product.originalPrice > product.price && (
+                                <span className="text-sm text-muted-foreground line-through">
+                                  ₹{product.originalPrice.toLocaleString('en-IN')}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-sm text-muted-foreground italic">
+                              Price not available — tap Compare to find prices
+                            </span>
+                          )}
+                        </div>
 
                         {product.discount > 0 && (
                           <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
@@ -345,10 +351,16 @@ const BarcodeScanner = () => {
                               {product.rating}
                             </span>
                           )}
-                          {product.store && (
+                          {product.store && product.store !== 'Unknown' && (
                             <span className="flex items-center gap-1">
                               <ShoppingCart className="h-3 w-3" />
                               {product.store}
+                            </span>
+                          )}
+                          {product.brand && (
+                            <span className="flex items-center gap-1">
+                              <Tag className="h-3 w-3" />
+                              {product.brand}
                             </span>
                           )}
                           <Badge variant="outline" className="text-[10px]">{product.source}</Badge>
