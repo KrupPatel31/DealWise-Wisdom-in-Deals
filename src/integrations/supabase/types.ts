@@ -59,6 +59,63 @@ export type Database = {
         }
         Relationships: []
       }
+      coupons: {
+        Row: {
+          category: string
+          code: string
+          coupon_type: string
+          created_at: string
+          description: string
+          discount_type: string
+          discount_value: number
+          expires_at: string
+          id: string
+          is_active: boolean
+          max_discount: number | null
+          min_purchase: number
+          store: string
+          updated_at: string
+          used_count: number
+          verified: boolean
+        }
+        Insert: {
+          category?: string
+          code: string
+          coupon_type: string
+          created_at?: string
+          description: string
+          discount_type: string
+          discount_value?: number
+          expires_at: string
+          id?: string
+          is_active?: boolean
+          max_discount?: number | null
+          min_purchase?: number
+          store: string
+          updated_at?: string
+          used_count?: number
+          verified?: boolean
+        }
+        Update: {
+          category?: string
+          code?: string
+          coupon_type?: string
+          created_at?: string
+          description?: string
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          max_discount?: number | null
+          min_purchase?: number
+          store?: string
+          updated_at?: string
+          used_count?: number
+          verified?: boolean
+        }
+        Relationships: []
+      }
       daily_deals: {
         Row: {
           category: string | null
