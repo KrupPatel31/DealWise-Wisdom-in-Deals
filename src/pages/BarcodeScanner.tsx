@@ -205,7 +205,7 @@ const BarcodeScanner = () => {
           <CardContent className="p-0">
             <div 
               id="barcode-reader" 
-              className={`w-full ${isScanning ? 'min-h-[300px]' : 'hidden'}`}
+              className={`w-full barcode-scanner-container ${isScanning ? 'block min-h-[350px]' : 'hidden'}`}
             />
 
             {!isScanning && !scannedBarcode && (
