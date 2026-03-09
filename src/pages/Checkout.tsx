@@ -142,20 +142,40 @@ const Checkout = () => {
     setCoinsToUse(Math.min(Math.max(0, numValue), maxCoins));
   };
 
-  // Client-side preview of discount (actual validation happens server-side)
-  const handleApplyDiscount = () => {
+  // Validate coupon against backend DB
+  const handleApplyDiscount = async () => {
     const code = discountCode.toUpperCase().trim();
-    if (code === "DEALWISE10") {
-      const discount = Math.round(subtotal * 0.1);
+    if (!code) return;
+    setIsApplyingCoupon(true);
+    try {
+      const { data, error } = await supabase
+        .from('coupons' as any)
+        .select('*')
+        .eq('is_active', true)
+        .filter('expires_at', 'gt', new Date().toISOString())
+        .ilike('code', code)
+        .maybeSingle();
+
+      if (error || !data) {
+        toast.error("Invalid or expired coupon code");
+        return;
+      }
+
+      const coupon = data as unknown as CheckoutCoupon;
+
+      // Check min purchase
+      if (Number(coupon.min_purchase) > 0 && subtotal < Number(coupon.min_purchase)) {
+        toast.error(`Minimum purchase of ₹${Number(coupon.min_purchase).toLocaleString()} required`);
+        return;
+      }
+
+      const discount = calculateCouponDiscount(coupon, subtotal, shipping);
+      setAppliedCoupon(coupon);
       setDiscountAmount(discount);
       setDiscountApplied(true);
-      toast.success(`Discount applied! You'll save ₹${discount.toLocaleString()}`);
-    } else if (code === "FIRST50") {
-      setDiscountAmount(50);
-      setDiscountApplied(true);
-      toast.success("Discount applied! You'll save ₹50");
-    } else {
-      toast.error("Invalid discount code");
+      toast.success(`Coupon applied! You save ₹${discount.toLocaleString()}`);
+    } finally {
+      setIsApplyingCoupon(false);
     }
   };
 
@@ -163,7 +183,8 @@ const Checkout = () => {
     setDiscountCode("");
     setDiscountApplied(false);
     setDiscountAmount(0);
-    toast.info("Discount code removed");
+    setAppliedCoupon(null);
+    toast.info("Coupon removed");
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
