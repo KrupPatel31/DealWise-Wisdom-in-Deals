@@ -69,11 +69,7 @@ const ChangePassword = () => {
       setConfirmPassword("");
       navigate("/");
     } catch (error: any) {
-      toast({
-        title: "Failed to change password",
-        description: error.message || "Please try again later.",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Please try again later.");
     }
 
     setLoading(false);
