@@ -106,19 +106,19 @@ const DealCoins = () => {
   }, []);
 
   const handleDailyClaim = async () => {
-    if (!user) { toast({ title: "Please sign in", variant: "destructive" }); return; }
+    if (!user) { toast.error("Please sign in"); return; }
     setDailyClaimLoading(true);
     try {
       const res = await callEarnCoins({ action: 'daily_login' });
       if (res.success) {
         setDailyClaimed(true);
-        toast({ title: "🪙 +10 Coins!", description: "Daily login reward claimed!" });
+        toast.success("🪙 +10 Coins! Daily login reward claimed!");
         refetchCoins();
       } else {
         setDailyClaimed(true);
-        toast({ title: "Already claimed", description: res.message });
+        toast.info(res.message || "Already claimed");
       }
-    } catch { toast({ title: "Error", description: "Failed to claim", variant: "destructive" }); }
+    } catch { toast.error("Failed to claim"); }
     setDailyClaimLoading(false);
   };
 
