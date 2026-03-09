@@ -56,11 +56,7 @@ const SignUp = () => {
     const { error } = await signUp(formData.email, formData.password, formData.name);
     
     if (error) {
-      toast({
-        title: "Sign up failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message);
     } else {
       setShowSuccess(true);
     }

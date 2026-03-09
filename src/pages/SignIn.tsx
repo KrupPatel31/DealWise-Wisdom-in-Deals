@@ -41,11 +41,7 @@ const SignIn = () => {
     const { error } = await signIn(email, password);
     
     if (error) {
-      toast({
-        title: "Sign in failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message);
     } else {
       setShowSuccess(true);
     }
