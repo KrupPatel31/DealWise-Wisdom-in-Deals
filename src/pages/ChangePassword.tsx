@@ -62,10 +62,7 @@ const ChangePassword = () => {
         throw error;
       }
 
-      toast({
-        title: "Password changed successfully!",
-        description: "Your password has been updated.",
-      });
+      toast.success("Password changed successfully!");
 
       // Clear form and redirect
       setNewPassword("");
