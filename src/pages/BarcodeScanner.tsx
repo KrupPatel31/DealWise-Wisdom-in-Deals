@@ -74,12 +74,28 @@ const BarcodeScanner = () => {
     setScannedBarcode(null);
 
     try {
+      // CRITICAL: Request camera directly in click handler to preserve gesture context
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "environment" } 
+      });
+      // Get the device ID from the granted stream
+      const track = stream.getVideoTracks()[0];
+      const deviceId = track.getSettings().deviceId;
+      // Stop the preliminary stream — html5-qrcode will open its own
+      stream.getTracks().forEach(t => t.stop());
+
       const html5QrCode = new Html5Qrcode("barcode-reader");
       scannerRef.current = html5QrCode;
 
+      const startConfig = {
+        fps: 10,
+        qrbox: { width: Math.min(280, window.innerWidth - 80), height: 150 },
+        aspectRatio: 1.777,
+      };
+
       await html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: Math.min(280, window.innerWidth - 80), height: 150 }, aspectRatio: 1.777 },
+        deviceId ? { deviceId: { exact: deviceId } } : { facingMode: "environment" },
+        startConfig,
         (decodedText) => {
           handleBarcodeScan(decodedText);
           stopScanner();
@@ -90,7 +106,13 @@ const BarcodeScanner = () => {
       setIsScanning(true);
     } catch (err: any) {
       console.error("Scanner error:", err);
-      setError("Camera access denied or not available. Try entering the barcode manually.");
+      if (err?.name === "NotAllowedError") {
+        setError("Camera permission denied. Please allow camera access in your browser settings and try again.");
+      } else if (err?.name === "NotFoundError") {
+        setError("No camera found on this device. Try entering the barcode manually.");
+      } else {
+        setError("Camera access denied or not available. Try entering the barcode manually.");
+      }
       setShowManual(true);
     }
   };
