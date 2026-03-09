@@ -984,7 +984,7 @@ const Checkout = () => {
                       </Button>
                     </div>
                   )}
-                  <p className="text-xs text-muted-foreground">Try: DEALWISE10 or FIRST50</p>
+                  <p className="text-xs text-muted-foreground">Coupons from the <a href="/coupons" className="underline text-primary">Coupons page</a> are all valid here</p>
                 </div>
 
                 <Separator className="bg-border" />
