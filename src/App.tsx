@@ -66,7 +66,6 @@ const App = () => (
       <CartProvider>
         <TooltipProvider>
           <Toaster />
-          <Sonner />
           <BrowserRouter>
             <AnimatedRoutes />
           </BrowserRouter>
