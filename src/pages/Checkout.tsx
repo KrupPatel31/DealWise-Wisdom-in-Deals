@@ -978,9 +978,9 @@ const Checkout = () => {
                       <Button
                         variant="outline"
                         onClick={handleApplyDiscount}
-                        disabled={!discountCode.trim()}
+                        disabled={!discountCode.trim() || isApplyingCoupon}
                       >
-                        Apply
+                        {isApplyingCoupon ? "Checking..." : "Apply"}
                       </Button>
                     </div>
                   )}
