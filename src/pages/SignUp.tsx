@@ -47,11 +47,7 @@ const SignUp = () => {
 
     const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
-      toast({
-        title: "Invalid password",
-        description: passwordValidation.errors.join(', '),
-        variant: "destructive",
-      });
+      toast.error(passwordValidation.errors.join(', '));
       return;
     }
 
