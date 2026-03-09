@@ -153,7 +153,7 @@ const DealCoins = () => {
     if (!referralCode) return;
     navigator.clipboard.writeText(referralCode);
     setCopied(true);
-    toast({ title: "Copied!", description: "Referral code copied to clipboard" });
+    toast.success("Referral code copied!");
     setTimeout(() => setCopied(false), 2000);
   };
 
