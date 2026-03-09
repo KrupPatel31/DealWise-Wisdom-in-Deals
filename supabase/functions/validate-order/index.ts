@@ -7,12 +7,6 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-// Valid discount codes with their logic
-const DISCOUNT_CODES: Record<string, { type: 'percentage' | 'fixed'; value: number }> = {
-  'DEALWISE10': { type: 'percentage', value: 10 },
-  'FIRST50': { type: 'fixed', value: 50 },
-};
-
 // Earn rate: 2% of order total as coins (1 coin = 1 rupee)
 const COIN_EARN_RATE = 0.02;
 
@@ -216,18 +210,46 @@ serve(async (req) => {
     const subtotal = items.reduce((sum: number, item: CartItem) => sum + (item.price * item.quantity), 0);
     const shipping = subtotal > 500 ? 0 : 50;
 
-    // Validate and apply discount
+    // Validate and apply discount — fetch coupon from DB
     let discountAmount = 0;
     let validatedDiscountCode: string | null = null;
     if (discountCode && typeof discountCode === 'string') {
       const code = discountCode.toUpperCase().trim();
-      const discountConfig = DISCOUNT_CODES[code];
-      if (discountConfig) {
-        discountAmount = discountConfig.type === 'percentage'
-          ? Math.round(subtotal * (discountConfig.value / 100))
-          : discountConfig.value;
+      const { data: couponRow } = await supabaseAdmin
+        .from('coupons')
+        .select('*')
+        .eq('is_active', true)
+        .gt('expires_at', new Date().toISOString())
+        .ilike('code', code)
+        .maybeSingle();
+
+      if (couponRow) {
+        // Enforce min purchase server-side
+        if (Number(couponRow.min_purchase) > 0 && subtotal < Number(couponRow.min_purchase)) {
+          return new Response(
+            JSON.stringify({ error: `Minimum purchase of ₹${Number(couponRow.min_purchase).toLocaleString()} required for coupon ${code}` }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        if (couponRow.coupon_type === 'freeShipping') {
+          discountAmount = shipping;
+        } else if (couponRow.discount_type === 'percentage') {
+          discountAmount = Math.round(subtotal * (Number(couponRow.discount_value) / 100));
+          if (couponRow.max_discount !== null) {
+            discountAmount = Math.min(discountAmount, Number(couponRow.max_discount));
+          }
+        } else if (couponRow.discount_type === 'fixed') {
+          discountAmount = Number(couponRow.discount_value);
+          if (couponRow.max_discount !== null) {
+            discountAmount = Math.min(discountAmount, Number(couponRow.max_discount));
+          }
+        }
+
+        discountAmount = Math.min(discountAmount, subtotal);
         validatedDiscountCode = code;
       }
+      // If coupon not found, silently ignore (no discount)
     }
 
     // Validate and apply coins server-side

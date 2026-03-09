@@ -51,6 +51,33 @@ const validateTextField = (value: string, maxLength: number): boolean => {
   return value.length === 0 || validPattern.test(value);
 };
 
+interface CheckoutCoupon {
+  id: string;
+  code: string;
+  coupon_type: "percentage" | "flat" | "cashback" | "freeShipping";
+  discount_type: "percentage" | "fixed" | "none";
+  discount_value: number;
+  min_purchase: number;
+  max_discount: number | null;
+}
+
+const calculateCouponDiscount = (coupon: CheckoutCoupon, subtotal: number, shipping: number) => {
+  if (coupon.coupon_type === "freeShipping") {
+    return shipping;
+  }
+
+  let discount =
+    coupon.discount_type === "percentage"
+      ? Math.round(subtotal * (Number(coupon.discount_value) / 100))
+      : Number(coupon.discount_value);
+
+  if (coupon.max_discount !== null) {
+    discount = Math.min(discount, Number(coupon.max_discount));
+  }
+
+  return Math.min(discount, subtotal);
+};
+
 const Checkout = () => {
   const { user } = useAuth();
   const { cartItems, clearCart } = useCart();
@@ -64,6 +91,8 @@ const Checkout = () => {
   const [discountCode, setDiscountCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState<CheckoutCoupon | null>(null);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [coinsToUse, setCoinsToUse] = useState(0);
   const [useCoins, setUseCoins] = useState(false);
   
@@ -113,20 +142,40 @@ const Checkout = () => {
     setCoinsToUse(Math.min(Math.max(0, numValue), maxCoins));
   };
 
-  // Client-side preview of discount (actual validation happens server-side)
-  const handleApplyDiscount = () => {
+  // Validate coupon against backend DB
+  const handleApplyDiscount = async () => {
     const code = discountCode.toUpperCase().trim();
-    if (code === "DEALWISE10") {
-      const discount = Math.round(subtotal * 0.1);
+    if (!code) return;
+    setIsApplyingCoupon(true);
+    try {
+      const { data, error } = await supabase
+        .from('coupons' as any)
+        .select('*')
+        .eq('is_active', true)
+        .filter('expires_at', 'gt', new Date().toISOString())
+        .ilike('code', code)
+        .maybeSingle();
+
+      if (error || !data) {
+        toast.error("Invalid or expired coupon code");
+        return;
+      }
+
+      const coupon = data as unknown as CheckoutCoupon;
+
+      // Check min purchase
+      if (Number(coupon.min_purchase) > 0 && subtotal < Number(coupon.min_purchase)) {
+        toast.error(`Minimum purchase of ₹${Number(coupon.min_purchase).toLocaleString()} required`);
+        return;
+      }
+
+      const discount = calculateCouponDiscount(coupon, subtotal, shipping);
+      setAppliedCoupon(coupon);
       setDiscountAmount(discount);
       setDiscountApplied(true);
-      toast.success(`Discount applied! You'll save ₹${discount.toLocaleString()}`);
-    } else if (code === "FIRST50") {
-      setDiscountAmount(50);
-      setDiscountApplied(true);
-      toast.success("Discount applied! You'll save ₹50");
-    } else {
-      toast.error("Invalid discount code");
+      toast.success(`Coupon applied! You save ₹${discount.toLocaleString()}`);
+    } finally {
+      setIsApplyingCoupon(false);
     }
   };
 
@@ -134,7 +183,8 @@ const Checkout = () => {
     setDiscountCode("");
     setDiscountApplied(false);
     setDiscountAmount(0);
-    toast.info("Discount code removed");
+    setAppliedCoupon(null);
+    toast.info("Coupon removed");
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -928,13 +978,13 @@ const Checkout = () => {
                       <Button
                         variant="outline"
                         onClick={handleApplyDiscount}
-                        disabled={!discountCode.trim()}
+                        disabled={!discountCode.trim() || isApplyingCoupon}
                       >
-                        Apply
+                        {isApplyingCoupon ? "Checking..." : "Apply"}
                       </Button>
                     </div>
                   )}
-                  <p className="text-xs text-muted-foreground">Try: DEALWISE10 or FIRST50</p>
+                  <p className="text-xs text-muted-foreground">Coupons from the <a href="/coupons" className="underline text-primary">Coupons page</a> are all valid here</p>
                 </div>
 
                 <Separator className="bg-border" />
