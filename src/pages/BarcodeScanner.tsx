@@ -367,8 +367,8 @@ const BarcodeScanner = () => {
                         </div>
 
                         <div className="flex gap-2 pt-2 flex-wrap">
-                          <Button size="sm" className="text-xs flex-1 sm:flex-none" onClick={() => handleCompare(product)}>
-                            <BarChart3 className="h-3 w-3 mr-1" />Compare
+                          <Button size="sm" className="text-xs flex-1 sm:flex-none" onClick={() => handleCompare(product)} disabled={!product.price || product.price <= 0}>
+                            <BarChart3 className="h-3 w-3 mr-1" />{(!product.price || product.price <= 0) ? "Price Not Available" : "Compare"}
                           </Button>
                           {product.link && (
                             <Button size="sm" variant="outline" className="text-xs flex-1 sm:flex-none" asChild>
