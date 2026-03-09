@@ -37,10 +37,7 @@ const ForgotPassword = () => {
       }
 
       setEmailSent(true);
-      toast({
-        title: "Check your email",
-        description: "If an account exists, you'll receive a new password shortly.",
-      });
+      toast.success("If an account exists, you'll receive a new password shortly.");
     } catch (error: any) {
       toast({
         title: "Request failed",
