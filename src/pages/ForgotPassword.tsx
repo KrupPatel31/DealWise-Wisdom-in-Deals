@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const { toast } = useToast();
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,16 +37,9 @@ const ForgotPassword = () => {
       }
 
       setEmailSent(true);
-      toast({
-        title: "Check your email",
-        description: "If an account exists, you'll receive a new password shortly.",
-      });
+      toast.success("If an account exists, you'll receive a new password shortly.");
     } catch (error: any) {
-      toast({
-        title: "Request failed",
-        description: error.message || "Please try again later.",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Please try again later.");
     }
 
     setLoading(false);

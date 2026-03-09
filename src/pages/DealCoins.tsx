@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useDealCoins } from "@/hooks/useDealCoins";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import {
   ShoppingBag, CalendarCheck, Users, Star, Zap, Gift,
   ArrowRight, Clock, TrendingUp, Coins, Copy, Check, Loader2,
@@ -55,7 +55,7 @@ const redemptionOptions = [
 const DealCoins = () => {
   const { user } = useAuth();
   const { coins, transactions, isLoading, refetchCoins } = useDealCoins();
-  const { toast } = useToast();
+  
 
   const [dailyClaimLoading, setDailyClaimLoading] = useState(false);
   const [dailyClaimed, setDailyClaimed] = useState(false);
@@ -106,46 +106,46 @@ const DealCoins = () => {
   }, []);
 
   const handleDailyClaim = async () => {
-    if (!user) { toast({ title: "Please sign in", variant: "destructive" }); return; }
+    if (!user) { toast.error("Please sign in"); return; }
     setDailyClaimLoading(true);
     try {
       const res = await callEarnCoins({ action: 'daily_login' });
       if (res.success) {
         setDailyClaimed(true);
-        toast({ title: "🪙 +10 Coins!", description: "Daily login reward claimed!" });
+        toast.success("🪙 +10 Coins! Daily login reward claimed!");
         refetchCoins();
       } else {
         setDailyClaimed(true);
-        toast({ title: "Already claimed", description: res.message });
+        toast.info(res.message || "Already claimed");
       }
-    } catch { toast({ title: "Error", description: "Failed to claim", variant: "destructive" }); }
+    } catch { toast.error("Failed to claim"); }
     setDailyClaimLoading(false);
   };
 
   const handleGetReferralCode = async () => {
-    if (!user) { toast({ title: "Please sign in", variant: "destructive" }); return; }
+    if (!user) { toast.error("Please sign in"); return; }
     setReferralLoading(true);
     try {
       const res = await callEarnCoins({ action: 'claim_referral_code' });
       if (res.success) setReferralCode(res.code);
-    } catch { toast({ title: "Error", variant: "destructive" }); }
+    } catch { toast.error("Error"); }
     setReferralLoading(false);
   };
 
   const handleUseReferral = async () => {
-    if (!user) { toast({ title: "Please sign in", variant: "destructive" }); return; }
+    if (!user) { toast.error("Please sign in"); return; }
     if (!referralInput.trim()) return;
     setUseReferralLoading(true);
     try {
       const res = await callEarnCoins({ action: 'use_referral', code: referralInput.trim() });
       if (res.success) {
-        toast({ title: "🪙 +25 Coins!", description: res.message });
+        toast.success(`🪙 +25 Coins! ${res.message}`);
         setReferralInput("");
         refetchCoins();
       } else {
-        toast({ title: "Failed", description: res.message, variant: "destructive" });
+        toast.error(res.message || "Failed");
       }
-    } catch { toast({ title: "Error", variant: "destructive" }); }
+    } catch { toast.error("Error"); }
     setUseReferralLoading(false);
   };
 
@@ -153,7 +153,7 @@ const DealCoins = () => {
     if (!referralCode) return;
     navigator.clipboard.writeText(referralCode);
     setCopied(true);
-    toast({ title: "Copied!", description: "Referral code copied to clipboard" });
+    toast.success("Referral code copied!");
     setTimeout(() => setCopied(false), 2000);
   };
 

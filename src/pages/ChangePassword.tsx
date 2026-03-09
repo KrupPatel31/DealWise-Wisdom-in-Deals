@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
@@ -18,7 +18,7 @@ const ChangePassword = () => {
   const [loading, setLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { toast } = useToast();
+  
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -42,20 +42,12 @@ const ChangePassword = () => {
     e.preventDefault();
     
     if (!validation.isValid) {
-      toast({
-        title: "Invalid password",
-        description: "Please meet all password requirements",
-        variant: "destructive",
-      });
+      toast.error("Please meet all password requirements");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast({
-        title: "Passwords don't match",
-        description: "Please make sure both passwords are the same",
-        variant: "destructive",
-      });
+      toast.error("Please make sure both passwords are the same");
       return;
     }
 
@@ -70,21 +62,14 @@ const ChangePassword = () => {
         throw error;
       }
 
-      toast({
-        title: "Password changed successfully!",
-        description: "Your password has been updated.",
-      });
+      toast.success("Password changed successfully!");
 
       // Clear form and redirect
       setNewPassword("");
       setConfirmPassword("");
       navigate("/");
     } catch (error: any) {
-      toast({
-        title: "Failed to change password",
-        description: error.message || "Please try again later.",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Please try again later.");
     }
 
     setLoading(false);

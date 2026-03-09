@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -29,7 +29,7 @@ const SignUp = () => {
   
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  
 
   useEffect(() => {
     if (user) {
@@ -41,21 +41,13 @@ const SignUp = () => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Password mismatch",
-        description: "Passwords do not match. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Passwords do not match. Please try again.");
       return;
     }
 
     const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
-      toast({
-        title: "Invalid password",
-        description: passwordValidation.errors.join(', '),
-        variant: "destructive",
-      });
+      toast.error(passwordValidation.errors.join(', '));
       return;
     }
 
@@ -64,11 +56,7 @@ const SignUp = () => {
     const { error } = await signUp(formData.email, formData.password, formData.name);
     
     if (error) {
-      toast({
-        title: "Sign up failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message);
     } else {
       setShowSuccess(true);
     }

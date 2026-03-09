@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ const SignIn = () => {
   
   const { signIn, user } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  
 
   useEffect(() => {
     if (user) {
@@ -32,11 +32,7 @@ const SignIn = () => {
     e.preventDefault();
     
     if (!email || !password) {
-      toast({
-        title: "Missing credentials",
-        description: "Please enter both email and password.",
-        variant: "destructive",
-      });
+      toast.error("Please enter both email and password.");
       return;
     }
     
@@ -45,11 +41,7 @@ const SignIn = () => {
     const { error } = await signIn(email, password);
     
     if (error) {
-      toast({
-        title: "Sign in failed",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message);
     } else {
       setShowSuccess(true);
     }
