@@ -42,11 +42,7 @@ const ChangePassword = () => {
     e.preventDefault();
     
     if (!validation.isValid) {
-      toast({
-        title: "Invalid password",
-        description: "Please meet all password requirements",
-        variant: "destructive",
-      });
+      toast.error("Please meet all password requirements");
       return;
     }
 
