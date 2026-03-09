@@ -55,7 +55,7 @@ const redemptionOptions = [
 const DealCoins = () => {
   const { user } = useAuth();
   const { coins, transactions, isLoading, refetchCoins } = useDealCoins();
-  const { toast } = useToast();
+  
 
   const [dailyClaimLoading, setDailyClaimLoading] = useState(false);
   const [dailyClaimed, setDailyClaimed] = useState(false);

@@ -13,7 +13,7 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const { toast } = useToast();
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

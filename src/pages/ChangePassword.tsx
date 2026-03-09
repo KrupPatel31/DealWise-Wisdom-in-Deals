@@ -18,7 +18,7 @@ const ChangePassword = () => {
   const [loading, setLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { toast } = useToast();
+  
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 

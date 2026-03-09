@@ -29,7 +29,7 @@ const SignUp = () => {
   
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  
 
   useEffect(() => {
     if (user) {
