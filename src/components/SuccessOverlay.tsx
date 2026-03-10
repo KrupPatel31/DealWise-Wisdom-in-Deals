@@ -84,11 +84,11 @@ const GlowRing = () => (
 
 const variantConfig = {
   signup: {
-    emoji: "🎉",
-    title: "Account Created Successfully",
-    subtitle: "Welcome to DealWise",
-    primaryAction: { label: "Continue Shopping", path: "/" },
-    secondaryAction: { label: "Go to Orders", path: "/orders" },
+    emoji: "📧",
+    title: "Verify Your Email",
+    subtitle: "We've sent a verification link to your email address. Please check your inbox and click the link to activate your account.",
+    primaryAction: { label: "Go to Sign In", path: "/sign-in" },
+    secondaryAction: null,
   },
   login: {
     emoji: "👋",
