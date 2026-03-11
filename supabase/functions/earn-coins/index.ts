@@ -57,27 +57,11 @@ serve(async (req) => {
 });
 
 async function awardCoins(adminClient: any, userId: string, amount: number, description: string, type: string = 'earned') {
-  // Upsert deal_coins balance
-  const { data: existing } = await adminClient
-    .from('deal_coins')
-    .select('balance, total_earned, total_spent')
-    .eq('user_id', userId)
-    .maybeSingle();
-
-  if (existing) {
-    await adminClient.from('deal_coins').update({
-      balance: existing.balance + amount,
-      total_earned: existing.total_earned + amount,
-      updated_at: new Date().toISOString(),
-    }).eq('user_id', userId);
-  } else {
-    await adminClient.from('deal_coins').insert({
-      user_id: userId,
-      balance: amount,
-      total_earned: amount,
-      total_spent: 0,
-    });
-  }
+  // Atomic upsert via database function — prevents race conditions
+  await adminClient.rpc('award_coins', {
+    p_user_id: userId,
+    p_amount: amount,
+  });
 
   // Record transaction
   await adminClient.from('deal_coins_transactions').insert({
