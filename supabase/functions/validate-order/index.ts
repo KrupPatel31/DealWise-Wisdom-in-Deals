@@ -252,7 +252,7 @@ serve(async (req) => {
       // If coupon not found, silently ignore (no discount)
     }
 
-    // Validate and apply coins server-side
+    // Validate coins availability (read only - actual spend is atomic below)
     let coinDiscount = 0;
     if (coinsToUse && typeof coinsToUse === 'number' && coinsToUse > 0) {
       const { data: userCoins } = await supabaseAdmin
