@@ -522,10 +522,18 @@ export type Database = {
       }
     }
     Functions: {
+      award_coins: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: number
+      }
       get_or_create_deal_coins:
         | { Args: never; Returns: number }
         | { Args: { p_user_id: string }; Returns: number }
       increment_view_count: { Args: { page?: string }; Returns: number }
+      spend_coins: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
