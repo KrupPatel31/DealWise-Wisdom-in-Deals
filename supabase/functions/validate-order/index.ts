@@ -252,7 +252,7 @@ serve(async (req) => {
       // If coupon not found, silently ignore (no discount)
     }
 
-    // Validate and apply coins server-side
+    // Validate coins availability (read only - actual spend is atomic below)
     let coinDiscount = 0;
     if (coinsToUse && typeof coinsToUse === 'number' && coinsToUse > 0) {
       const { data: userCoins } = await supabaseAdmin
@@ -313,25 +313,23 @@ serve(async (req) => {
       );
     }
 
-    // === COIN MUTATIONS (server-side only, using admin client) ===
+    // === COIN MUTATIONS (atomic, server-side only) ===
 
-    // Spend coins if applicable
+    // Spend coins if applicable — atomic to prevent double-spend
     if (coinDiscount > 0) {
-      const { data: currentCoins } = await supabaseAdmin
-        .from('deal_coins')
-        .select('balance, total_spent')
-        .eq('user_id', userId)
-        .single();
+      const { data: spendResult, error: spendError } = await supabaseAdmin.rpc('spend_coins', {
+        p_user_id: userId,
+        p_amount: coinDiscount,
+      });
 
-      if (currentCoins) {
-        await supabaseAdmin
-          .from('deal_coins')
-          .update({
-            balance: currentCoins.balance - coinDiscount,
-            total_spent: currentCoins.total_spent + coinDiscount,
-          })
-          .eq('user_id', userId);
-
+      if (spendError || spendResult === -1) {
+        // Insufficient balance (race condition caught) — remove coin discount
+        console.warn('Atomic spend_coins failed, proceeding without coin discount');
+        coinDiscount = 0;
+        // Update order total without coin discount
+        const correctedTotal = Math.max(0, subtotal + shipping - discountAmount);
+        await supabaseAdmin.from('orders').update({ total: correctedTotal }).eq('id', order.id);
+      } else {
         await supabaseAdmin.from('deal_coins_transactions').insert({
           user_id: userId,
           amount: -coinDiscount,
@@ -342,33 +340,13 @@ serve(async (req) => {
       }
     }
 
-    // Earn coins from order total
+    // Earn coins from order total — atomic upsert
     const coinsEarned = Math.min(Math.floor(total * COIN_EARN_RATE), MAX_COINS_PER_ORDER);
     if (coinsEarned > 0) {
-      const { data: existingCoins } = await supabaseAdmin
-        .from('deal_coins')
-        .select('balance, total_earned')
-        .eq('user_id', userId)
-        .single();
-
-      if (existingCoins) {
-        await supabaseAdmin
-          .from('deal_coins')
-          .update({
-            balance: existingCoins.balance + coinsEarned,
-            total_earned: existingCoins.total_earned + coinsEarned,
-          })
-          .eq('user_id', userId);
-      } else {
-        await supabaseAdmin
-          .from('deal_coins')
-          .insert({
-            user_id: userId,
-            balance: coinsEarned,
-            total_earned: coinsEarned,
-            total_spent: 0,
-          });
-      }
+      await supabaseAdmin.rpc('award_coins', {
+        p_user_id: userId,
+        p_amount: coinsEarned,
+      });
 
       await supabaseAdmin.from('deal_coins_transactions').insert({
         user_id: userId,
