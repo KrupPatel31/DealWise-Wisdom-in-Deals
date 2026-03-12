@@ -2,47 +2,67 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Eye, ShoppingCart, TrendingUp } from "lucide-react";
+import { Search, Eye, ShoppingCart, TrendingUp, Camera, ScanBarcode, Coins, Tag, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Zap } from "lucide-react";
 
 const steps = [
   {
     number: "01",
     icon: Search,
     title: "SEARCH",
-    description:
-      "Enter the product name or paste a product URL from any major retailer",
-    details:
-      "Our AI-powered search engine instantly recognizes products across thousands of online stores",
+    description: "Search by product name or paste a URL from any retailer",
+    details: "Our AI-powered engine matches products across thousands of online stores instantly",
   },
   {
     number: "02",
-    icon: Eye,
-    title: "COMPARE",
-    description: "View real-time prices from multiple platforms side by side",
-    details:
-      "See current prices, shipping costs, taxes, and total costs from all major retailers",
+    icon: Camera,
+    title: "VISUAL SEARCH",
+    description: "Upload a product image and let AI find it for you",
+    details: "Snap a photo or drag-and-drop an image — our Gemini-powered engine identifies products and finds the best prices",
   },
   {
     number: "03",
-    icon: TrendingUp,
-    title: "ANALYZE",
-    description:
-      "Get intelligent insights on price trends and best buying opportunities",
-    details:
-      "Historical data, price predictions, and seasonal trends help you make smart decisions",
+    icon: ScanBarcode,
+    title: "SCAN BARCODE",
+    description: "Use your camera to scan any product barcode instantly",
+    details: "Point your phone at a barcode and get real-time price comparisons from multiple stores",
   },
   {
     number: "04",
-    icon: ShoppingCart,
-    title: "SAVE",
-    description:
-      "Buy from the best deal or set price alerts for future purchases",
-    details:
-      "Direct links to stores, coupon codes, and cashback opportunities maximize your savings",
+    icon: Eye,
+    title: "COMPARE",
+    description: "View real-time prices from multiple platforms side by side",
+    details: "See current prices, shipping costs, taxes, and total costs with historical price charts",
   },
+  {
+    number: "05",
+    icon: Tag,
+    title: "APPLY COUPONS",
+    description: "Browse verified coupon codes and apply them at checkout",
+    details: "Access hundreds of verified discount codes across categories — automatically applied to maximize savings",
+  },
+  {
+    number: "06",
+    icon: Coins,
+    title: "EARN DEAL COINS",
+    description: "Earn rewards on every purchase, daily login, and referral",
+    details: "Collect Deal Coins (1 coin = ₹1) through purchases (2% cashback), daily logins, referrals, and product reviews",
+  },
+  {
+    number: "07",
+    icon: ShoppingCart,
+    title: "SAVE & BUY",
+    description: "Redeem coins, checkout at the best price, and track your orders",
+    details: "Use Deal Coins as discounts, get order confirmation with downloadable invoices, and track delivery status",
+  },
+];
+
+const highlights = [
+  { label: "Stores Compared", value: "50+" },
+  { label: "Average Savings", value: "Up to 50%" },
+  { label: "Coin Cashback", value: "2%" },
+  { label: "Verified Coupons", value: "500+" },
 ];
 
 const HowItWorks = () => {
@@ -60,70 +80,59 @@ const HowItWorks = () => {
             <span className="hero-gradient">MADE SIMPLE</span>
           </h1>
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Save money in 4 easy steps with our intelligent price comparison
-            platform
+            Search, compare, earn rewards, and save — all in one platform
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-10 sm:mb-16 lg:mb-20">
-          <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-            {steps.map((step, index) => (
-              <Card
-                key={index}
-                className="p-4 sm:p-6 lg:p-8 bg-deal border-deal-border hover:border-accent/50 transition-all duration-300 group"
-              >
-                <div className="flex items-start gap-4 sm:gap-6">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <step.icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
-                    </div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
-                      <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-accent">
-                        {step.number}
-                      </span>
-                      <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
-                        {step.title}
-                      </h3>
-                    </div>
-                    <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-2 sm:mb-3">
-                      {step.description}
-                    </p>
-                    <p className="text-xs sm:text-sm text-accent">{step.details}</p>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+        {/* Highlight Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 sm:mb-16 lg:mb-20">
+          {highlights.map((item, i) => (
+            <Card key={i} className="p-4 sm:p-6 bg-deal border-deal-border text-center">
+              <p className="text-2xl sm:text-3xl font-bold hero-gradient">{item.value}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">{item.label}</p>
+            </Card>
+          ))}
+        </div>
 
-          <div className="space-y-8">
-            <Card className="p-6 sm:p-8 bg-gradient-to-br from-card via-card to-muted border-deal-border">
-              <div className="text-center space-y-4 sm:space-y-6">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center glow">
-                  <TrendingUp className="h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 text-white" />
+        {/* Steps */}
+        <div className="space-y-4 sm:space-y-6 lg:space-y-8 mb-10 sm:mb-16 lg:mb-20">
+          {steps.map((step, index) => (
+            <Card
+              key={index}
+              className="p-4 sm:p-6 lg:p-8 bg-deal border-deal-border hover:border-accent/50 transition-all duration-300 group"
+            >
+              <div className="flex items-start gap-4 sm:gap-6">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <step.icon className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
+                  </div>
                 </div>
-                <div className="space-y-3 sm:space-y-4">
-                  <h3 className="text-xl sm:text-2xl font-bold">
-                    <span className="text-primary">SAVE UP TO</span>
-                    <br />
-                    <span className="hero-gradient text-3xl sm:text-4xl">50%</span>
-                  </h3>
-                  <p className="text-sm sm:text-base text-muted-foreground">
-                    Average savings across all categories
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-2 sm:mb-3">
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-accent">
+                      {step.number}
+                    </span>
+                    <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
+                      {step.title}
+                    </h3>
+                  </div>
+                  <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-2 sm:mb-3">
+                    {step.description}
                   </p>
+                  <p className="text-xs sm:text-sm text-accent">{step.details}</p>
                 </div>
               </div>
             </Card>
-          </div>
+          ))}
         </div>
 
+        {/* CTA */}
         <Card className="p-6 sm:p-8 lg:p-12 bg-gradient-to-br from-primary/10 to-accent/10 border-accent/20 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
-            <span className="text-primary">Try it now - it's free!</span>
+            <span className="text-primary">Try it now — it's free!</span>
           </h2>
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8">
-            Start saving money today with intelligent price comparison
+            Start saving money today with intelligent price comparison, visual search, and Deal Coins rewards
           </p>
           <div className="flex justify-center gap-4">
             <Link to="/search" className="w-full sm:w-auto">
