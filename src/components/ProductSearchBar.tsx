@@ -260,6 +260,14 @@ export const ProductSearchBar = () => {
     }
   };
 
+  // Persist filter/sort selections
+  useEffect(() => {
+    sessionStorage.setItem("search_category", selectedCategory);
+  }, [selectedCategory]);
+  useEffect(() => {
+    sessionStorage.setItem("search_sort", sortBy);
+  }, [sortBy]);
+
   // Local filtering and sorting
   useEffect(() => {
     handleLocalFilter();
