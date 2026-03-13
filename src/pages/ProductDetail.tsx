@@ -26,7 +26,12 @@ const ProductDetail = () => {
   useEffect(() => {
     if (!id) return;
     const mockProducts = ProductSearchService.getMockProducts();
-    const allProducts = [...mockProducts, ...fakeStoreProducts];
+    let sessionProducts: ProductData[] = [];
+    try {
+      const saved = sessionStorage.getItem("search_products");
+      if (saved) sessionProducts = JSON.parse(saved);
+    } catch {}
+    const allProducts = [...mockProducts, ...fakeStoreProducts, ...sessionProducts];
     const found = allProducts.find((p) => p.id === id);
     if (found) setProduct(found);
   }, [id, fakeStoreProducts]);
