@@ -151,9 +151,9 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "DealWise Wisdom in Deals <onboarding@resend.dev>",
+        from: "DealWise - Wisdom in Deals <onboarding@resend.dev>",
         to: [email],
-        subject: "Your Password Has Been Reset - DealWise Wisdom in Deals",
+        subject: "Your Password Has Been Reset - DealWise - Wisdom in Deals",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
