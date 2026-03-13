@@ -230,8 +230,14 @@ export const ProductSearchBar = () => {
     }
   }, [user, navigate]);
 
-  // Merge mock + Fake Store products
+  // Merge mock + Fake Store products (only if no restored search results)
   useEffect(() => {
+    if (hasRestoredSearch.current) return; // Don't overwrite restored search
+    const savedProducts = sessionStorage.getItem("search_products");
+    if (savedProducts) {
+      hasRestoredSearch.current = true;
+      return; // Already restored from sessionStorage in useState init
+    }
     const mockProducts = ProductSearchService.getMockProducts();
     const merged = [...mockProducts, ...fakeStoreProducts];
     setProducts(merged);
