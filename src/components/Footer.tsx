@@ -9,6 +9,7 @@ import {
   Heart,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import qrCode from "@/assets/qr-code-styled.png";
 
 export const Footer = () => {
   return (
