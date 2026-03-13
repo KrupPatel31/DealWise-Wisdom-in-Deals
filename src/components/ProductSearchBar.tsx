@@ -212,6 +212,9 @@ export const ProductSearchBar = () => {
         
         setProducts(transformedProducts);
         setFilteredProducts(transformedProducts);
+        // Persist search results
+        sessionStorage.setItem("search_products", JSON.stringify(transformedProducts));
+        sessionStorage.setItem("search_query", searchQuery);
         
         const sources = data.sources;
         const sourceInfo = sources ? ` (${sources.realTime + sources.googleShopping + sources.offers} from ${Object.values(sources).filter((v: any) => v > 0).length} sources)` : '';
