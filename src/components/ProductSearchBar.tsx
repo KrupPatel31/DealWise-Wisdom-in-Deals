@@ -26,15 +26,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { ShareDeal } from "@/components/ShareDeal";
 
 export const ProductSearchBar = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [products, setProducts] = useState<ProductData[]>([]);
+  // Restore persisted search state from sessionStorage
+  const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem("search_query") || "");
+  const [products, setProducts] = useState<ProductData[]>(() => {
+    try {
+      const saved = sessionStorage.getItem("search_products");
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [filteredProducts, setFilteredProducts] = useState<ProductData[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("relevance");
+  const [selectedCategory, setSelectedCategory] = useState<string>(() => sessionStorage.getItem("search_category") || "all");
+  const [sortBy, setSortBy] = useState<string>(() => sessionStorage.getItem("search_sort") || "relevance");
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchingApi, setIsSearchingApi] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const hasRestoredSearch = useRef(false);
   
   const { user } = useAuth();
   const { addToCart, cartItems, updateQuantity } = useCart();
