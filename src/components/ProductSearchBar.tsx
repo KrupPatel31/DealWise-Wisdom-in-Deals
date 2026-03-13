@@ -26,15 +26,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { ShareDeal } from "@/components/ShareDeal";
 
 export const ProductSearchBar = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [products, setProducts] = useState<ProductData[]>([]);
+  // Restore persisted search state from sessionStorage
+  const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem("search_query") || "");
+  const [products, setProducts] = useState<ProductData[]>(() => {
+    try {
+      const saved = sessionStorage.getItem("search_products");
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [filteredProducts, setFilteredProducts] = useState<ProductData[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("relevance");
+  const [selectedCategory, setSelectedCategory] = useState<string>(() => sessionStorage.getItem("search_category") || "all");
+  const [sortBy, setSortBy] = useState<string>(() => sessionStorage.getItem("search_sort") || "relevance");
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchingApi, setIsSearchingApi] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const hasRestoredSearch = useRef(false);
   
   const { user } = useAuth();
   const { addToCart, cartItems, updateQuantity } = useCart();
@@ -205,6 +212,9 @@ export const ProductSearchBar = () => {
         
         setProducts(transformedProducts);
         setFilteredProducts(transformedProducts);
+        // Persist search results
+        sessionStorage.setItem("search_products", JSON.stringify(transformedProducts));
+        sessionStorage.setItem("search_query", searchQuery);
         
         const sources = data.sources;
         const sourceInfo = sources ? ` (${sources.realTime + sources.googleShopping + sources.offers} from ${Object.values(sources).filter((v: any) => v > 0).length} sources)` : '';
@@ -220,8 +230,14 @@ export const ProductSearchBar = () => {
     }
   }, [user, navigate]);
 
-  // Merge mock + Fake Store products
+  // Merge mock + Fake Store products (only if no restored search results)
   useEffect(() => {
+    if (hasRestoredSearch.current) return; // Don't overwrite restored search
+    const savedProducts = sessionStorage.getItem("search_products");
+    if (savedProducts) {
+      hasRestoredSearch.current = true;
+      return; // Already restored from sessionStorage in useState init
+    }
     const mockProducts = ProductSearchService.getMockProducts();
     const merged = [...mockProducts, ...fakeStoreProducts];
     setProducts(merged);
@@ -243,6 +259,14 @@ export const ProductSearchBar = () => {
       handleSearch();
     }
   };
+
+  // Persist filter/sort selections
+  useEffect(() => {
+    sessionStorage.setItem("search_category", selectedCategory);
+  }, [selectedCategory]);
+  useEffect(() => {
+    sessionStorage.setItem("search_sort", sortBy);
+  }, [sortBy]);
 
   // Local filtering and sorting
   useEffect(() => {
@@ -420,7 +444,17 @@ export const ProductSearchBar = () => {
         {searchQuery && (
           <Button
             variant="ghost"
-            onClick={() => setSearchQuery("")}
+            onClick={() => {
+              setSearchQuery("");
+              sessionStorage.removeItem("search_query");
+              sessionStorage.removeItem("search_products");
+              hasRestoredSearch.current = false;
+              // Reload default products
+              const mockProducts = ProductSearchService.getMockProducts();
+              const merged = [...mockProducts, ...fakeStoreProducts];
+              setProducts(merged);
+              setFilteredProducts(merged);
+            }}
             className="text-sm"
           >
             Clear search
