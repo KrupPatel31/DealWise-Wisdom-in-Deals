@@ -444,7 +444,17 @@ export const ProductSearchBar = () => {
         {searchQuery && (
           <Button
             variant="ghost"
-            onClick={() => setSearchQuery("")}
+            onClick={() => {
+              setSearchQuery("");
+              sessionStorage.removeItem("search_query");
+              sessionStorage.removeItem("search_products");
+              hasRestoredSearch.current = false;
+              // Reload default products
+              const mockProducts = ProductSearchService.getMockProducts();
+              const merged = [...mockProducts, ...fakeStoreProducts];
+              setProducts(merged);
+              setFilteredProducts(merged);
+            }}
             className="text-sm"
           >
             Clear search
