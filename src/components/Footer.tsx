@@ -9,6 +9,7 @@ import {
   Heart,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import qrCode from "@/assets/qr-code-styled.png";
 
 export const Footer = () => {
   return (
@@ -83,24 +84,13 @@ export const Footer = () => {
             </nav>
           </div>
 
-          {/* Support - Hidden on smallest screens */}
-          <div className="hidden lg:block space-y-3 sm:space-y-4">
-            <h3 className="font-semibold text-foreground text-base sm:text-lg">Support</h3>
-            <nav className="space-y-2 sm:space-y-3">
-              {[
-                "Help Center",
-                "Contact Us",
-                "Live Chat",
-              ].map((item) => (
-                <Link
-                  key={item}
-                  to="/contact"
-                  className="block text-sm sm:text-base text-muted-foreground hover:text-accent transition-colors"
-                >
-                  {item}
-                </Link>
-              ))}
-            </nav>
+          {/* QR Code & Support */}
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="font-semibold text-foreground text-base sm:text-lg">Scan & Visit</h3>
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-lg overflow-hidden border border-border/50 shadow-glow">
+              <img src={qrCode} alt="Scan QR code to visit DealWise" className="w-full h-full object-cover" />
+            </div>
+            <p className="text-xs text-muted-foreground">Scan to open DealWise</p>
           </div>
         </div>
 
