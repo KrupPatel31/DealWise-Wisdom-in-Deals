@@ -157,7 +157,7 @@ Deno.serve(async (req) => {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #16a34a; font-size: 24px;">DealWise Wisdom in Deals</h1>
+              <h1 style="color: #16a34a; font-size: 24px;">DealWise - Wisdom in Deals</h1>
             </div>
             <div style="background-color: #f9fafb; border-radius: 8px; padding: 30px; margin-bottom: 20px;">
               <h2 style="color: #111827; margin-top: 0;">Password Reset Successful</h2>
