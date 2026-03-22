@@ -9,7 +9,7 @@ const TurnstileWidget = ({ onSuccess, onError, onExpire, theme, className }) => 
 
     window.onloadTurnstileCallback = () => {
       window.turnstile.render('#turnstile-widget', {
-        sitekey: process.env.VITE_TURNSTILE_SITE_KEY,
+        sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
         callback: onSuccess,
         'error-callback': onError,
         'expired-callback': onExpire,
