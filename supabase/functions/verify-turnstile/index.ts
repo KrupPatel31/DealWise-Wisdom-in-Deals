@@ -1,7 +1,7 @@
 const {Turnstile} = require('turnstile');
 
 const verifyTurnstile = async (token) => {
-    const secretKey = Deno.env.get("TURNSTILE_SECRET_KEY");
+    const secretKey = Deno.env.get("0x4AAAAAACuggvL-2tVN1yqvdEkYeFkPFxQ");
     const turnstile = new Turnstile({ secret: secretKey });
 
     // Logic to verify the token...
