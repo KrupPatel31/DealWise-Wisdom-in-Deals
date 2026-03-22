@@ -1,29 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
-const TurnstileWidget = ({ onSuccess, onError, onExpire, theme, className }) => {
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback';
-    script.async = true;
-    document.body.appendChild(script);
+const TurnstileWidget = () => {
+    const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
-    window.onloadTurnstileCallback = () => {
-      window.turnstile.render('#turnstile-widget', {
-        sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
-        callback: onSuccess,
-        'error-callback': onError,
-        'expired-callback': onExpire,
-        theme: theme,
-        className: className
-      });
-    };
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, [onSuccess, onError, onExpire, theme, className]);
-
-  return <div id="turnstile-widget" className={className}></div>;
+    return (
+        <div>
+            {/* Your widget implementation goes here, using siteKey */}
+            <div>Turnstile Site Key: {siteKey}</div>
+        </div>
+    );
 };
 
 export default TurnstileWidget;
