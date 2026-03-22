@@ -1,7 +1,7 @@
 import React from 'react';
 
 const TurnstileWidget = () => {
-    const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+    const sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
     return (
         <div>
