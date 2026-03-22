@@ -1,102 +1,29 @@
-import { useEffect, useRef } from "react";
+import React, { useRef, useEffect } from 'react';
 
-interface TurnstileWidgetProps {
-    onSuccess: (token: string) => void;
-    onError?: () => void;
-    onExpire?: () => void;
-    theme?: "light" | "dark" | "auto";
-    className?: string;
-}
-
-declare global {
-    interface Window {
-        turnstile: {
-            render: (container: string | HTMLElement, options: object) => string;
-            reset: (widgetId: string) => void;
-            remove: (widgetId: string) => void;
-        };
-        onloadTurnstileCallback: () => void;
-    }
-}
-
-const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || "0x4AAAAAACuggoF1VDKzpd2e";
-
-export function TurnstileWidget({
-    onSuccess,
-    onError,
-    onExpire,
-    theme = "dark",
-    className = "",
-}: TurnstileWidgetProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const widgetIdRef = useRef<string | null>(null);
-    const renderedRef = useRef(false);
+const TurnstileWidget = () => {
+    const ref = useRef(null);
 
     useEffect(() => {
-        const renderWidget = () => {
-            if (!containerRef.current || renderedRef.current) return;
-            if (typeof window.turnstile === "undefined") return;
-
-            renderedRef.current = true;
-            widgetIdRef.current = window.turnstile.render(containerRef.current, {
-                sitekey: SITE_KEY,
-                theme,
-                callback: onSuccess,
-                "error-callback": onError,
-                "expired-callback": onExpire,
-            });
-        };
-
-        // If script already loaded
-        if (typeof window.turnstile !== "undefined") {
-            renderWidget();
-            return;
-        }
-
-        // Inject Turnstile script once
-        if (!document.getElementById("cf-turnstile-script")) {
-            window.onloadTurnstileCallback = renderWidget;
-            const script = document.createElement("script");
-            script.id = "cf-turnstile-script";
-            script.src =
-                "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback";
+        const loadScript = () => {
+            const script = document.createElement('script');
+            script.src = `https://your-turnstile-script-url?render=explicit`;
             script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-        } else {
-            // Script injected by another instance, poll until ready
-            const interval = setInterval(() => {
-                if (typeof window.turnstile !== "undefined") {
-                    clearInterval(interval);
-                    renderWidget();
+            script.referrerPolicy = 'no-referrer';
+            script.onload = () => {
+                if (window.renderWidget) {
+                    window.renderWidget(ref.current);
                 }
-            }, 100);
-            return () => clearInterval(interval);
-        }
-
-        return () => {
-            if (widgetIdRef.current && typeof window.turnstile !== "undefined") {
-                try {
-                    window.turnstile.remove(widgetIdRef.current);
-                } catch (_) { }
-            }
-            renderedRef.current = false;
+            };
+            script.onerror = () => {
+                console.error('Turnstile script failed to load.');
+            };
+            document.body.appendChild(script);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
+        loadScript();
     }, []);
 
-    return (
-        <div
-            ref={containerRef}
-            className={`flex justify-center my-2 ${className}`}
-        />
-    );
-}
+    return <div ref={ref}></div>;
+};
 
-export function resetTurnstile(widgetId: string | null) {
-    if (widgetId && typeof window.turnstile !== "undefined") {
-        try {
-            window.turnstile.reset(widgetId);
-        } catch (_) { }
-    }
-}
+export default TurnstileWidget;
