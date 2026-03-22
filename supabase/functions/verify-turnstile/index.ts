@@ -27,7 +27,7 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        const secretKey = Deno.env.get("TURNSTILE_SECRET_KEY");
+        const secretKey = Deno.env.get("0x4AAAAAACuggvL-2tVN1yqvdEkYeFkPFxQ");
         if (!secretKey) {
             console.error("TURNSTILE_SECRET_KEY not configured");
             return new Response(
