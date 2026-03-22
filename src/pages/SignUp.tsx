@@ -1,285 +1,322 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
-import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { Eye, EyeOff, UserPlus, ShieldCheck, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TrendingUp, Eye, EyeOff, Check, X } from "lucide-react";
-import { SuccessOverlay } from "@/components/SuccessOverlay";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import { TurnstileWidget } from "@/components/TurnstileWidget";
+import { supabase } from "@/integrations/supabase/client";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
-const SignUp = () => {
+interface PasswordRule {
+  label: string;
+  test: (pw: string) => boolean;
+}
+
+const passwordRules: PasswordRule[] = [
+  { label: "At least 8 characters", test: (pw) => pw.length >= 8 },
+  { label: "One uppercase letter", test: (pw) => /[A-Z]/.test(pw) },
+  { label: "One lowercase letter", test: (pw) => /[a-z]/.test(pw) },
+  { label: "One number", test: (pw) => /[0-9]/.test(pw) },
+  { label: "One special character", test: (pw) => /[^A-Za-z0-9]/.test(pw) },
+];
+
+export default function SignUp() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreeToTerms: false
-  });
-  
-  const { signUp, user } = useAuth();
+  const [done, setDone] = useState(false);
+
+  // Turnstile state
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileError, setTurnstileError] = useState(false);
+  const widgetKeyRef = useRef(0);
+
+  const { signUp } = useAuth();
   const navigate = useNavigate();
-  
 
-  useEffect(() => {
-    if (user) {
-      navigate('/');
+  const passwordValid = passwordRules.every((r) => r.test(password));
+
+  const resetTurnstile = () => {
+    setTurnstileToken(null);
+    setTurnstileError(false);
+    widgetKeyRef.current += 1;
+  };
+
+  const verifyTurnstileToken = async (token: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.functions.invoke("verify-turnstile", {
+        body: { token },
+      });
+      if (error || !data?.success) {
+        toast.error(data?.error ?? "Security check failed. Please try again.");
+        return false;
+      }
+      return true;
+    } catch {
+      toast.error("Security verification failed. Please try again.");
+      return false;
     }
-  }, [user, navigate]);
+  };
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match. Please try again.");
+
+    if (!passwordValid) {
+      toast.error("Password does not meet all requirements.");
       return;
     }
-
-    const passwordValidation = validatePassword(formData.password);
-    if (!passwordValidation.isValid) {
-      toast.error(passwordValidation.errors.join(', '));
+    if (!acceptTerms) {
+      toast.error("Please accept the terms and conditions.");
+      return;
+    }
+    if (!turnstileToken) {
+      toast.error("Please complete the security check.");
       return;
     }
 
     setLoading(true);
-    
-    const { error } = await signUp(formData.email, formData.password, formData.name);
-    
+
+    const isHuman = await verifyTurnstileToken(turnstileToken);
+    if (!isHuman) {
+      resetTurnstile();
+      setLoading(false);
+      return;
+    }
+
+    const { error } = await signUp(email, password, fullName);
     if (error) {
       toast.error(error.message);
+      resetTurnstile();
     } else {
-      setShowSuccess(true);
+      setDone(true);
     }
-    
+
     setLoading(false);
   };
 
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
+  if (done) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Header />
+        <main className="flex-1 flex items-center justify-center px-4 py-16">
+          <Card className="w-full max-w-md text-center border-border bg-card/60 backdrop-blur-sm shadow-xl p-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/10 border border-green-500/30 mb-4">
+              <Check className="w-8 h-8 text-green-500" />
+            </div>
+            <h2 className="text-xl font-bold mb-2">Check your email</h2>
+            <p className="text-muted-foreground text-sm mb-6">
+              We've sent a verification link to <strong>{email}</strong>. Please verify your email before signing in.
+            </p>
+            <Button variant="outline" onClick={() => navigate("/sign-in")} className="w-full">
+              Go to Sign In
+            </Button>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen dark">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      
-      <main className="flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      <main className="flex-1 flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">
-          <div className="text-center mb-6 sm:mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-              <span className="text-xl sm:text-2xl font-bold text-primary">DEALWISE</span>
+          {/* Brand */}
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
+              <UserPlus className="w-7 h-7 text-primary" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Create Account</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">Join DealWise to start finding the best deals</p>
+            <h1 className="text-2xl font-bold font-display text-foreground">Create account</h1>
+            <p className="text-muted-foreground mt-1 text-sm">Join DealWise and start saving today</p>
           </div>
 
-          <Card className="border-border bg-card/50 backdrop-blur-sm">
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl text-foreground">Sign Up</CardTitle>
-              <CardDescription>
-                Create your account to get started
-              </CardDescription>
+          <Card className="border-border bg-card/60 backdrop-blur-sm shadow-xl">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg">Sign Up</CardTitle>
+              <CardDescription>Fill in your details to get started</CardDescription>
             </CardHeader>
-            
-            <CardContent className="space-y-6">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-foreground">Full Name</Label>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Full Name */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="fullName">Full name</Label>
                   <Input
-                    id="name"
+                    id="fullName"
                     type="text"
-                    placeholder="Enter your full name"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange("name", e.target.value)}
-                    className="bg-input border-border focus:border-primary"
+                    placeholder="John Doe"
+                    autoComplete="name"
                     required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    disabled={loading}
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-foreground">Email</Label>
+                {/* Email */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">Email address</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="bg-input border-border focus:border-primary"
+                    placeholder="you@example.com"
+                    autoComplete="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
                   />
                 </div>
-                
-                 <div className="space-y-2">
-                   <Label htmlFor="password" className="text-foreground">Password</Label>
-                   <div className="relative">
-                     <Input
-                       id="password"
-                       type={showPassword ? "text" : "password"}
-                       placeholder="Create a password"
-                       value={formData.password}
-                       onChange={(e) => handleInputChange("password", e.target.value)}
-                       className="bg-input border-border focus:border-primary pr-10"
-                       required
-                     />
-                     <button
-                       type="button"
-                       onClick={() => setShowPassword(!showPassword)}
-                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                     >
-                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                     </button>
-                   </div>
-                   {formData.password && (
-                     <div className="space-y-3">
-                       {(() => {
-                         const { strength, label, color } = getPasswordStrength(formData.password);
-                         const validation = validatePassword(formData.password);
-                         return (
-                           <>
-                             <div className="flex items-center gap-2">
-                               <div className="flex-1 bg-muted rounded-full h-2">
-                                 <div 
-                                   className={`h-full rounded-full transition-all duration-300 ${
-                                     strength <= 1 ? 'bg-red-500' :
-                                     strength === 2 ? 'bg-orange-500' :
-                                     strength === 3 ? 'bg-yellow-500' :
-                                     strength === 4 ? 'bg-blue-500' : 'bg-green-500'
-                                   }`}
-                                   style={{ width: `${(strength / 5) * 100}%` }}
-                                 />
-                               </div>
-                               <span className={`text-sm font-medium ${color}`}>{label}</span>
-                             </div>
-                             <div className="bg-muted/30 rounded-lg p-3 space-y-2">
-                               <p className="text-sm font-medium text-foreground">Password Requirements:</p>
-                               <div className="grid grid-cols-1 gap-1">
-                                 {validation.criteria.map((criterion, index) => (
-                                   <div key={index} className="flex items-center gap-2 text-sm">
-                                     {criterion.icon === 'check' ? (
-                                       <Check className="h-4 w-4 text-green-500" />
-                                     ) : (
-                                       <X className="h-4 w-4 text-red-500" />
-                                     )}
-                                     <span className={criterion.met ? 'text-green-600' : 'text-muted-foreground'}>
-                                       {criterion.label}
-                                     </span>
-                                   </div>
-                                 ))}
-                               </div>
-                             </div>
-                           </>
-                         );
-                       })()}
-                     </div>
-                   )}
-                   {!formData.password && (
-                     <div className="bg-muted/30 rounded-lg p-3 space-y-2">
-                       <p className="text-sm font-medium text-foreground">Password Requirements:</p>
-                       <div className="grid grid-cols-1 gap-1">
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                           <X className="h-4 w-4" />
-                           <span>At least 8 characters</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                           <X className="h-4 w-4" />
-                           <span>One lowercase letter (a-z)</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                           <X className="h-4 w-4" />
-                           <span>One uppercase letter (A-Z)</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                           <X className="h-4 w-4" />
-                           <span>One number (0-9)</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                           <X className="h-4 w-4" />
-                           <span>One special character (!@#$%^&*)</span>
-                         </div>
-                       </div>
-                     </div>
-                   )}
-                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
+                {/* Password */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Input
-                      id="confirmPassword"
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirm your password"
-                      value={formData.confirmPassword}
-                      onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                      className="bg-input border-border focus:border-primary pr-10"
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      autoComplete="new-password"
                       required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={loading}
+                      className="pr-10"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      tabIndex={-1}
                     >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
+
+                  {/* Password rules */}
+                  {password.length > 0 && (
+                    <ul className="mt-2 space-y-1">
+                      {passwordRules.map((rule) => {
+                        const passed = rule.test(password);
+                        return (
+                          <li
+                            key={rule.label}
+                            className={`flex items-center gap-1.5 text-xs transition-colors ${passed ? "text-green-500" : "text-muted-foreground"
+                              }`}
+                          >
+                            {passed ? (
+                              <Check className="w-3 h-3 shrink-0" />
+                            ) : (
+                              <X className="w-3 h-3 shrink-0" />
+                            )}
+                            {rule.label}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
                 </div>
 
-                <div className="flex items-center space-x-2">
+                {/* Terms */}
+                <div className="flex items-start gap-2.5">
                   <Checkbox
                     id="terms"
-                    checked={formData.agreeToTerms}
-                    onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked as boolean)}
-                    className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    checked={acceptTerms}
+                    onCheckedChange={(v) => setAcceptTerms(Boolean(v))}
+                    disabled={loading}
+                    className="mt-0.5"
                   />
-                  <Label htmlFor="terms" className="text-sm text-muted-foreground">
+                  <Label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
                     I agree to the{" "}
-                    <Link to="/terms" className="text-primary hover:text-primary/80">
+                    <Link to="/features" className="text-primary hover:underline">
                       Terms of Service
                     </Link>{" "}
                     and{" "}
-                    <Link to="/privacy" className="text-primary hover:text-primary/80">
+                    <Link to="/about" className="text-primary hover:underline">
                       Privacy Policy
                     </Link>
                   </Label>
                 </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                  disabled={!formData.agreeToTerms || loading}
+                {/* Cloudflare Turnstile */}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                    <span>Security verification</span>
+                  </div>
+                  <div
+                    className={`rounded-lg border transition-colors ${turnstileError
+                      ? "border-destructive/60 bg-destructive/5"
+                      : turnstileToken
+                        ? "border-green-500/40 bg-green-500/5"
+                        : "border-border bg-muted/20"
+                      }`}
+                  >
+                    <TurnstileWidget
+                      key={widgetKeyRef.current}
+                      onSuccess={(token) => {
+                        setTurnstileToken(token);
+                        setTurnstileError(false);
+                      }}
+                      onError={() => {
+                        setTurnstileError(true);
+                        setTurnstileToken(null);
+                        toast.error("Security check failed. Please refresh and try again.");
+                      }}
+                      onExpire={() => {
+                        setTurnstileToken(null);
+                        toast.warning("Security check expired. Please verify again.");
+                      }}
+                      theme="dark"
+                    />
+                  </div>
+                  {turnstileToken && (
+                    <p className="text-xs text-green-500 flex items-center gap-1 mt-1">
+                      <ShieldCheck className="w-3 h-3" /> Verification complete
+                    </p>
+                  )}
+                </div>
+
+                {/* Submit */}
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={loading || !turnstileToken || !passwordValid || !acceptTerms}
                 >
-                  {loading ? "Creating account..." : "Create Account"}
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Creating account…
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <UserPlus className="w-4 h-4" /> Create Account
+                    </span>
+                  )}
                 </Button>
               </form>
 
-              <div className="text-center text-sm text-muted-foreground">
+              {/* Login link */}
+              <p className="text-center text-sm text-muted-foreground mt-5">
                 Already have an account?{" "}
-                <Link 
-                  to="/sign-in" 
-                  className="text-primary hover:text-primary/80 transition-colors font-medium"
-                >
+                <Link to="/sign-in" className="text-primary hover:underline font-medium">
                   Sign in
                 </Link>
-              </div>
+              </p>
             </CardContent>
           </Card>
         </div>
       </main>
-      
       <Footer />
-      <SuccessOverlay show={showSuccess} onClose={() => setShowSuccess(false)} variant="signup" />
     </div>
   );
-};
-
-export default SignUp;
+}
