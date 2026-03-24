@@ -13,7 +13,7 @@ const contactInfo = [
   {
     icon: Mail,
     title: "Email Us",
-    details: ["support@dealwise.com", "hello@dealwise.com"],
+    details: ["support@dealwise.in", "help@dealwise.in"],
     description: "Get in touch for any questions or support needs",
   },
   {
@@ -40,13 +40,13 @@ const departments = [
   {
     icon: MessageCircle,
     title: "General Support",
-    email: "support@dealwise.com",
+    email: "support@dealwise.in",
     description: "For general questions, technical issues, and account help",
   },
   {
     icon: Users,
     title: "Business Partnerships",
-    email: "partners@dealwise.com",
+    email: "business@dealwise.in",
     description: "For retailer partnerships and business development",
   },
 ];
