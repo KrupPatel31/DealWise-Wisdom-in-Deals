@@ -54,7 +54,7 @@ This project uses Bun as its package manager.
     npm run dev
     ```
 
-This will start the application, and you can access it in your browser, typically at `http://localhost:5173` (the port might vary).
+This will start the application, and you can access it in your browser, typically at `http://localhost:8080` (the port might vary).
 
 ## Live Demo
 
