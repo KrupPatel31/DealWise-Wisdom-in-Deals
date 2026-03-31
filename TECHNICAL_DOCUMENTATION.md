@@ -2431,11 +2431,10 @@ dealwise/
 
 ### 15.1 Hosting Platform
 
-**Platform:** Lovable (with Lovable Cloud backend)
+**Platform:** Hostinger (with Lovable Cloud backend)
 
 **URLs:**
-- Preview: `https://id-preview--{project-id}.lovable.app`
-- Published: `https://{custom-domain}.lovable.app` or custom domain
+- Published: `https://www.dealwise.in/`
 
 ---
 
