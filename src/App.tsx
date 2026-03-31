@@ -6,6 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index";
 import Features from "./pages/Features";
@@ -71,6 +72,7 @@ const App = () => (
             <AnimatedRoutes />
           </BrowserRouter>
           <Analytics />
+          <SpeedInsights />
         </TooltipProvider>
       </CartProvider>
     </AuthProvider>
