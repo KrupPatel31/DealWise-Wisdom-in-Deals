@@ -38,7 +38,7 @@ This project uses Bun as its package manager.
 1.  Install the project dependencies:
 
     ```bash
-    bun install
+    npm install
     ```
 
 ### Setting up Environment Variables
@@ -51,7 +51,7 @@ This project uses Bun as its package manager.
 1.  Start the development server:
 
     ```bash
-    bun run dev
+    npm run dev
     ```
 
 This will start the application, and you can access it in your browser, typically at `http://localhost:5173` (the port might vary).
