@@ -2434,7 +2434,7 @@ dealwise/
 **Platform:** Hostinger (with Lovable Cloud backend)
 
 **URLs:**
-- Published: <a href="https://www.dealwise.in/" target="_blank">https://www.dealwise.in/</a>
+- Published: [https://www.dealwise.in/](https://www.dealwise.in/)
 
 
 ---
