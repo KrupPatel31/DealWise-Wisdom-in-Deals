@@ -64,15 +64,15 @@ DealWise is a **Consumer-Facing Price Comparison Platform** with:
 ### 1.5 Core Concept
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                       USER JOURNEY                          │
-├─────────────────────────────────────────────────────────────┤
-│  DISCOVER → COMPARE → SAVE → CHECKOUT → EARN REWARDS       │
-│     │          │        │        │           │              │
-│  Search    Multiple   Coupons  Secure    Deal Coins        │
-│  Visual    Stores     Codes    Cart      2% Cashback       │
-│  Barcode   EMI Info   Deals    Invoice   Daily Login       │
-└─────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│                       USER JOURNEY                        │
+├───────────────────────────────────────────────────────────┤
+│  DISCOVER → COMPARE → SAVE → CHECKOUT → EARN REWARDS      │
+│     │          │        │        │           │            │
+│  Search    Multiple   Coupons  Secure    Deal Coins       │
+│  Visual    Stores     Codes    Cart      2% Cashback      │
+│  Barcode   EMI Info   Deals    Invoice   Daily Login      │
+└───────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -1055,14 +1055,14 @@ return new Response(
 ### 7.1 Entity Relationship Diagram
 
 ```
-┌─────────────┐     ┌─────────────────┐     ┌─────────────┐
-│   profiles  │     │   deal_coins    │     │   orders    │
-│─────────────│     │─────────────────│     │─────────────│
-│ user_id (FK)│◄────│ user_id (FK)    │     │ user_id (FK)│
-│ full_name   │     │ balance         │     │ order_number│
-│ email       │     │ total_earned    │     │ items (JSON)│
-│ referral_cod│     │ total_spent     │     │ total       │
-└─────────────┘     └─────────────────┘     └─────────────┘
+┌─────────────┐     ┌─────────────────┐     ┌──────────────┐
+│   profiles  │     │   deal_coins    │     │   orders     │
+│─────────────│     │─────────────────│     │───────────── │
+│ user_id (FK)│◄────│ user_id (FK)    │     │ user_id (FK) │
+│ full_name   │     │ balance         │     │ order_number │
+│ email       │     │ total_earned    │     │ items (JSON) │
+│ referral_cod│     │ total_spent     │     │ total        │
+└─────────────┘     └─────────────────┘     └──────────────┘
                             │
                             ▼
                 ┌───────────────────────────┐
