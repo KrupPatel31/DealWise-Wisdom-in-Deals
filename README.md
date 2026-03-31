@@ -89,13 +89,6 @@ Please ensure your code adheres to the project's coding standards and includes r
 
 ## 📄 License
 
-This project does not currently have a specified license.
-
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-
-<p align="center">
-  <a href="https://readmeforge.app?utm_source=badge">
-    <img src="https://readmeforge.app/badge.svg" alt="Made with ReadmeForge" height="20">
-  </a>
-</p>
