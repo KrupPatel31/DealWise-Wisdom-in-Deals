@@ -1,4 +1,4 @@
-# DealWise-Wisdom-in-Deals 💡
+# DealWise - Wisdom in Deals 💡
 
 DealWise is a comprehensive price comparison and deal discovery platform designed to help Indian consumers find the best prices for products across multiple e-commerce stores. The platform aggregates pricing data, provides visual search capabilities, and rewards users for their engagement through a gamified loyalty system.
 
