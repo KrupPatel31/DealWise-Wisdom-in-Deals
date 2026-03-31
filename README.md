@@ -126,25 +126,6 @@ KrupPatel31-DealWise/
 
 ---
 
-## 📸 Demo & Screenshots
-
-### 🖼️ Screenshots
-
-  <img src="https://placehold.co/800x450/2d2d4d/ffffff?text=DealWise+Home+Dashboard" alt="App Screenshot 1" width="100%">
-  <em><p align="center">The main dashboard featuring the Deal of the Day and personalized recommendations.</p></em>
-
-  <img src="https://placehold.co/800x450/2d2d4d/ffffff?text=Price+Comparison+Engine" alt="App Screenshot 2" width="100%">
-  <em><p align="center">Deep-dive price comparison with historical charts and store-by-store breakdowns.</p></em>
-
-## 🎬 Video Demos
-
-  <a href="#" target="_blank">
-    <img src="https://placehold.co/800x450/2d2d4d/c5a8ff?text=Watch+Visual+Search+In+Action" alt="Video Demo 1" width="100%">
-  </a>
-  <em><p align="center">Experience how the Visual Search engine identifies products in real-time.</p></em>
-
----
-
 ## 🔐 Environment Variables
 
 To run this project, you will need to add the following environment variables to your `.env` file. These connect your frontend to the Supabase backend services.
