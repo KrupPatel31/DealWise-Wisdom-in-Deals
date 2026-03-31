@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
+import { Analytics } from "@vercel/analytics/react";
 import PageTransition from "@/components/PageTransition";
 import Index from "./pages/Index";
 import Features from "./pages/Features";
@@ -69,6 +70,7 @@ const App = () => (
           <BrowserRouter>
             <AnimatedRoutes />
           </BrowserRouter>
+          <Analytics />
         </TooltipProvider>
       </CartProvider>
     </AuthProvider>
