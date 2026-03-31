@@ -20,7 +20,7 @@ To get a local copy up and running, follow these simple steps.
 Before you begin, ensure you have the following installed on your system:
 
 *   [Node.js](https://nodejs.org/) (LTS version recommended)
-*   [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/) or [Bun](https://bun.sh/) (Bun is recommended for this project)
+*   [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/) or [Bun](https://bun.sh/) (npm is recommended for this project)
 
 ### Cloning the Repository
 
