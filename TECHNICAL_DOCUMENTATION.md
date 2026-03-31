@@ -2829,7 +2829,7 @@ npx shadcn@latest add button card input (etc.)
 
 ## Document Information
 
-**Author:** Lovable AI  
+**Author:** DealWise Team  
 **Created:** March 2025  
 **Total Pages:** ~200+ (rendered)  
 **Word Count:** ~15,000+
