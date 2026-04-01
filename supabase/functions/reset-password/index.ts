@@ -151,29 +151,39 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "DealWise - Wisdom in Deals <onboarding@resend.dev>",
+        from: "DealWise <no-reply@dealwise.in>",
+        reply_to: "support@dealwise.in",
         to: [email],
-        subject: "Your Password Has Been Reset - DealWise - Wisdom in Deals",
+        subject: "Your Password Has Been Reset — DealWise",
         html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="text-align: center; margin-bottom: 30px;">
-              <h1 style="color: #16a34a; font-size: 24px;">DealWise - Wisdom in Deals</h1>
+          <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+            <div style="background-color: #111827; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+              <h1 style="color: #22c55e; font-size: 26px; margin: 0; font-weight: 700; letter-spacing: 1px;">DealWise</h1>
+              <p style="color: #9ca3af; font-size: 13px; margin: 6px 0 0;">Wisdom in Deals</p>
             </div>
-            <div style="background-color: #f9fafb; border-radius: 8px; padding: 30px; margin-bottom: 20px;">
-              <h2 style="color: #111827; margin-top: 0;">Password Reset Successful</h2>
-              <p style="color: #4b5563; line-height: 1.6;">
-                Your password has been reset successfully. Your new password is:
+            <div style="background-color: #f9fafb; padding: 32px 28px; border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;">
+              <h2 style="color: #111827; margin: 0 0 16px; font-size: 20px;">Password Reset Successful</h2>
+              <p style="color: #4b5563; line-height: 1.7; margin: 0 0 20px; font-size: 15px;">
+                Your password has been reset successfully. Here is your new password:
               </p>
-              <div style="background-color: #111827; color: #22c55e; font-family: monospace; font-size: 20px; padding: 15px 20px; border-radius: 6px; text-align: center; letter-spacing: 2px; margin: 20px 0;">
+              <div style="background-color: #111827; color: #22c55e; font-family: 'Courier New', monospace; font-size: 22px; padding: 16px 24px; border-radius: 8px; text-align: center; letter-spacing: 3px; margin: 0 0 20px;">
                 ${newPassword}
               </div>
-              <p style="color: #4b5563; line-height: 1.6;">
-                You can now log in using this new password.😊
+              <p style="color: #4b5563; line-height: 1.7; font-size: 15px; margin: 0 0 8px;">
+                Please log in with this password and change it from your account settings for security. 😊
               </p>
             </div>
-            <div style="text-align: center; color: #9ca3af; font-size: 12px;">
-              <p>If you did not request this password reset, please contact support immediately.</p>
-              <p>&copy; ${new Date().getFullYear()} DealWise Wisdom in Deals. All rights reserved.</p>
+            <div style="background-color: #111827; padding: 20px 28px; text-align: center; border-radius: 0 0 8px 8px;">
+              <p style="color: #9ca3af; font-size: 12px; margin: 0 0 6px;">
+                If you did not request this reset, contact us immediately at
+                <a href="mailto:support@dealwise.in" style="color: #22c55e; text-decoration: none;">support@dealwise.in</a>
+              </p>
+              <p style="color: #9ca3af; font-size: 12px; margin: 0 0 6px;">
+                Need help? Reach out at <a href="mailto:help@dealwise.in" style="color: #22c55e; text-decoration: none;">help@dealwise.in</a>
+              </p>
+              <p style="color: #6b7280; font-size: 11px; margin: 8px 0 0;">
+                &copy; ${new Date().getFullYear()} DealWise. All rights reserved.
+              </p>
             </div>
           </div>
         `,
