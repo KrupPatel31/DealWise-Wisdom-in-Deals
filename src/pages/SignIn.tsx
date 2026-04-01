@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { TrendingUp, Eye, EyeOff } from "lucide-react";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
+import { supabase } from "@/integrations/supabase/client";
+import { useTurnstile } from "@/hooks/useTurnstile";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +22,7 @@ const SignIn = () => {
   
   const { signIn, user } = useAuth();
   const navigate = useNavigate();
-  
+  const { token: turnstileToken, error: turnstileError, reset: resetTurnstile, containerRef } = useTurnstile();
 
   useEffect(() => {
     if (user) {
@@ -35,20 +37,41 @@ const SignIn = () => {
       toast.error("Please enter both email and password.");
       return;
     }
+
+    if (!turnstileToken) {
+      toast.error("Please wait for security verification to complete.");
+      return;
+    }
     
     setLoading(true);
-    
-    const { error } = await signIn(email, password);
-    
-    if (error) {
-      toast.error(error.message);
-    } else {
-      setShowSuccess(true);
+
+    try {
+      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-turnstile', {
+        body: { token: turnstileToken },
+      });
+
+      if (verifyError || !verifyData?.success) {
+        toast.error("Security verification failed. Please try again.");
+        resetTurnstile();
+        setLoading(false);
+        return;
+      }
+
+      const { error } = await signIn(email, password);
+      
+      if (error) {
+        toast.error(error.message);
+        resetTurnstile();
+      } else {
+        setShowSuccess(true);
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+      resetTurnstile();
     }
     
     setLoading(false);
   };
-
 
   return (
     <div className="min-h-screen dark">
@@ -118,6 +141,9 @@ const SignIn = () => {
                     Forgot password?
                   </Link>
                 </div>
+
+                <div ref={containerRef} />
+                {turnstileError && <p className="text-xs text-destructive">{turnstileError}</p>}
 
                 <Button 
                   type="submit" 

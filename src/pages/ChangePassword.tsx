@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { TrendingUp, Lock, CheckCircle, X, Eye, EyeOff } from "lucide-react";
 import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
+import { useTurnstile } from "@/hooks/useTurnstile";
 
 const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -21,19 +22,18 @@ const ChangePassword = () => {
   
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { token: turnstileToken, error: turnstileError, reset: resetTurnstile, containerRef } = useTurnstile();
 
   const validation = validatePassword(newPassword);
   const strength = getPasswordStrength(newPassword);
   const passwordsMatch = newPassword === confirmPassword && confirmPassword.length > 0;
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/sign-in");
     }
   }, [user, authLoading, navigate]);
 
-  // Show nothing while checking auth
   if (authLoading || !user) {
     return null;
   }
@@ -51,9 +51,25 @@ const ChangePassword = () => {
       return;
     }
 
+    if (!turnstileToken) {
+      toast.error("Please wait for security verification to complete.");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-turnstile', {
+        body: { token: turnstileToken },
+      });
+
+      if (verifyError || !verifyData?.success) {
+        toast.error("Security verification failed. Please try again.");
+        resetTurnstile();
+        setLoading(false);
+        return;
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
@@ -63,13 +79,12 @@ const ChangePassword = () => {
       }
 
       toast.success("Password changed successfully!");
-
-      // Clear form and redirect
       setNewPassword("");
       setConfirmPassword("");
       navigate("/");
     } catch (error: any) {
       toast.error(error.message || "Please try again later.");
+      resetTurnstile();
     }
 
     setLoading(false);
@@ -126,7 +141,6 @@ const ChangePassword = () => {
                     </button>
                   </div>
                   
-                  {/* Password strength indicator */}
                   {newPassword && (
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
@@ -202,6 +216,9 @@ const ChangePassword = () => {
                     </div>
                   )}
                 </div>
+
+                <div ref={containerRef} />
+                {turnstileError && <p className="text-xs text-destructive">{turnstileError}</p>}
 
                 <Button 
                   type="submit" 

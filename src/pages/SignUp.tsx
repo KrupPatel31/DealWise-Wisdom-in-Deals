@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-
 import { Checkbox } from "@/components/ui/checkbox";
 import { TrendingUp, Eye, EyeOff, Check, X } from "lucide-react";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
+import { supabase } from "@/integrations/supabase/client";
+import { useTurnstile } from "@/hooks/useTurnstile";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +30,7 @@ const SignUp = () => {
   
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
-  
+  const { token: turnstileToken, error: turnstileError, reset: resetTurnstile, containerRef } = useTurnstile();
 
   useEffect(() => {
     if (user) {
@@ -51,14 +52,36 @@ const SignUp = () => {
       return;
     }
 
+    if (!turnstileToken) {
+      toast.error("Please wait for security verification to complete.");
+      return;
+    }
+
     setLoading(true);
-    
-    const { error } = await signUp(formData.email, formData.password, formData.name);
-    
-    if (error) {
-      toast.error(error.message);
-    } else {
-      setShowSuccess(true);
+
+    try {
+      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-turnstile', {
+        body: { token: turnstileToken },
+      });
+
+      if (verifyError || !verifyData?.success) {
+        toast.error("Security verification failed. Please try again.");
+        resetTurnstile();
+        setLoading(false);
+        return;
+      }
+
+      const { error } = await signUp(formData.email, formData.password, formData.name);
+      
+      if (error) {
+        toast.error(error.message);
+        resetTurnstile();
+      } else {
+        setShowSuccess(true);
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+      resetTurnstile();
     }
     
     setLoading(false);
@@ -67,7 +90,6 @@ const SignUp = () => {
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
-
 
   return (
     <div className="min-h-screen dark">
@@ -120,97 +142,97 @@ const SignUp = () => {
                   />
                 </div>
                 
-                 <div className="space-y-2">
-                   <Label htmlFor="password" className="text-foreground">Password</Label>
-                   <div className="relative">
-                     <Input
-                       id="password"
-                       type={showPassword ? "text" : "password"}
-                       placeholder="Create a password"
-                       value={formData.password}
-                       onChange={(e) => handleInputChange("password", e.target.value)}
-                       className="bg-input border-border focus:border-primary pr-10"
-                       required
-                     />
-                     <button
-                       type="button"
-                       onClick={() => setShowPassword(!showPassword)}
-                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                     >
-                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                     </button>
-                   </div>
-                   {formData.password && (
-                     <div className="space-y-3">
-                       {(() => {
-                         const { strength, label, color } = getPasswordStrength(formData.password);
-                         const validation = validatePassword(formData.password);
-                         return (
-                           <>
-                             <div className="flex items-center gap-2">
-                               <div className="flex-1 bg-muted rounded-full h-2">
-                                 <div 
-                                   className={`h-full rounded-full transition-all duration-300 ${
-                                     strength <= 1 ? 'bg-red-500' :
-                                     strength === 2 ? 'bg-orange-500' :
-                                     strength === 3 ? 'bg-yellow-500' :
-                                     strength === 4 ? 'bg-blue-500' : 'bg-green-500'
-                                   }`}
-                                   style={{ width: `${(strength / 5) * 100}%` }}
-                                 />
-                               </div>
-                               <span className={`text-sm font-medium ${color}`}>{label}</span>
-                             </div>
-                             <div className="bg-muted/30 rounded-lg p-3 space-y-2">
-                               <p className="text-sm font-medium text-foreground">Password Requirements:</p>
-                               <div className="grid grid-cols-1 gap-1">
-                                 {validation.criteria.map((criterion, index) => (
-                                   <div key={index} className="flex items-center gap-2 text-sm">
-                                     {criterion.icon === 'check' ? (
-                                       <Check className="h-4 w-4 text-green-500" />
-                                     ) : (
-                                       <X className="h-4 w-4 text-red-500" />
-                                     )}
-                                     <span className={criterion.met ? 'text-green-600' : 'text-muted-foreground'}>
-                                       {criterion.label}
-                                     </span>
-                                   </div>
-                                 ))}
-                               </div>
-                             </div>
-                           </>
-                         );
-                       })()}
-                     </div>
-                   )}
-                   {!formData.password && (
-                     <div className="bg-muted/30 rounded-lg p-3 space-y-2">
-                       <p className="text-sm font-medium text-foreground">Password Requirements:</p>
-                       <div className="grid grid-cols-1 gap-1">
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                           <X className="h-4 w-4" />
-                           <span>At least 8 characters</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                           <X className="h-4 w-4" />
-                           <span>One lowercase letter (a-z)</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                           <X className="h-4 w-4" />
-                           <span>One uppercase letter (A-Z)</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                           <X className="h-4 w-4" />
-                           <span>One number (0-9)</span>
-                         </div>
-                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                           <X className="h-4 w-4" />
-                           <span>One special character (!@#$%^&*)</span>
-                         </div>
-                       </div>
-                     </div>
-                   )}
-                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-foreground">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create a password"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange("password", e.target.value)}
+                      className="bg-input border-border focus:border-primary pr-10"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  {formData.password && (
+                    <div className="space-y-3">
+                      {(() => {
+                        const { strength, label, color } = getPasswordStrength(formData.password);
+                        const validation = validatePassword(formData.password);
+                        return (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 bg-muted rounded-full h-2">
+                                <div 
+                                  className={`h-full rounded-full transition-all duration-300 ${
+                                    strength <= 1 ? 'bg-red-500' :
+                                    strength === 2 ? 'bg-orange-500' :
+                                    strength === 3 ? 'bg-yellow-500' :
+                                    strength === 4 ? 'bg-blue-500' : 'bg-green-500'
+                                  }`}
+                                  style={{ width: `${(strength / 5) * 100}%` }}
+                                />
+                              </div>
+                              <span className={`text-sm font-medium ${color}`}>{label}</span>
+                            </div>
+                            <div className="bg-muted/30 rounded-lg p-3 space-y-2">
+                              <p className="text-sm font-medium text-foreground">Password Requirements:</p>
+                              <div className="grid grid-cols-1 gap-1">
+                                {validation.criteria.map((criterion, index) => (
+                                  <div key={index} className="flex items-center gap-2 text-sm">
+                                    {criterion.icon === 'check' ? (
+                                      <Check className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                      <X className="h-4 w-4 text-red-500" />
+                                    )}
+                                    <span className={criterion.met ? 'text-green-600' : 'text-muted-foreground'}>
+                                      {criterion.label}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  )}
+                  {!formData.password && (
+                    <div className="bg-muted/30 rounded-lg p-3 space-y-2">
+                      <p className="text-sm font-medium text-foreground">Password Requirements:</p>
+                      <div className="grid grid-cols-1 gap-1">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <X className="h-4 w-4" />
+                          <span>At least 8 characters</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <X className="h-4 w-4" />
+                          <span>One lowercase letter (a-z)</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <X className="h-4 w-4" />
+                          <span>One uppercase letter (A-Z)</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <X className="h-4 w-4" />
+                          <span>One number (0-9)</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <X className="h-4 w-4" />
+                          <span>One special character (!@#$%^&*)</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
@@ -252,6 +274,9 @@ const SignUp = () => {
                     </Link>
                   </Label>
                 </div>
+
+                <div ref={containerRef} />
+                {turnstileError && <p className="text-xs text-destructive">{turnstileError}</p>}
 
                 <Button 
                   type="submit" 
