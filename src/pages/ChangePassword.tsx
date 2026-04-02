@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { TrendingUp, Lock, CheckCircle, X, Eye, EyeOff } from "lucide-react";
 import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
-import { useTurnstile } from "@/hooks/useTurnstile";
 
 const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -22,7 +21,6 @@ const ChangePassword = () => {
   
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { token: turnstileToken, error: turnstileError, reset: resetTurnstile, containerRef } = useTurnstile();
 
   const validation = validatePassword(newPassword);
   const strength = getPasswordStrength(newPassword);
@@ -51,25 +49,9 @@ const ChangePassword = () => {
       return;
     }
 
-    if (!turnstileToken) {
-      toast.error("Please wait for security verification to complete.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-turnstile', {
-        body: { token: turnstileToken },
-      });
-
-      if (verifyError || !verifyData?.success) {
-        toast.error("Security verification failed. Please try again.");
-        resetTurnstile();
-        setLoading(false);
-        return;
-      }
-
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
@@ -84,7 +66,6 @@ const ChangePassword = () => {
       navigate("/");
     } catch (error: any) {
       toast.error(error.message || "Please try again later.");
-      resetTurnstile();
     }
 
     setLoading(false);
@@ -217,10 +198,7 @@ const ChangePassword = () => {
                   )}
                 </div>
 
-                <div ref={containerRef} />
-                {turnstileError && <p className="text-xs text-destructive">{turnstileError}</p>}
-
-                <Button 
+                <Button
                   type="submit" 
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   disabled={loading || !validation.isValid || !passwordsMatch}

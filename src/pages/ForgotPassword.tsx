@@ -9,37 +9,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { TrendingUp, ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useTurnstile } from "@/hooks/useTurnstile";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const { token: turnstileToken, error: turnstileError, reset: resetTurnstile, containerRef } = useTurnstile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!turnstileToken) {
-      toast.error("Please wait for security verification to complete.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      // Verify turnstile first
-      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-turnstile', {
-        body: { token: turnstileToken },
-      });
-
-      if (verifyError || !verifyData?.success) {
-        toast.error("Security verification failed. Please try again.");
-        resetTurnstile();
-        setLoading(false);
-        return;
-      }
-
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/reset-password`,
@@ -60,7 +41,6 @@ const ForgotPassword = () => {
       toast.success("If an account exists, you'll receive a new password shortly.");
     } catch (error: any) {
       toast.error(error.message || "Please try again later.");
-      resetTurnstile();
     }
 
     setLoading(false);
@@ -110,7 +90,7 @@ const ForgotPassword = () => {
                     <Button 
                       variant="outline" 
                       className="w-full"
-                      onClick={() => { setEmailSent(false); resetTurnstile(); }}
+                      onClick={() => setEmailSent(false)}
                     >
                       <Mail className="h-4 w-4 mr-2" />
                       Try a different email
@@ -138,10 +118,7 @@ const ForgotPassword = () => {
                     />
                   </div>
 
-                  <div ref={containerRef} />
-                  {turnstileError && <p className="text-xs text-destructive">{turnstileError}</p>}
-
-                  <Button 
+                  <Button
                     type="submit" 
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                     disabled={loading}

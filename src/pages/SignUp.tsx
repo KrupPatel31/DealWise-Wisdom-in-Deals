@@ -12,8 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TrendingUp, Eye, EyeOff, Check, X } from "lucide-react";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
-import { supabase } from "@/integrations/supabase/client";
-import { useTurnstile } from "@/hooks/useTurnstile";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +28,6 @@ const SignUp = () => {
   
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
-  const { token: turnstileToken, error: turnstileError, reset: resetTurnstile, containerRef } = useTurnstile();
 
   useEffect(() => {
     if (user) {
@@ -52,36 +49,18 @@ const SignUp = () => {
       return;
     }
 
-    if (!turnstileToken) {
-      toast.error("Please wait for security verification to complete.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-turnstile', {
-        body: { token: turnstileToken },
-      });
-
-      if (verifyError || !verifyData?.success) {
-        toast.error("Security verification failed. Please try again.");
-        resetTurnstile();
-        setLoading(false);
-        return;
-      }
-
       const { error } = await signUp(formData.email, formData.password, formData.name);
       
       if (error) {
         toast.error(error.message);
-        resetTurnstile();
       } else {
         setShowSuccess(true);
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
-      resetTurnstile();
     }
     
     setLoading(false);
@@ -275,10 +254,7 @@ const SignUp = () => {
                   </Label>
                 </div>
 
-                <div ref={containerRef} />
-                {turnstileError && <p className="text-xs text-destructive">{turnstileError}</p>}
-
-                <Button 
+                <Button
                   type="submit" 
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   disabled={!formData.agreeToTerms || loading}
