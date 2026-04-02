@@ -122,8 +122,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         .eq('product_id', id);
 
       if (error) {
-        console.error('Error removing from cart:', error);
-        // Rollback on error
         if (itemToRemove) {
           setCartItems((prev) => [...prev, itemToRemove]);
         }
