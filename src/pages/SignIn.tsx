@@ -35,36 +35,18 @@ const SignIn = () => {
       return;
     }
 
-    if (!turnstileToken) {
-      toast.error("Please wait for security verification to complete.");
-      return;
-    }
-    
     setLoading(true);
 
     try {
-      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-turnstile', {
-        body: { token: turnstileToken },
-      });
-
-      if (verifyError || !verifyData?.success) {
-        toast.error("Security verification failed. Please try again.");
-        resetTurnstile();
-        setLoading(false);
-        return;
-      }
-
       const { error } = await signIn(email, password);
       
       if (error) {
         toast.error(error.message);
-        resetTurnstile();
       } else {
         setShowSuccess(true);
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
-      resetTurnstile();
     }
     
     setLoading(false);
