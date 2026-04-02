@@ -194,8 +194,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       if (error) {
         setCartItems(previousItems);
       }
-    } catch (error) {
-      console.error('Error clearing cart:', error);
+    } catch {
       setCartItems(previousItems);
     }
   };
