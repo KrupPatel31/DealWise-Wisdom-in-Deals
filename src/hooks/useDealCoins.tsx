@@ -55,8 +55,7 @@ export const useDealCoins = () => {
           totalSpent: data.total_spent,
         });
       }
-    } catch (error) {
-      console.error('Error in fetchCoins:', error);
+    } catch {
     } finally {
       setIsLoading(false);
     }
