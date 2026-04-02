@@ -82,7 +82,6 @@ export const ProductSearchBar = () => {
     };
 
     recognition.onerror = (event: any) => {
-      console.error("Speech error:", event.error);
       setIsListening(false);
       if (event.error === "not-allowed") {
         toast.error("Microphone access denied. Please allow microphone permission.");
@@ -189,7 +188,6 @@ export const ProductSearchBar = () => {
       });
 
       if (error) {
-        console.error('API search error:', error);
         toast.error('Failed to fetch products from API');
         return;
       }
@@ -222,8 +220,7 @@ export const ProductSearchBar = () => {
       } else {
         toast.info('No products found, showing local results');
       }
-    } catch (error) {
-      console.error('Error searching products:', error);
+    } catch {
       toast.error('Search failed, showing local results');
     } finally {
       setIsSearchingApi(false);

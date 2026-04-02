@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -109,13 +109,11 @@ const variantConfig = {
 export const SuccessOverlay = ({ show, onClose, variant, dealUrl }: SuccessOverlayProps) => {
   const navigate = useNavigate();
   const config = variantConfig[variant];
-  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   // Auto-redirect for deal variant
   useEffect(() => {
     if (show && variant === "deal" && dealUrl) {
       const timer = setTimeout(() => {
-        setShouldRedirect(true);
         window.open(dealUrl, "_blank");
         onClose();
       }, 1800);

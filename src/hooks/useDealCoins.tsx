@@ -45,7 +45,6 @@ export const useDealCoins = () => {
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching coins:', error);
         return;
       }
 
@@ -56,8 +55,7 @@ export const useDealCoins = () => {
           totalSpent: data.total_spent,
         });
       }
-    } catch (error) {
-      console.error('Error in fetchCoins:', error);
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -78,13 +76,11 @@ export const useDealCoins = () => {
         .limit(20);
 
       if (error) {
-        console.error('Error fetching transactions:', error);
         return;
       }
 
       setTransactions(data as CoinTransaction[]);
-    } catch (error) {
-      console.error('Error in fetchTransactions:', error);
+    } catch {
     }
   }, [user]);
 

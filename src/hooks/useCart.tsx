@@ -45,7 +45,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         .eq('user_id', user.id);
 
       if (error) {
-        console.error('Error loading cart:', error);
         return;
       }
 
@@ -61,8 +60,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       }));
 
       setCartItems(items);
-    } catch (error) {
-      console.error('Error loading cart:', error);
+    } catch {
     } finally {
       setIsLoading(false);
     }
@@ -98,12 +96,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         });
 
         if (error) {
-          console.error('Error adding to cart:', error);
           // Rollback on error
           setCartItems((prev) => prev.filter((i) => i.id !== item.id));
         }
-      } catch (error) {
-        console.error('Error adding to cart:', error);
+      } catch {
         setCartItems((prev) => prev.filter((i) => i.id !== item.id));
       }
     }
@@ -126,14 +122,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         .eq('product_id', id);
 
       if (error) {
-        console.error('Error removing from cart:', error);
-        // Rollback on error
         if (itemToRemove) {
           setCartItems((prev) => [...prev, itemToRemove]);
         }
       }
-    } catch (error) {
-      console.error('Error removing from cart:', error);
+    } catch {
       if (itemToRemove) {
         setCartItems((prev) => [...prev, itemToRemove]);
       }
@@ -164,8 +157,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         .eq('product_id', id);
 
       if (error) {
-        console.error('Error updating quantity:', error);
-        // Rollback on error
         if (previousItem) {
           setCartItems((prev) =>
             prev.map((item) =>
@@ -174,8 +165,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           );
         }
       }
-    } catch (error) {
-      console.error('Error updating quantity:', error);
+    } catch {
       if (previousItem) {
         setCartItems((prev) =>
           prev.map((item) =>
@@ -202,12 +192,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         .eq('user_id', user.id);
 
       if (error) {
-        console.error('Error clearing cart:', error);
-        // Rollback on error
         setCartItems(previousItems);
       }
-    } catch (error) {
-      console.error('Error clearing cart:', error);
+    } catch {
       setCartItems(previousItems);
     }
   };
