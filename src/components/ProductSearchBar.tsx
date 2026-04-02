@@ -188,7 +188,6 @@ export const ProductSearchBar = () => {
       });
 
       if (error) {
-        console.error('API search error:', error);
         toast.error('Failed to fetch products from API');
         return;
       }
