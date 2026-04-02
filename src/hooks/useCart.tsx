@@ -126,8 +126,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           setCartItems((prev) => [...prev, itemToRemove]);
         }
       }
-    } catch (error) {
-      console.error('Error removing from cart:', error);
+    } catch {
       if (itemToRemove) {
         setCartItems((prev) => [...prev, itemToRemove]);
       }
