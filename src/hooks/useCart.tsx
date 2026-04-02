@@ -99,8 +99,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           // Rollback on error
           setCartItems((prev) => prev.filter((i) => i.id !== item.id));
         }
-      } catch (error) {
-        console.error('Error adding to cart:', error);
+      } catch {
         setCartItems((prev) => prev.filter((i) => i.id !== item.id));
       }
     }
