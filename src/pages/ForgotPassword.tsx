@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { TrendingUp, ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useTurnstile } from "@/hooks/useTurnstile";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
