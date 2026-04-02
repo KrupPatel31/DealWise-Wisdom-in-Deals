@@ -157,8 +157,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         .eq('product_id', id);
 
       if (error) {
-        console.error('Error updating quantity:', error);
-        // Rollback on error
         if (previousItem) {
           setCartItems((prev) =>
             prev.map((item) =>
