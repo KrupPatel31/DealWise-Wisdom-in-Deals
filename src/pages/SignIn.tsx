@@ -20,7 +20,6 @@ const SignIn = () => {
   
   const { signIn, user } = useAuth();
   const navigate = useNavigate();
-  const { token: turnstileToken, error: turnstileError, reset: resetTurnstile, containerRef } = useTurnstile();
 
   useEffect(() => {
     if (user) {
