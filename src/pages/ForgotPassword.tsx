@@ -90,7 +90,7 @@ const ForgotPassword = () => {
                     <Button 
                       variant="outline" 
                       className="w-full"
-                      onClick={() => { setEmailSent(false); resetTurnstile(); }}
+                      onClick={() => setEmailSent(false)}
                     >
                       <Mail className="h-4 w-4 mr-2" />
                       Try a different email
