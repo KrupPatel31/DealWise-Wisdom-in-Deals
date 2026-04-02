@@ -76,7 +76,6 @@ export const useDealCoins = () => {
         .limit(20);
 
       if (error) {
-        console.error('Error fetching transactions:', error);
         return;
       }
 
