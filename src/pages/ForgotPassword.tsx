@@ -118,10 +118,7 @@ const ForgotPassword = () => {
                     />
                   </div>
 
-                  <div ref={containerRef} />
-                  {turnstileError && <p className="text-xs text-destructive">{turnstileError}</p>}
-
-                  <Button 
+                  <Button
                     type="submit" 
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                     disabled={loading}
