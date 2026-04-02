@@ -49,25 +49,9 @@ const ChangePassword = () => {
       return;
     }
 
-    if (!turnstileToken) {
-      toast.error("Please wait for security verification to complete.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-turnstile', {
-        body: { token: turnstileToken },
-      });
-
-      if (verifyError || !verifyData?.success) {
-        toast.error("Security verification failed. Please try again.");
-        resetTurnstile();
-        setLoading(false);
-        return;
-      }
-
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
