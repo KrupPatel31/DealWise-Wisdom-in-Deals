@@ -80,8 +80,7 @@ export const useDealCoins = () => {
       }
 
       setTransactions(data as CoinTransaction[]);
-    } catch (error) {
-      console.error('Error in fetchTransactions:', error);
+    } catch {
     }
   }, [user]);
 
