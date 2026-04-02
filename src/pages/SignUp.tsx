@@ -12,8 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TrendingUp, Eye, EyeOff, Check, X } from "lucide-react";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
-import { supabase } from "@/integrations/supabase/client";
-import { useTurnstile } from "@/hooks/useTurnstile";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
