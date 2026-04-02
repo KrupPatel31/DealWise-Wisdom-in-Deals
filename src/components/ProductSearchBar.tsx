@@ -82,7 +82,6 @@ export const ProductSearchBar = () => {
     };
 
     recognition.onerror = (event: any) => {
-      console.error("Speech error:", event.error);
       setIsListening(false);
       if (event.error === "not-allowed") {
         toast.error("Microphone access denied. Please allow microphone permission.");
