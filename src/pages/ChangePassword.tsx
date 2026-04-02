@@ -66,7 +66,6 @@ const ChangePassword = () => {
       navigate("/");
     } catch (error: any) {
       toast.error(error.message || "Please try again later.");
-      resetTurnstile();
     }
 
     setLoading(false);
