@@ -45,7 +45,6 @@ export const useDealCoins = () => {
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching coins:', error);
         return;
       }
 
