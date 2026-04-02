@@ -69,8 +69,6 @@ const App = () => (
           <BrowserRouter>
             <AnimatedRoutes />
           </BrowserRouter>
-          <Analytics />
-          <SpeedInsights />
         </TooltipProvider>
       </CartProvider>
     </AuthProvider>

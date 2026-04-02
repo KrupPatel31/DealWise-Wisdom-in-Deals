@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { TrendingUp, ArrowLeft, Mail, CheckCircle } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
