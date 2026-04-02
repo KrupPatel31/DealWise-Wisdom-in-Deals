@@ -165,8 +165,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           );
         }
       }
-    } catch (error) {
-      console.error('Error updating quantity:', error);
+    } catch {
       if (previousItem) {
         setCartItems((prev) =>
           prev.map((item) =>
