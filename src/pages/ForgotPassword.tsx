@@ -18,26 +18,9 @@ const ForgotPassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!turnstileToken) {
-      toast.error("Please wait for security verification to complete.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      // Verify turnstile first
-      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-turnstile', {
-        body: { token: turnstileToken },
-      });
-
-      if (verifyError || !verifyData?.success) {
-        toast.error("Security verification failed. Please try again.");
-        resetTurnstile();
-        setLoading(false);
-        return;
-      }
-
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/reset-password`,
