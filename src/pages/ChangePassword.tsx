@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { TrendingUp, Lock, CheckCircle, X, Eye, EyeOff } from "lucide-react";
 import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
-import { useTurnstile } from "@/hooks/useTurnstile";
 
 const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
