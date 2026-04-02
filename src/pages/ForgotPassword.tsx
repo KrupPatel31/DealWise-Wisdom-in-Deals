@@ -41,7 +41,6 @@ const ForgotPassword = () => {
       toast.success("If an account exists, you'll receive a new password shortly.");
     } catch (error: any) {
       toast.error(error.message || "Please try again later.");
-      resetTurnstile();
     }
 
     setLoading(false);
