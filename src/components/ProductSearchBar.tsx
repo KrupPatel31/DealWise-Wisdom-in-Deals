@@ -220,8 +220,7 @@ export const ProductSearchBar = () => {
       } else {
         toast.info('No products found, showing local results');
       }
-    } catch (error) {
-      console.error('Error searching products:', error);
+    } catch {
       toast.error('Search failed, showing local results');
     } finally {
       setIsSearchingApi(false);
