@@ -21,7 +21,6 @@ const ChangePassword = () => {
   
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { token: turnstileToken, error: turnstileError, reset: resetTurnstile, containerRef } = useTurnstile();
 
   const validation = validatePassword(newPassword);
   const strength = getPasswordStrength(newPassword);
