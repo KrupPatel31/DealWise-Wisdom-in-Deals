@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
 import PageTransition from "@/components/PageTransition";
@@ -71,6 +72,7 @@ const App = () => (
             <AnimatedRoutes />
           </BrowserRouter>
           <Analytics />
+          <SpeedInsights />
         </TooltipProvider>
       </CartProvider>
     </AuthProvider>
