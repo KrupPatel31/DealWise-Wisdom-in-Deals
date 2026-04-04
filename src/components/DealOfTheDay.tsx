@@ -49,18 +49,18 @@ const CountdownTimer = ({
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
   }, [endTime]);
-  return <div className="flex items-center gap-2">
-      <Clock className="h-4 w-4 text-destructive animate-pulse" />
-      <div className="flex gap-1">
-        <div className="bg-destructive/20 text-destructive font-bold px-2 py-1 rounded text-sm min-w-[2.5rem] text-center">
+  return <div className="flex items-center gap-1.5 sm:gap-2">
+      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-destructive animate-pulse" />
+      <div className="flex gap-0.5 sm:gap-1">
+        <div className="bg-destructive/20 text-destructive font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs sm:text-sm min-w-[2rem] sm:min-w-[2.5rem] text-center">
           {String(timeLeft.hours).padStart(2, '0')}h
         </div>
-        <span className="text-destructive font-bold">:</span>
-        <div className="bg-destructive/20 text-destructive font-bold px-2 py-1 rounded text-sm min-w-[2.5rem] text-center">
+        <span className="text-destructive font-bold text-xs sm:text-sm">:</span>
+        <div className="bg-destructive/20 text-destructive font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs sm:text-sm min-w-[2rem] sm:min-w-[2.5rem] text-center">
           {String(timeLeft.minutes).padStart(2, '0')}m
         </div>
-        <span className="text-destructive font-bold">:</span>
-        <div className="bg-destructive/20 text-destructive font-bold px-2 py-1 rounded text-sm min-w-[2.5rem] text-center">
+        <span className="text-destructive font-bold text-xs sm:text-sm">:</span>
+        <div className="bg-destructive/20 text-destructive font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs sm:text-sm min-w-[2rem] sm:min-w-[2.5rem] text-center">
           {String(timeLeft.seconds).padStart(2, '0')}s
         </div>
       </div>
