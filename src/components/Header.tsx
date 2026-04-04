@@ -141,15 +141,15 @@ export const Header = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="lg:hidden flex items-center gap-2">
+          <div className="lg:hidden flex items-center gap-1">
             {!authLoading && user && (
               <>
-                <Link to="/deal-coins"><DealCoinsDisplay /></Link>
+                <Link to="/deal-coins" className="hidden xs:block"><DealCoinsDisplay /></Link>
                 <Link to="/cart">
-                  <Button variant="ghost" size="sm" className="relative">
+                  <Button variant="ghost" size="icon" className="relative h-8 w-8">
                     <ShoppingCart className="h-4 w-4" />
                     {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                         {cartCount > 99 ? '99+' : cartCount}
                       </span>
                     )}
@@ -157,7 +157,7 @@ export const Header = () => {
                   </Button>
                 </Link>
                 <Link to="/orders">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Package className="h-4 w-4" />
                     <span className="sr-only">Orders</span>
                   </Button>
