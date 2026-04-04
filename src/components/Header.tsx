@@ -41,9 +41,9 @@ export const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <TrendingUp className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold text-primary">DEALWISE</span>
+          <Link to="/" className="flex items-center gap-1.5 sm:gap-2">
+            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <span className="text-lg sm:text-xl font-bold text-primary">DEALWISE</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -141,15 +141,15 @@ export const Header = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="lg:hidden flex items-center gap-2">
+          <div className="lg:hidden flex items-center gap-1">
             {!authLoading && user && (
               <>
-                <Link to="/deal-coins"><DealCoinsDisplay /></Link>
+                <Link to="/deal-coins" className="hidden xs:block"><DealCoinsDisplay /></Link>
                 <Link to="/cart">
-                  <Button variant="ghost" size="sm" className="relative">
+                  <Button variant="ghost" size="icon" className="relative h-8 w-8">
                     <ShoppingCart className="h-4 w-4" />
                     {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                         {cartCount > 99 ? '99+' : cartCount}
                       </span>
                     )}
@@ -157,7 +157,7 @@ export const Header = () => {
                   </Button>
                 </Link>
                 <Link to="/orders">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Package className="h-4 w-4" />
                     <span className="sr-only">Orders</span>
                   </Button>
@@ -172,7 +172,7 @@ export const Header = () => {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetContent side="right" className="w-[280px] sm:w-[400px]">
                 <div className="flex flex-col gap-4 mt-6">
                   <div className="flex items-center gap-2 mb-4">
                     <TrendingUp className="h-6 w-6 text-primary" />

@@ -20,9 +20,9 @@ export const Footer = () => {
         <Separator className="bg-border/50 mb-8 sm:mb-12" />
 
         {/* Main Footer Content */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 mb-8 sm:mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {/* Company Info */}
-          <div className="col-span-2 lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-2 space-y-4 sm:space-y-6">
             <Link to="/" className="flex items-center gap-2 sm:gap-3">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center shadow-glow">
                 <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
