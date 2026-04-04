@@ -175,13 +175,13 @@ export const Header = () => {
                     </span>
                   </div>
 
-                  <nav className="flex flex-col gap-3">
+                  <nav className="flex flex-col gap-1">
                     {navigation.map((item) => (
                       <Link
                         key={item.name}
                         to={item.href}
                         onClick={() => setIsOpen(false)}
-                        className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-muted"
+                        className="text-foreground hover:text-primary transition-colors py-1.5 px-3 rounded-md hover:bg-muted text-sm"
                       >
                         {item.name}
                       </Link>
