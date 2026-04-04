@@ -188,7 +188,7 @@ export const Header = () => {
                     ))}
                   </nav>
 
-                  <div className="mt-6 pt-6 border-t border-border">
+                  <div className="mt-4 pt-4 border-t border-border">
                     {user ? (
                       <div className="space-y-3">
                         <div className="px-3 py-2 bg-muted/50 rounded-lg">
