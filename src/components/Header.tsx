@@ -144,7 +144,7 @@ export const Header = () => {
           <div className="lg:hidden flex items-center gap-1">
             {!authLoading && user && (
               <>
-                <Link to="/deal-coins" className="hidden xs:block"><DealCoinsDisplay /></Link>
+                <Link to="/deal-coins"><DealCoinsDisplay /></Link>
                 <Link to="/cart">
                   <Button variant="ghost" size="icon" className="relative h-8 w-8">
                     <ShoppingCart className="h-4 w-4" />
@@ -154,12 +154,6 @@ export const Header = () => {
                       </span>
                     )}
                     <span className="sr-only">Cart</span>
-                  </Button>
-                </Link>
-                <Link to="/orders">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Package className="h-4 w-4" />
-                    <span className="sr-only">Orders</span>
                   </Button>
                 </Link>
               </>
