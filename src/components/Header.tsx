@@ -166,8 +166,8 @@ export const Header = () => {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[400px]">
-                <div className="flex flex-col gap-4 mt-6">
+              <SheetContent side="right" className="w-[280px] sm:w-[400px] overflow-y-auto">
+                <div className="flex flex-col gap-3 mt-6 pb-8">
                   <div className="flex items-center gap-2 mb-4">
                     <TrendingUp className="h-6 w-6 text-primary" />
                     <span className="text-xl font-bold text-primary">
@@ -175,20 +175,20 @@ export const Header = () => {
                     </span>
                   </div>
 
-                  <nav className="flex flex-col gap-3">
+                  <nav className="flex flex-col gap-1">
                     {navigation.map((item) => (
                       <Link
                         key={item.name}
                         to={item.href}
                         onClick={() => setIsOpen(false)}
-                        className="text-foreground hover:text-primary transition-colors py-2 px-3 rounded-md hover:bg-muted"
+                        className="text-foreground hover:text-primary transition-colors py-1.5 px-3 rounded-md hover:bg-muted text-sm"
                       >
                         {item.name}
                       </Link>
                     ))}
                   </nav>
 
-                  <div className="mt-6 pt-6 border-t border-border">
+                  <div className="mt-4 pt-4 border-t border-border">
                     {user ? (
                       <div className="space-y-3">
                         <div className="px-3 py-2 bg-muted/50 rounded-lg">
