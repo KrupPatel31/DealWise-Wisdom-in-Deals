@@ -144,7 +144,7 @@ export const Header = () => {
           <div className="lg:hidden flex items-center gap-1">
             {!authLoading && user && (
               <>
-                <Link to="/deal-coins" className="hidden xs:block"><DealCoinsDisplay /></Link>
+                <Link to="/deal-coins"><DealCoinsDisplay /></Link>
                 <Link to="/cart">
                   <Button variant="ghost" size="icon" className="relative h-8 w-8">
                     <ShoppingCart className="h-4 w-4" />
@@ -154,12 +154,6 @@ export const Header = () => {
                       </span>
                     )}
                     <span className="sr-only">Cart</span>
-                  </Button>
-                </Link>
-                <Link to="/orders">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Package className="h-4 w-4" />
-                    <span className="sr-only">Orders</span>
                   </Button>
                 </Link>
               </>
@@ -196,11 +190,20 @@ export const Header = () => {
 
                   <div className="mt-6 pt-6 border-t border-border">
                     {user ? (
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         <div className="px-3 py-2 bg-muted/50 rounded-lg">
                           <p className="text-sm font-medium">{displayName}</p>
                           <p className="text-xs text-muted-foreground">{displayEmail}</p>
                         </div>
+                        <Link to="/orders" onClick={() => setIsOpen(false)}>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start mb-2"
+                          >
+                            <Package className="h-4 w-4 mr-2" />
+                            My Orders
+                          </Button>
+                        </Link>
                         <Link to="/change-password" onClick={() => setIsOpen(false)}>
                           <Button
                             variant="outline"
@@ -211,7 +214,7 @@ export const Header = () => {
                           </Button>
                         </Link>
                         <Button
-                          variant="outline"
+                          variant="destructive"
                           className="w-full justify-start"
                           onClick={() => {
                             signOut();
