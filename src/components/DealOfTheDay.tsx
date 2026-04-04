@@ -240,10 +240,10 @@ export const DealOfTheDay = () => {
                 {/* Price - pushed to bottom with mt-auto */}
                 <div className="mt-auto pt-3 space-y-2">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl font-bold text-primary">
+                    <span className="text-xl sm:text-2xl font-bold text-primary">
                       ₹{deal.deal_price.toLocaleString('en-IN')}
                     </span>
-                    <span className="text-base text-muted-foreground line-through">
+                    <span className="text-sm sm:text-base text-muted-foreground line-through">
                       ₹{deal.original_price.toLocaleString('en-IN')}
                     </span>
                   </div>

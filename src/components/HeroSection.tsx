@@ -21,7 +21,7 @@ export const HeroSection = () => {
           </h2>
         </div>
 
-        <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-lg font-medium">
+        <p className="text-base sm:text-xl text-muted-foreground leading-relaxed max-w-lg font-medium">
           Compare prices across{" "}
           <span className="text-primary font-bold">multiple platforms</span>,
           track promotions, and discover the best deals with{" "}
