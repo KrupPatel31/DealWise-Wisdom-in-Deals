@@ -162,7 +162,7 @@ export const DealOfTheDay = () => {
               <Flame className="h-6 w-6 text-destructive animate-pulse" />
             </div>
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+              <h2 className="text-xl sm:text-3xl font-bold text-foreground">
                 Deal of the Day
               </h2>
               <p className="text-muted-foreground text-sm">
