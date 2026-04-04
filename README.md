@@ -23,6 +23,7 @@
 - [🚀 Getting Started](#-getting-started)
 - [🔧 Usage](#-usage)
 - [🤝 Contributing](#-contributing)
+- [🌐 Live Demo](#-live-demo)
 - [📝 License](#-license)
 
 ---
@@ -243,6 +244,11 @@ We welcome contributions to improve DealWise! Your input helps make this project
 
 ---
 
+## 🌐 Live Demo
+
+[https://www.dealwise.in/](https://www.dealwise.in/)
+
+---
 ## 📝 License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for complete details.
