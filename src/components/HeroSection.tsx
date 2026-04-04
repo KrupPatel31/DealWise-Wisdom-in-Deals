@@ -16,7 +16,7 @@ export const HeroSection = () => {
             <br />
             <span className="gradient-text animate-float">DEALS</span>
           </h1>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary font-display">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-primary font-display">
             DEALWISE
           </h2>
         </div>
