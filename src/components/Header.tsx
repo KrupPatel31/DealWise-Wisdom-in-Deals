@@ -190,11 +190,20 @@ export const Header = () => {
 
                   <div className="mt-6 pt-6 border-t border-border">
                     {user ? (
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         <div className="px-3 py-2 bg-muted/50 rounded-lg">
                           <p className="text-sm font-medium">{displayName}</p>
                           <p className="text-xs text-muted-foreground">{displayEmail}</p>
                         </div>
+                        <Link to="/orders" onClick={() => setIsOpen(false)}>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start mb-2"
+                          >
+                            <Package className="h-4 w-4 mr-2" />
+                            My Orders
+                          </Button>
+                        </Link>
                         <Link to="/change-password" onClick={() => setIsOpen(false)}>
                           <Button
                             variant="outline"
@@ -205,7 +214,7 @@ export const Header = () => {
                           </Button>
                         </Link>
                         <Button
-                          variant="outline"
+                          variant="destructive"
                           className="w-full justify-start"
                           onClick={() => {
                             signOut();
