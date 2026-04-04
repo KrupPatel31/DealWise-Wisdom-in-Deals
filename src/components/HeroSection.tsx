@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export const HeroSection = () => {
   return (
-    <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20 grid lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-[80vh]">
+    <section className="container mx-auto px-4 sm:px-6 py-8 sm:py-16 lg:py-20 grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-center min-h-[60vh] sm:min-h-[80vh]">
       {/* Left Column - Text Content */}
       <div className="space-y-8 animate-fade-up">
         {/* Trust Badge */}
