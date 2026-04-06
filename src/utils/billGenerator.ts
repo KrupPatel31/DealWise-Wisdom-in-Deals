@@ -226,7 +226,7 @@ export const generateBillHTML = (order: OrderData): string => {
     
     <div class="footer">
       <p>Thank you for shopping with DealWise!</p>
-      <p style="margin-top: 5px;">For any queries, contact us at support@dealwise.com</p>
+      <p style="margin-top: 5px;">For any queries, contact us at support@dealwise.in</p>
       <p style="margin-top: 10px; font-size: 10px; color: #9ca3af;">
         This is a computer-generated invoice and does not require a signature.
       </p>
