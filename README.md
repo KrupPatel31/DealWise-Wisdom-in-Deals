@@ -157,31 +157,37 @@ To run DealWise, you need to configure the following environment variables in a 
 
 ### Installation
 
-1.  **Clone the Repository**
+1.  Clone the repository to your local machine:
+
     ```bash
-    git clone https://github.com/KrupPatel31/DealWise.git
-    cd DealWise
+    git clone https://github.com/KrupPatel31/DealWise-Wisdom-in-Deals.git
+    cd DealWise-Wisdom-in-Deals
     ```
 
-2.  **Install Dependencies**
+### Installing Dependencies
+
+This project uses Bun as its package manager.
+
+1.  Install the project dependencies:
+
     ```bash
     npm install
     ```
 
-3.  **Environment Setup**
-    Create a `.env` file in the root directory and populate it with your verified Supabase credentials as shown in the [Environment Variables](#-environment-variables) section.
+### Setting up Environment Variables
 
-4.  **Database Migration**
-    Apply the database schema to your Supabase instance:
-    ```bash
-    supabase db push
-    ```
+1.  Create a `.env` file in the root directory of the project.
+2.  Populate the `.env` file with your specific environment variables. Refer to `.env.example` (if available) for required variables.
 
-5.  **Run Development Server**
+### Running the Application
+
+1.  Start the development server:
+
     ```bash
     npm run dev
     ```
-    The application will be accessible at `http://localhost:5173`.
+
+This will start the application, and you can access it in your browser, typically at `http://localhost:8080` (the port might vary).
 
 ### Available Scripts
 
