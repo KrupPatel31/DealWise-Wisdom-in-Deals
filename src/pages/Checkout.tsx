@@ -9,18 +9,18 @@ import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
-  MapPin, 
-  CreditCard, 
-  Truck, 
-  Tag, 
+import {
+  MapPin,
+  CreditCard,
+  Truck,
+  Tag,
   ShoppingBag,
   CheckCircle,
   ArrowLeft,
@@ -33,7 +33,7 @@ import {
   X,
   Shield,
   Lock,
-  Coins
+  Coins,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
@@ -61,7 +61,11 @@ interface CheckoutCoupon {
   max_discount: number | null;
 }
 
-const calculateCouponDiscount = (coupon: CheckoutCoupon, subtotal: number, shipping: number) => {
+const calculateCouponDiscount = (
+  coupon: CheckoutCoupon,
+  subtotal: number,
+  shipping: number,
+) => {
   if (coupon.coupon_type === "freeShipping") {
     return shipping;
   }
@@ -83,7 +87,7 @@ const Checkout = () => {
   const { cartItems, clearCart } = useCart();
   const { coins, refetchCoins } = useDealCoins();
   const navigate = useNavigate();
-  
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<any>(null);
@@ -91,11 +95,13 @@ const Checkout = () => {
   const [discountCode, setDiscountCode] = useState("");
   const [discountApplied, setDiscountApplied] = useState(false);
   const [discountAmount, setDiscountAmount] = useState(0);
-  const [appliedCoupon, setAppliedCoupon] = useState<CheckoutCoupon | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<CheckoutCoupon | null>(
+    null,
+  );
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [coinsToUse, setCoinsToUse] = useState(0);
   const [useCoins, setUseCoins] = useState(false);
-  
+
   const [shippingAddress, setShippingAddress] = useState({
     fullName: "",
     phone: "",
@@ -104,23 +110,28 @@ const Checkout = () => {
     city: "",
     state: "",
     pincode: "",
-    landmark: ""
+    landmark: "",
   });
-  
+
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [orderNotes, setOrderNotes] = useState("");
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
   const totalSavings = cartItems.reduce(
     (sum, item) => sum + (item.originalPrice - item.price) * item.quantity,
-    0
+    0,
   );
   const shipping = subtotal > 500 ? 0 : 50;
-  const coinDiscount = useCoins ? Math.min(coinsToUse, coins.balance, subtotal) : 0;
-  const total = Math.max(0, subtotal + shipping - discountAmount - coinDiscount);
+  const coinDiscount = useCoins
+    ? Math.min(coinsToUse, coins.balance, subtotal)
+    : 0;
+  const total = Math.max(
+    0,
+    subtotal + shipping - discountAmount - coinDiscount,
+  );
   const potentialCoinsEarned = Math.floor(total * COIN_EARN_RATE);
 
   // Handle applying/removing coins
@@ -149,11 +160,11 @@ const Checkout = () => {
     setIsApplyingCoupon(true);
     try {
       const { data, error } = await supabase
-        .from('coupons' as any)
-        .select('*')
-        .eq('is_active', true)
-        .filter('expires_at', 'gt', new Date().toISOString())
-        .ilike('code', code)
+        .from("coupons" as any)
+        .select("*")
+        .eq("is_active", true)
+        .filter("expires_at", "gt", new Date().toISOString())
+        .ilike("code", code)
         .maybeSingle();
 
       if (error || !data) {
@@ -164,8 +175,13 @@ const Checkout = () => {
       const coupon = data as unknown as CheckoutCoupon;
 
       // Check min purchase
-      if (Number(coupon.min_purchase) > 0 && subtotal < Number(coupon.min_purchase)) {
-        toast.error(`Minimum purchase of ₹${Number(coupon.min_purchase).toLocaleString()} required`);
+      if (
+        Number(coupon.min_purchase) > 0 &&
+        subtotal < Number(coupon.min_purchase)
+      ) {
+        toast.error(
+          `Minimum purchase of ₹${Number(coupon.min_purchase).toLocaleString()} required`,
+        );
         return;
       }
 
@@ -189,7 +205,7 @@ const Checkout = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     // Field-specific max lengths
     const maxLengths: Record<string, number> = {
       fullName: 100,
@@ -201,31 +217,43 @@ const Checkout = () => {
       pincode: 6,
       landmark: 200,
     };
-    
+
     // For phone and pincode, only allow digits
-    if (name === 'phone' || name === 'pincode') {
-      const numericValue = value.replace(/\D/g, '');
+    if (name === "phone" || name === "pincode") {
+      const numericValue = value.replace(/\D/g, "");
       if (numericValue.length <= maxLengths[name]) {
-        setShippingAddress(prev => ({ ...prev, [name]: numericValue }));
+        setShippingAddress((prev) => ({ ...prev, [name]: numericValue }));
       }
       return;
     }
-    
+
     // For text fields, validate characters
-    if (value.length <= (maxLengths[name] || 200) && validateTextField(value, maxLengths[name] || 200)) {
-      setShippingAddress(prev => ({ ...prev, [name]: value }));
+    if (
+      value.length <= (maxLengths[name] || 200) &&
+      validateTextField(value, maxLengths[name] || 200)
+    ) {
+      setShippingAddress((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const validateForm = () => {
-    const required = ["fullName", "phone", "addressLine1", "city", "state", "pincode"];
+    const required = [
+      "fullName",
+      "phone",
+      "addressLine1",
+      "city",
+      "state",
+      "pincode",
+    ];
     for (const field of required) {
       if (!shippingAddress[field as keyof typeof shippingAddress].trim()) {
-        toast.error(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+        toast.error(
+          `Please fill in ${field.replace(/([A-Z])/g, " $1").toLowerCase()}`,
+        );
         return false;
       }
     }
-    
+
     // Validate field lengths
     if (shippingAddress.fullName.length > 100) {
       toast.error("Name must be less than 100 characters");
@@ -235,7 +263,7 @@ const Checkout = () => {
       toast.error("Address must be less than 200 characters");
       return false;
     }
-    
+
     if (!/^\d{10}$/.test(shippingAddress.phone)) {
       toast.error("Please enter a valid 10-digit phone number");
       return false;
@@ -252,35 +280,38 @@ const Checkout = () => {
       toast.error("Please sign in to place an order");
       return;
     }
-    
+
     if (cartItems.length === 0) {
       toast.error("Your cart is empty");
       return;
     }
-    
+
     if (!validateForm()) return;
 
     setIsProcessing(true);
-    
+
     try {
       // Call server-side order validation function
       // Server reads cart items directly from DB for price integrity
-      const { data, error } = await supabase.functions.invoke('validate-order', {
-        body: {
-          discountCode: discountApplied ? discountCode : null,
-          coinsToUse: useCoins ? coinDiscount : 0,
-          shippingAddress,
-          paymentMethod,
-          notes: orderNotes,
+      const { data, error } = await supabase.functions.invoke(
+        "validate-order",
+        {
+          body: {
+            discountCode: discountApplied ? discountCode : null,
+            coinsToUse: useCoins ? coinDiscount : 0,
+            shippingAddress,
+            paymentMethod,
+            notes: orderNotes,
+          },
         },
-      });
+      );
 
       if (error) {
-        throw new Error(error.message || 'Failed to place order');
+        throw new Error(error.message || "Failed to place order");
       }
 
       if (!data?.success) {
-        throw new Error(data?.error || 'Failed to place order');
+        throw new Error(data?.error || "Failed to place order");
       }
 
       // Coins are handled server-side in the edge function
@@ -289,7 +320,7 @@ const Checkout = () => {
       // Store completed order data for invoice
       const orderData = {
         order_number: data.order.orderNumber,
-        items: cartItems.map(item => ({
+        items: cartItems.map((item) => ({
           id: item.id,
           name: item.name,
           price: item.price,
@@ -297,7 +328,7 @@ const Checkout = () => {
           quantity: item.quantity,
           image: item.image,
           store: item.store,
-          discount: item.discount
+          discount: item.discount,
         })),
         subtotal: data.order.subtotal,
         shipping: data.order.shipping,
@@ -306,9 +337,9 @@ const Checkout = () => {
         coinDiscount: data.order.coinDiscount || 0,
         shipping_address: shippingAddress,
         payment_method: paymentMethod,
-        status: 'placed',
+        status: "placed",
         notes: orderNotes,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
       setCompletedOrder(orderData);
@@ -376,12 +407,18 @@ const Checkout = () => {
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Items</span>
                   <span className="text-foreground">
-                    {completedOrder.items.reduce((sum: number, i: any) => sum + i.quantity, 0)} items
+                    {completedOrder.items.reduce(
+                      (sum: number, i: any) => sum + i.quantity,
+                      0,
+                    )}{" "}
+                    items
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span className="text-foreground">₹{completedOrder.subtotal.toLocaleString()}</span>
+                  <span className="text-foreground">
+                    ₹{completedOrder.subtotal.toLocaleString()}
+                  </span>
                 </div>
                 {completedOrder.discount > 0 && (
                   <div className="flex justify-between text-sm text-green-500">
@@ -394,27 +431,41 @@ const Checkout = () => {
                     <span className="flex items-center gap-1">
                       <Coins className="h-3 w-3" /> Deal Coins Used
                     </span>
-                    <span>-₹{completedOrder.coinDiscount.toLocaleString()}</span>
+                    <span>
+                      -₹{completedOrder.coinDiscount.toLocaleString()}
+                    </span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span className={completedOrder.shipping === 0 ? "text-green-500" : "text-foreground"}>
-                    {completedOrder.shipping === 0 ? "Free" : `₹${completedOrder.shipping}`}
+                  <span
+                    className={
+                      completedOrder.shipping === 0
+                        ? "text-green-500"
+                        : "text-foreground"
+                    }
+                  >
+                    {completedOrder.shipping === 0
+                      ? "Free"
+                      : `₹${completedOrder.shipping}`}
                   </span>
                 </div>
                 <Separator className="bg-border" />
                 <div className="flex justify-between font-bold text-lg">
                   <span className="text-foreground">Total Paid</span>
-                  <span className="text-primary">₹{completedOrder.total.toLocaleString()}</span>
+                  <span className="text-primary">
+                    ₹{completedOrder.total.toLocaleString()}
+                  </span>
                 </div>
-                
+
                 {/* Coins earned banner */}
                 {earnedCoins > 0 && (
                   <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
                     <div className="flex items-center gap-2 text-amber-500">
                       <Coins className="h-5 w-5" />
-                      <span className="font-medium">You earned {earnedCoins} Deal Coins!</span>
+                      <span className="font-medium">
+                        You earned {earnedCoins} Deal Coins!
+                      </span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
                       Use them on your next order (1 coin = ₹1 off)
@@ -433,7 +484,7 @@ const Checkout = () => {
                 <FileText className="h-5 w-5 mr-2" />
                 Download Invoice / Bill
               </Button>
-              
+
               <div className="flex gap-3">
                 <Link to="/orders" className="flex-1">
                   <Button variant="outline" className="w-full">
@@ -449,7 +500,8 @@ const Checkout = () => {
             </div>
 
             <p className="text-sm text-muted-foreground mt-6">
-              A confirmation has been sent. You can download your invoice anytime from the Orders page.
+              A confirmation has been sent. You can download your invoice
+              anytime from the Orders page.
             </p>
           </div>
         </main>
@@ -489,7 +541,10 @@ const Checkout = () => {
 
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="mb-8">
-          <Link to="/cart" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4">
+          <Link
+            to="/cart"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4"
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to Cart
           </Link>
@@ -533,7 +588,7 @@ const Checkout = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="addressLine1">Address Line 1 *</Label>
                   <Input
@@ -545,7 +600,7 @@ const Checkout = () => {
                     maxLength={200}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="addressLine2">Address Line 2</Label>
                   <Input
@@ -617,43 +672,63 @@ const Checkout = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+                <RadioGroup
+                  value={paymentMethod}
+                  onValueChange={setPaymentMethod}
+                >
                   {/* UPI Payment */}
-                  <div className={`border rounded-lg transition-all ${paymentMethod === 'upi' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                  <div
+                    className={`border rounded-lg transition-all ${paymentMethod === "upi" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border hover:bg-muted/50"}`}
+                  >
                     <div className="flex items-center space-x-3 p-4 cursor-pointer">
                       <RadioGroupItem value="upi" id="upi" />
                       <Label htmlFor="upi" className="flex-1 cursor-pointer">
                         <div className="flex items-center gap-2">
                           <Smartphone className="h-5 w-5 text-primary" />
                           <span className="font-medium">UPI Payment</span>
-                          <Badge variant="secondary" className="text-xs">Instant</Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            Instant
+                          </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">Pay using any UPI app</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Pay using any UPI app
+                        </p>
                       </Label>
                     </div>
-                    {paymentMethod === 'upi' && (
+                    {paymentMethod === "upi" && (
                       <div className="px-4 pb-4 pt-2 border-t border-border/50">
                         <div className="grid grid-cols-4 gap-2 mb-3">
                           {[
-                            { name: "Google Pay", icon: "G" },
-                            { name: "PhonePe", icon: "P" },
-                            { name: "Paytm", icon: "₽" },
-                            { name: "BHIM", icon: "B" }
+                            {
+                              name: "Google Pay",
+                              src: "/images/upi/google-pay.png",
+                            },
+                            { name: "PhonePe", src: "/images/upi/phonepe.png" },
+                            { name: "Paytm", src: "/images/upi/paytm.png" },
+                            { name: "BHIM", src: "/images/upi/bhim.png" },
                           ].map((app) => (
                             <button
                               key={app.name}
                               type="button"
                               className="flex flex-col items-center gap-1 p-2 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors"
                             >
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold">
-                                {app.icon}
+                              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border border-border">
+                                <img
+                                  src={app.src}
+                                  alt={app.name}
+                                  className="w-full h-full object-cover"
+                                />
                               </div>
-                              <span className="text-xs text-muted-foreground">{app.name}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {app.name}
+                              </span>
                             </button>
                           ))}
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="upiId" className="text-sm">Or enter UPI ID</Label>
+                          <Label htmlFor="upiId" className="text-sm">
+                            Or enter UPI ID
+                          </Label>
                           <Input
                             id="upiId"
                             placeholder="yourname@upi"
@@ -665,7 +740,9 @@ const Checkout = () => {
                   </div>
 
                   {/* Credit/Debit Card */}
-                  <div className={`border rounded-lg transition-all ${paymentMethod === 'card' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                  <div
+                    className={`border rounded-lg transition-all ${paymentMethod === "card" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border hover:bg-muted/50"}`}
+                  >
                     <div className="flex items-center space-x-3 p-4 cursor-pointer">
                       <RadioGroupItem value="card" id="card" />
                       <Label htmlFor="card" className="flex-1 cursor-pointer">
@@ -673,18 +750,28 @@ const Checkout = () => {
                           <CreditCard className="h-5 w-5 text-primary" />
                           <span className="font-medium">Credit/Debit Card</span>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">Visa, Mastercard, RuPay, Amex</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Visa, Mastercard, RuPay, Amex
+                        </p>
                       </Label>
                       <div className="flex gap-1">
-                        <div className="w-8 h-5 bg-blue-600 rounded text-white text-[8px] flex items-center justify-center font-bold">VISA</div>
-                        <div className="w-8 h-5 bg-red-500 rounded text-white text-[8px] flex items-center justify-center font-bold">MC</div>
-                        <div className="w-8 h-5 bg-green-600 rounded text-white text-[8px] flex items-center justify-center font-bold">RuPay</div>
+                        <div className="w-8 h-5 bg-blue-600 rounded text-white text-[8px] flex items-center justify-center font-bold">
+                          VISA
+                        </div>
+                        <div className="w-8 h-5 bg-red-500 rounded text-white text-[8px] flex items-center justify-center font-bold">
+                          MC
+                        </div>
+                        <div className="w-8 h-5 bg-green-600 rounded text-white text-[8px] flex items-center justify-center font-bold">
+                          RuPay
+                        </div>
                       </div>
                     </div>
-                    {paymentMethod === 'card' && (
+                    {paymentMethod === "card" && (
                       <div className="px-4 pb-4 pt-2 border-t border-border/50 space-y-3">
                         <div className="space-y-2">
-                          <Label htmlFor="cardNumber" className="text-sm">Card Number</Label>
+                          <Label htmlFor="cardNumber" className="text-sm">
+                            Card Number
+                          </Label>
                           <Input
                             id="cardNumber"
                             placeholder="1234 5678 9012 3456"
@@ -694,7 +781,9 @@ const Checkout = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-2">
-                            <Label htmlFor="expiry" className="text-sm">Expiry Date</Label>
+                            <Label htmlFor="expiry" className="text-sm">
+                              Expiry Date
+                            </Label>
                             <Input
                               id="expiry"
                               placeholder="MM/YY"
@@ -703,7 +792,9 @@ const Checkout = () => {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="cvv" className="text-sm">CVV</Label>
+                            <Label htmlFor="cvv" className="text-sm">
+                              CVV
+                            </Label>
                             <Input
                               id="cvv"
                               type="password"
@@ -714,7 +805,9 @@ const Checkout = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="cardName" className="text-sm">Name on Card</Label>
+                          <Label htmlFor="cardName" className="text-sm">
+                            Name on Card
+                          </Label>
                           <Input
                             id="cardName"
                             placeholder="JOHN DOE"
@@ -730,21 +823,35 @@ const Checkout = () => {
                   </div>
 
                   {/* Net Banking */}
-                  <div className={`border rounded-lg transition-all ${paymentMethod === 'netbanking' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                  <div
+                    className={`border rounded-lg transition-all ${paymentMethod === "netbanking" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border hover:bg-muted/50"}`}
+                  >
                     <div className="flex items-center space-x-3 p-4 cursor-pointer">
                       <RadioGroupItem value="netbanking" id="netbanking" />
-                      <Label htmlFor="netbanking" className="flex-1 cursor-pointer">
+                      <Label
+                        htmlFor="netbanking"
+                        className="flex-1 cursor-pointer"
+                      >
                         <div className="flex items-center gap-2">
                           <Building2 className="h-5 w-5 text-primary" />
                           <span className="font-medium">Net Banking</span>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">All major Indian banks supported</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          All major Indian banks supported
+                        </p>
                       </Label>
                     </div>
-                    {paymentMethod === 'netbanking' && (
+                    {paymentMethod === "netbanking" && (
                       <div className="px-4 pb-4 pt-2 border-t border-border/50">
                         <div className="grid grid-cols-3 gap-2 mb-3">
-                          {["HDFC", "ICICI", "SBI", "Axis", "Kotak", "Yes Bank"].map((bank) => (
+                          {[
+                            "HDFC",
+                            "ICICI",
+                            "SBI",
+                            "Axis",
+                            "Kotak",
+                            "Yes Bank",
+                          ].map((bank) => (
                             <button
                               key={bank}
                               type="button"
@@ -759,12 +866,16 @@ const Checkout = () => {
                             <SelectValue placeholder="Select other bank" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="pnb">Punjab National Bank</SelectItem>
+                            <SelectItem value="pnb">
+                              Punjab National Bank
+                            </SelectItem>
                             <SelectItem value="bob">Bank of Baroda</SelectItem>
                             <SelectItem value="canara">Canara Bank</SelectItem>
                             <SelectItem value="union">Union Bank</SelectItem>
                             <SelectItem value="idbi">IDBI Bank</SelectItem>
-                            <SelectItem value="federal">Federal Bank</SelectItem>
+                            <SelectItem value="federal">
+                              Federal Bank
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -772,19 +883,25 @@ const Checkout = () => {
                   </div>
 
                   {/* EMI Options */}
-                  <div className={`border rounded-lg transition-all ${paymentMethod === 'emi' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                  <div
+                    className={`border rounded-lg transition-all ${paymentMethod === "emi" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border hover:bg-muted/50"}`}
+                  >
                     <div className="flex items-center space-x-3 p-4 cursor-pointer">
                       <RadioGroupItem value="emi" id="emi" />
                       <Label htmlFor="emi" className="flex-1 cursor-pointer">
                         <div className="flex items-center gap-2">
                           <Clock className="h-5 w-5 text-primary" />
                           <span className="font-medium">EMI</span>
-                          <Badge className="bg-green-500 text-white text-xs">No Cost EMI Available</Badge>
+                          <Badge className="bg-green-500 text-white text-xs">
+                            No Cost EMI Available
+                          </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">Pay in easy monthly installments</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Pay in easy monthly installments
+                        </p>
                       </Label>
                     </div>
-                    {paymentMethod === 'emi' && (
+                    {paymentMethod === "emi" && (
                       <div className="px-4 pb-4 pt-2 border-t border-border/50 space-y-3">
                         <div className="space-y-2">
                           <Label className="text-sm">Select Bank</Label>
@@ -812,7 +929,8 @@ const Checkout = () => {
                               >
                                 <div className="font-medium">{months} mo</div>
                                 <div className="text-xs text-muted-foreground">
-                                  ₹{Math.round(total / months).toLocaleString()}/mo
+                                  ₹{Math.round(total / months).toLocaleString()}
+                                  /mo
                                 </div>
                               </button>
                             ))}
@@ -832,7 +950,9 @@ const Checkout = () => {
                   </div>
 
                   {/* Wallet */}
-                  <div className={`border rounded-lg transition-all ${paymentMethod === 'wallet' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                  <div
+                    className={`border rounded-lg transition-all ${paymentMethod === "wallet" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border hover:bg-muted/50"}`}
+                  >
                     <div className="flex items-center space-x-3 p-4 cursor-pointer">
                       <RadioGroupItem value="wallet" id="wallet" />
                       <Label htmlFor="wallet" className="flex-1 cursor-pointer">
@@ -840,10 +960,12 @@ const Checkout = () => {
                           <Wallet className="h-5 w-5 text-primary" />
                           <span className="font-medium">Mobile Wallets</span>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">Paytm, Mobikwik, Amazon Pay</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Paytm, Mobikwik, Amazon Pay
+                        </p>
                       </Label>
                     </div>
-                    {paymentMethod === 'wallet' && (
+                    {paymentMethod === "wallet" && (
                       <div className="px-4 pb-4 pt-2 border-t border-border/50">
                         <div className="grid grid-cols-3 gap-2">
                           {["Paytm", "Mobikwik", "Amazon Pay"].map((wallet) => (
@@ -861,7 +983,9 @@ const Checkout = () => {
                   </div>
 
                   {/* Cash on Delivery */}
-                  <div className={`border rounded-lg transition-all ${paymentMethod === 'cod' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-border hover:bg-muted/50'}`}>
+                  <div
+                    className={`border rounded-lg transition-all ${paymentMethod === "cod" ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border hover:bg-muted/50"}`}
+                  >
                     <div className="flex items-center space-x-3 p-4 cursor-pointer">
                       <RadioGroupItem value="cod" id="cod" />
                       <Label htmlFor="cod" className="flex-1 cursor-pointer">
@@ -869,10 +993,12 @@ const Checkout = () => {
                           <Truck className="h-5 w-5 text-primary" />
                           <span className="font-medium">Cash on Delivery</span>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">Pay when you receive your order</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Pay when you receive your order
+                        </p>
                       </Label>
                     </div>
-                    {paymentMethod === 'cod' && (
+                    {paymentMethod === "cod" && (
                       <div className="px-4 pb-4 pt-2 border-t border-border/50">
                         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
                           <p className="text-sm text-yellow-600 dark:text-yellow-400">
@@ -955,8 +1081,12 @@ const Checkout = () => {
                     <div className="flex items-center justify-between p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
                       <div className="flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="font-medium text-green-600 dark:text-green-400">{discountCode.toUpperCase()}</span>
-                        <span className="text-sm text-muted-foreground">applied</span>
+                        <span className="font-medium text-green-600 dark:text-green-400">
+                          {discountCode.toUpperCase()}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          applied
+                        </span>
                       </div>
                       <Button
                         variant="ghost"
@@ -971,7 +1101,9 @@ const Checkout = () => {
                     <div className="flex gap-2">
                       <Input
                         value={discountCode}
-                        onChange={(e) => setDiscountCode(e.target.value.slice(0, 20))}
+                        onChange={(e) =>
+                          setDiscountCode(e.target.value.slice(0, 20))
+                        }
                         placeholder="Enter code"
                         maxLength={20}
                       />
@@ -984,7 +1116,13 @@ const Checkout = () => {
                       </Button>
                     </div>
                   )}
-                  <p className="text-xs text-muted-foreground">Coupons from the <a href="/coupons" className="underline text-primary">Coupons page</a> are all valid here</p>
+                  <p className="text-xs text-muted-foreground">
+                    Coupons from the{" "}
+                    <a href="/coupons" className="underline text-primary">
+                      Coupons page
+                    </a>{" "}
+                    are all valid here
+                  </p>
                 </div>
 
                 <Separator className="bg-border" />
@@ -992,7 +1130,10 @@ const Checkout = () => {
                 {/* Price Breakdown */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-foreground">
-                    <span>Subtotal ({cartItems.reduce((sum, i) => sum + i.quantity, 0)} items)</span>
+                    <span>
+                      Subtotal (
+                      {cartItems.reduce((sum, i) => sum + i.quantity, 0)} items)
+                    </span>
                     <span>₹{subtotal.toLocaleString()}</span>
                   </div>
 
@@ -1025,7 +1166,8 @@ const Checkout = () => {
                   </div>
                   {shipping > 0 && (
                     <p className="text-xs text-muted-foreground">
-                      Add ₹{(500 - subtotal).toLocaleString()} more for free shipping
+                      Add ₹{(500 - subtotal).toLocaleString()} more for free
+                      shipping
                     </p>
                   )}
                 </div>
@@ -1038,7 +1180,10 @@ const Checkout = () => {
                     <Label className="flex items-center gap-2">
                       <Coins className="h-4 w-4 text-amber-500" />
                       Deal Coins
-                      <Badge variant="secondary" className="bg-amber-500/20 text-amber-500 text-xs">
+                      <Badge
+                        variant="secondary"
+                        className="bg-amber-500/20 text-amber-500 text-xs"
+                      >
                         {coins.balance} available
                       </Badge>
                     </Label>
@@ -1047,7 +1192,9 @@ const Checkout = () => {
                         <div className="flex items-center justify-between p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
                           <div className="flex items-center gap-2">
                             <CheckCircle className="h-4 w-4 text-amber-500" />
-                            <span className="text-sm text-amber-500">Using coins</span>
+                            <span className="text-sm text-amber-500">
+                              Using coins
+                            </span>
                           </div>
                           <Button
                             variant="ghost"
@@ -1070,7 +1217,9 @@ const Checkout = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => setCoinsToUse(Math.min(coins.balance, subtotal))}
+                            onClick={() =>
+                              setCoinsToUse(Math.min(coins.balance, subtotal))
+                            }
                           >
                             Max
                           </Button>
@@ -1098,8 +1247,12 @@ const Checkout = () => {
                     <div className="flex items-center gap-2 text-sm">
                       <Coins className="h-4 w-4 text-amber-500" />
                       <span className="text-muted-foreground">You'll earn</span>
-                      <span className="font-medium text-amber-500">{potentialCoinsEarned} coins</span>
-                      <span className="text-muted-foreground">on this order</span>
+                      <span className="font-medium text-amber-500">
+                        {potentialCoinsEarned} coins
+                      </span>
+                      <span className="text-muted-foreground">
+                        on this order
+                      </span>
                     </div>
                   </div>
                 )}
@@ -1121,7 +1274,8 @@ const Checkout = () => {
                 </Button>
 
                 <div className="text-center text-xs text-muted-foreground">
-                  By placing this order, you agree to our Terms of Service and Privacy Policy
+                  By placing this order, you agree to our Terms of Service and
+                  Privacy Policy
                 </div>
               </CardContent>
             </Card>
