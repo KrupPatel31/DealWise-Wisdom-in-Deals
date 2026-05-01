@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { downloadBill } from "@/utils/billGenerator";
+import { runAuthWithRetry, friendlyAuthError } from "@/utils/authRetry";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 // Text field validation: allow alphanumeric, spaces, and common punctuation
 const validateTextField = (value: string, maxLength: number): boolean => {
@@ -87,6 +89,8 @@ const Checkout = () => {
   const { cartItems, clearCart } = useCart();
   const { coins, refetchCoins } = useDealCoins();
   const navigate = useNavigate();
+  const online = useOnlineStatus();
+  const lastSubmitRef = useRef<number>(0);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
@@ -288,22 +292,44 @@ const Checkout = () => {
 
     if (!validateForm()) return;
 
+    // Debounce: prevent double-submission within 1.2s
+    const now = Date.now();
+    if (now - lastSubmitRef.current < 1200) return;
+    lastSubmitRef.current = now;
+
+    if (!online) {
+      toast.error("You're offline. Please reconnect to place your order.");
+      return;
+    }
+
+    const validMethods = ["cod", "upi", "card", "netbanking", "emi", "wallet"];
+    if (!validMethods.includes(paymentMethod)) {
+      toast.error("Please choose a valid payment method.");
+      return;
+    }
+
     setIsProcessing(true);
+    const t0 = performance.now();
+    console.info(
+      `[checkout] placing order via ${paymentMethod} @ ${new Date().toISOString()}`,
+    );
 
     try {
-      // Call server-side order validation function
-      // Server reads cart items directly from DB for price integrity
-      const { data, error } = await supabase.functions.invoke(
-        "validate-order",
-        {
-          body: {
-            discountCode: discountApplied ? discountCode : null,
-            coinsToUse: useCoins ? coinDiscount : 0,
-            shippingAddress,
-            paymentMethod,
-            notes: orderNotes,
-          },
-        },
+      // Retry transient network/server failures with exponential backoff
+      // and a 15s timeout per attempt. Real validation errors (400) are
+      // not retried by the helper.
+      const { data, error } = await runAuthWithRetry(
+        () =>
+          supabase.functions.invoke("validate-order", {
+            body: {
+              discountCode: discountApplied ? discountCode : null,
+              coinsToUse: useCoins ? coinDiscount : 0,
+              shippingAddress,
+              paymentMethod,
+              notes: orderNotes,
+            },
+          }),
+        { label: "placeOrder", timeoutMs: 15_000, attempts: 3 },
       );
 
       if (error) {
@@ -313,6 +339,10 @@ const Checkout = () => {
       if (!data?.success) {
         throw new Error(data?.error || "Failed to place order");
       }
+
+      console.info(
+        `[checkout] order success in ${Math.round(performance.now() - t0)}ms`,
+      );
 
       // Coins are handled server-side in the edge function
       setEarnedCoins(data.order.coinsEarned || 0);
@@ -348,8 +378,11 @@ const Checkout = () => {
       setOrderSuccess(true);
       toast.success("Order placed successfully!");
     } catch (error: any) {
-      console.error("Error placing order:", error);
-      toast.error(error.message || "Failed to place order. Please try again.");
+      console.error(
+        `[checkout] order failed in ${Math.round(performance.now() - t0)}ms:`,
+        error,
+      );
+      toast.error(friendlyAuthError(error));
     } finally {
       setIsProcessing(false);
     }
@@ -1264,11 +1297,16 @@ const Checkout = () => {
                   <span>₹{total.toLocaleString()}</span>
                 </div>
 
+                {!online && (
+                  <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+                    You're offline. Reconnect to place your order.
+                  </div>
+                )}
                 <Button
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   size="lg"
                   onClick={handlePlaceOrder}
-                  disabled={isProcessing}
+                  disabled={isProcessing || !online}
                 >
                   {isProcessing ? "Placing Order..." : "Place Order"}
                 </Button>
