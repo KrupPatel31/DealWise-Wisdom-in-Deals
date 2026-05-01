@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
@@ -7,39 +7,66 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, ArrowLeft, Mail, CheckCircle } from "lucide-react";
+import { TrendingUp, ArrowLeft, Mail, CheckCircle, WifiOff, Loader2 } from "lucide-react";
+import { runAuthWithRetry, friendlyAuthError } from "@/utils/authRetry";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const online = useOnlineStatus();
+  const lastSubmitRef = useRef<number>(0);
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const now = Date.now();
+    if (now - lastSubmitRef.current < 600) return;
+    lastSubmitRef.current = now;
+
+    if (!emailValid) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    if (!online) {
+      toast.error("You're offline. Please reconnect and try again.");
+      return;
+    }
+
     setLoading(true);
+    const t0 = performance.now();
+    console.info(`[forgotPassword] submit @ ${new Date().toISOString()}`);
 
     try {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/reset-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
+      const response = await runAuthWithRetry(
+        () =>
+          fetch(`https://${projectId}.supabase.co/functions/v1/reset-password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          }).then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              const err: any = new Error(data?.error || `Request failed (${res.status})`);
+              err.status = res.status;
+              return { data: null, error: err };
+            }
+            return { data, error: null };
+          }),
+        { label: "forgotPassword" },
       );
 
-      const data = await response.json();
+      if (response.error) throw response.error;
 
-      if (!response.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
-
+      console.info(`[forgotPassword] success in ${Math.round(performance.now() - t0)}ms`);
       setEmailSent(true);
       toast.success("If an account exists, you'll receive a new password shortly.");
     } catch (error: any) {
-      toast.error(error.message || "Please try again later.");
+      console.warn(`[forgotPassword] failed in ${Math.round(performance.now() - t0)}ms:`, error?.message || error);
+      toast.error(friendlyAuthError(error));
     }
 
     setLoading(false);
@@ -71,6 +98,12 @@ const ForgotPassword = () => {
             </CardHeader>
             
             <CardContent className="space-y-6">
+              {!online && (
+                <div className="flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+                  <WifiOff className="h-4 w-4" />
+                  You're offline. Please reconnect to request a password reset.
+                </div>
+              )}
               {emailSent ? (
                 <div className="text-center space-y-4">
                   <div className="flex justify-center">
@@ -114,15 +147,26 @@ const ForgotPassword = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       className="bg-input border-border focus:border-primary"
                       required
+                      autoComplete="email"
                     />
+                    {email.length > 0 && !emailValid && (
+                      <p className="text-xs text-destructive">Please enter a valid email address.</p>
+                    )}
                   </div>
 
                   <Button
                     type="submit" 
                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                    disabled={loading}
+                    disabled={loading || !emailValid}
                   >
-                    {loading ? "Sending..." : "Reset Password"}
+                    {loading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Sending...
+                      </span>
+                    ) : (
+                      "Reset Password"
+                    )}
                   </Button>
 
                   <Link to="/sign-in" className="block">
