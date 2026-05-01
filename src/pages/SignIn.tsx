@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { TrendingUp, Eye, EyeOff } from "lucide-react";
+import { TrendingUp, Eye, EyeOff, WifiOff, Loader2 } from "lucide-react";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
+import { friendlyAuthError } from "@/utils/authRetry";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,8 +19,16 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   
-  const { signIn, user } = useAuth();
+  const { signIn, user, online } = useAuth();
   const navigate = useNavigate();
+  const lastSubmitRef = useRef<number>(0);
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const canSubmit = emailValid && password.length >= 1 && !loading;
+
+  // Clear stale state on mount (defensive against partial sessions)
+  useEffect(() => {
+    setShowSuccess(false);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -29,26 +38,42 @@ const SignIn = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !password) {
-      toast.error("Please enter both email and password.");
+
+    // Debounce double-submits within 600ms
+    const now = Date.now();
+    if (now - lastSubmitRef.current < 600) {
+      return;
+    }
+    lastSubmitRef.current = now;
+
+    if (!emailValid) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    if (!password) {
+      toast.error("Please enter your password.");
       return;
     }
 
     setLoading(true);
+    const t0 = performance.now();
+    console.info(`[signIn] submit @ ${new Date().toISOString()}`);
 
     try {
       const { error } = await signIn(email, password);
-      
+
       if (error) {
-        toast.error(error.message);
+        console.warn(`[signIn] failed in ${Math.round(performance.now() - t0)}ms:`, error?.message || error);
+        toast.error(friendlyAuthError(error));
       } else {
+        console.info(`[signIn] success in ${Math.round(performance.now() - t0)}ms`);
         setShowSuccess(true);
       }
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (err) {
+      console.error(`[signIn] threw in ${Math.round(performance.now() - t0)}ms:`, err);
+      toast.error(friendlyAuthError(err));
     }
-    
+
     setLoading(false);
   };
 
@@ -76,6 +101,12 @@ const SignIn = () => {
             </CardHeader>
             
             <CardContent className="space-y-6">
+              {!online && (
+                <div className="flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+                  <WifiOff className="h-4 w-4" />
+                  You're offline. We'll queue your sign-in and retry automatically.
+                </div>
+              )}
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-foreground">Email</Label>
@@ -87,7 +118,11 @@ const SignIn = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     className="bg-input border-border focus:border-primary"
                     required
+                    autoComplete="email"
                   />
+                  {email.length > 0 && !emailValid && (
+                    <p className="text-xs text-destructive">Please enter a valid email address.</p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
@@ -101,10 +136,12 @@ const SignIn = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       className="bg-input border-border focus:border-primary pr-10"
                       required
+                      autoComplete="current-password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -124,9 +161,16 @@ const SignIn = () => {
                 <Button
                   type="submit" 
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                  disabled={loading}
+                  disabled={!canSubmit}
                 >
-                  {loading ? "Signing in..." : "Sign In"}
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Signing in...
+                    </span>
+                  ) : (
+                    "Sign In"
+                  )}
                 </Button>
               </form>
 

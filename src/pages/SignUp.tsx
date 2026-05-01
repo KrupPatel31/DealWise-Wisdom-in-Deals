@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TrendingUp, Eye, EyeOff, Check, X } from "lucide-react";
+import { TrendingUp, Eye, EyeOff, Check, X, WifiOff, Loader2 } from "lucide-react";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
+import { friendlyAuthError } from "@/utils/authRetry";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,8 +27,21 @@ const SignUp = () => {
     agreeToTerms: false
   });
   
-  const { signUp, user } = useAuth();
+  const { signUp, user, online } = useAuth();
   const navigate = useNavigate();
+  const lastSubmitRef = useRef<number>(0);
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
+  const passwordValidation = validatePassword(formData.password);
+  const passwordsMatch =
+    formData.confirmPassword.length > 0 && formData.password === formData.confirmPassword;
+  const canSubmit =
+    !loading &&
+    formData.name.trim().length > 0 &&
+    emailValid &&
+    passwordValidation.isValid &&
+    passwordsMatch &&
+    formData.agreeToTerms;
 
   useEffect(() => {
     if (user) {
@@ -37,32 +51,43 @@ const SignUp = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    const now = Date.now();
+    if (now - lastSubmitRef.current < 600) return;
+    lastSubmitRef.current = now;
+
+    if (!emailValid) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match. Please try again.");
       return;
     }
-
-    const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
       toast.error(passwordValidation.errors.join(', '));
       return;
     }
 
     setLoading(true);
+    const t0 = performance.now();
+    console.info(`[signUp] submit @ ${new Date().toISOString()}`);
 
     try {
       const { error } = await signUp(formData.email, formData.password, formData.name);
-      
+
       if (error) {
-        toast.error(error.message);
+        console.warn(`[signUp] failed in ${Math.round(performance.now() - t0)}ms:`, error?.message || error);
+        toast.error(friendlyAuthError(error));
       } else {
+        console.info(`[signUp] success in ${Math.round(performance.now() - t0)}ms`);
         setShowSuccess(true);
       }
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (err) {
+      console.error(`[signUp] threw in ${Math.round(performance.now() - t0)}ms:`, err);
+      toast.error(friendlyAuthError(err));
     }
-    
+
     setLoading(false);
   };
 
@@ -94,6 +119,12 @@ const SignUp = () => {
             </CardHeader>
             
             <CardContent className="space-y-6">
+              {!online && (
+                <div className="flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+                  <WifiOff className="h-4 w-4" />
+                  You're offline. We'll queue your sign-up and retry automatically.
+                </div>
+              )}
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-foreground">Full Name</Label>
@@ -118,7 +149,11 @@ const SignUp = () => {
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     className="bg-input border-border focus:border-primary"
                     required
+                    autoComplete="email"
                   />
+                  {formData.email.length > 0 && !emailValid && (
+                    <p className="text-xs text-destructive">Please enter a valid email address.</p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
@@ -257,9 +292,16 @@ const SignUp = () => {
                 <Button
                   type="submit" 
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                  disabled={!formData.agreeToTerms || loading}
+                  disabled={!canSubmit}
                 >
-                  {loading ? "Creating account..." : "Create Account"}
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Creating account...
+                    </span>
+                  ) : (
+                    "Create Account"
+                  )}
                 </Button>
               </form>
 
