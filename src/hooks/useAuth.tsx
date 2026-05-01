@@ -1,9 +1,8 @@
 import { useState, useEffect, createContext, useContext, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
-import { runAuthWithRetry, AuthOfflineError } from '@/utils/authRetry';
+import { runAuthWithRetry } from '@/utils/authRetry';
 
 interface AuthContextType {
   user: User | null;
