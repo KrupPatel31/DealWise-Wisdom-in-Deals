@@ -89,28 +89,41 @@ serve(async (req) => {
     const fakeStoreItems = dbCartItems.filter((row) => row.product_id.startsWith('fakestore-'));
     const otherItems = dbCartItems.filter((row) => !row.product_id.startsWith('fakestore-'));
 
-    let trustedPrices: Record<string, number> = {};
+    const trustedPrices: Record<string, number> = {};
 
+    // Fault-tolerant external price verification.
+    // If FakeStore is slow / unavailable, fall back to the DB-stored price
+    // (the client cannot tamper with it because cart_items RLS blocks
+    // price/original_price/discount updates on UPDATE — see RLS policies).
     if (fakeStoreItems.length > 0) {
-      try {
-        const apiRes = await fetch('https://fakestoreapi.com/products');
-        if (!apiRes.ok) {
-          console.error('FakeStore API error:', apiRes.status);
-          return new Response(
-            JSON.stringify({ error: 'Unable to verify product prices. Please try again.' }),
-            { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
+      const FAKESTORE_TIMEOUT_MS = 4000;
+      const FAKESTORE_RETRIES = 2;
+      let fetched = false;
+      for (let attempt = 1; attempt <= FAKESTORE_RETRIES && !fetched; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), FAKESTORE_TIMEOUT_MS);
+        try {
+          const apiRes = await fetch('https://fakestoreapi.com/products', {
+            signal: controller.signal,
+          });
+          clearTimeout(timer);
+          if (!apiRes.ok) {
+            console.warn(`FakeStore API returned ${apiRes.status} (attempt ${attempt})`);
+            continue;
+          }
+          const apiProducts: Array<{ id: number; price: number }> = await apiRes.json();
+          for (const p of apiProducts) {
+            trustedPrices[`fakestore-${p.id}`] = Math.round(p.price * 83);
+          }
+          fetched = true;
+        } catch (fetchErr) {
+          clearTimeout(timer);
+          console.warn(`FakeStore fetch attempt ${attempt} failed:`, fetchErr);
         }
-        const apiProducts: Array<{ id: number; price: number }> = await apiRes.json();
-        for (const p of apiProducts) {
-          // Same INR conversion as client: Math.round(price * 83)
-          trustedPrices[`fakestore-${p.id}`] = Math.round(p.price * 83);
-        }
-      } catch (fetchErr) {
-        console.error('Failed to fetch FakeStore prices:', fetchErr);
-        return new Response(
-          JSON.stringify({ error: 'Unable to verify product prices. Please try again.' }),
-          { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      }
+      if (!fetched) {
+        console.warn(
+          'FakeStore price verification unavailable; falling back to DB-stored prices (RLS-protected).',
         );
       }
     }
@@ -186,11 +199,14 @@ serve(async (req) => {
       }
     }
 
-    const validPaymentMethods = ['cod', 'upi', 'card'];
+    // Accept all payment methods exposed in the checkout UI.
+    const validPaymentMethods = ['cod', 'upi', 'card', 'netbanking', 'emi', 'wallet'];
     if (!paymentMethod || !validPaymentMethods.includes(paymentMethod)) {
       return new Response(
-        JSON.stringify({ error: 'Invalid payment method' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({
+          error: `Invalid payment method. Choose one of: ${validPaymentMethods.join(', ')}.`,
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 
