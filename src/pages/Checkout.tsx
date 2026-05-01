@@ -1297,11 +1297,16 @@ const Checkout = () => {
                   <span>₹{total.toLocaleString()}</span>
                 </div>
 
+                {!online && (
+                  <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+                    You're offline. Reconnect to place your order.
+                  </div>
+                )}
                 <Button
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   size="lg"
                   onClick={handlePlaceOrder}
-                  disabled={isProcessing}
+                  disabled={isProcessing || !online}
                 >
                   {isProcessing ? "Placing Order..." : "Place Order"}
                 </Button>
