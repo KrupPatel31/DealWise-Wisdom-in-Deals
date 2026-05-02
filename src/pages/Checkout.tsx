@@ -120,6 +120,14 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [orderNotes, setOrderNotes] = useState("");
 
+  // Sub-selections for payment methods
+  const [upiApp, setUpiApp] = useState<string>("");
+  const [upiId, setUpiId] = useState<string>("");
+  const [netBankingBank, setNetBankingBank] = useState<string>("");
+  const [emiBank, setEmiBank] = useState<string>("");
+  const [emiTenure, setEmiTenure] = useState<number>(0);
+  const [walletProvider, setWalletProvider] = useState<string>("");
+
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
@@ -743,7 +751,12 @@ const Checkout = () => {
                             <button
                               key={app.name}
                               type="button"
-                              className="flex flex-col items-center gap-1 p-2 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors"
+                              onClick={() => setUpiApp(app.name)}
+                              className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-colors ${
+                                upiApp === app.name
+                                  ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                                  : "border-border hover:border-primary hover:bg-primary/5"
+                              }`}
                             >
                               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border border-border">
                                 <img
@@ -764,10 +777,17 @@ const Checkout = () => {
                           </Label>
                           <Input
                             id="upiId"
+                            value={upiId}
+                            onChange={(e) => setUpiId(e.target.value)}
                             placeholder="yourname@upi"
                             className="bg-background"
                           />
                         </div>
+                        {(upiApp || upiId) && (
+                          <p className="text-xs text-green-500 mt-2">
+                            ✓ Selected: {upiApp || upiId}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -888,29 +908,35 @@ const Checkout = () => {
                             <button
                               key={bank}
                               type="button"
-                              className="p-2 text-sm rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors text-center"
+                              onClick={() => setNetBankingBank(bank)}
+                              className={`p-2 text-sm rounded-lg border transition-colors text-center ${
+                                netBankingBank === bank
+                                  ? "border-primary bg-primary/10 ring-2 ring-primary/30 font-medium"
+                                  : "border-border hover:border-primary hover:bg-primary/5"
+                              }`}
                             >
                               {bank}
                             </button>
                           ))}
                         </div>
-                        <Select>
+                        <Select value={netBankingBank} onValueChange={setNetBankingBank}>
                           <SelectTrigger className="bg-background">
                             <SelectValue placeholder="Select other bank" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="pnb">
-                              Punjab National Bank
-                            </SelectItem>
-                            <SelectItem value="bob">Bank of Baroda</SelectItem>
-                            <SelectItem value="canara">Canara Bank</SelectItem>
-                            <SelectItem value="union">Union Bank</SelectItem>
-                            <SelectItem value="idbi">IDBI Bank</SelectItem>
-                            <SelectItem value="federal">
-                              Federal Bank
-                            </SelectItem>
+                            <SelectItem value="Punjab National Bank">Punjab National Bank</SelectItem>
+                            <SelectItem value="Bank of Baroda">Bank of Baroda</SelectItem>
+                            <SelectItem value="Canara Bank">Canara Bank</SelectItem>
+                            <SelectItem value="Union Bank">Union Bank</SelectItem>
+                            <SelectItem value="IDBI Bank">IDBI Bank</SelectItem>
+                            <SelectItem value="Federal Bank">Federal Bank</SelectItem>
                           </SelectContent>
                         </Select>
+                        {netBankingBank && (
+                          <p className="text-xs text-green-500 mt-2">
+                            ✓ Selected: {netBankingBank}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -938,16 +964,16 @@ const Checkout = () => {
                       <div className="px-4 pb-4 pt-2 border-t border-border/50 space-y-3">
                         <div className="space-y-2">
                           <Label className="text-sm">Select Bank</Label>
-                          <Select>
+                          <Select value={emiBank} onValueChange={setEmiBank}>
                             <SelectTrigger className="bg-background">
                               <SelectValue placeholder="Choose your bank" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="hdfc">HDFC Bank</SelectItem>
-                              <SelectItem value="icici">ICICI Bank</SelectItem>
-                              <SelectItem value="sbi">SBI Card</SelectItem>
-                              <SelectItem value="axis">Axis Bank</SelectItem>
-                              <SelectItem value="kotak">Kotak Bank</SelectItem>
+                              <SelectItem value="HDFC Bank">HDFC Bank</SelectItem>
+                              <SelectItem value="ICICI Bank">ICICI Bank</SelectItem>
+                              <SelectItem value="SBI Card">SBI Card</SelectItem>
+                              <SelectItem value="Axis Bank">Axis Bank</SelectItem>
+                              <SelectItem value="Kotak Bank">Kotak Bank</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -958,7 +984,12 @@ const Checkout = () => {
                               <button
                                 key={months}
                                 type="button"
-                                className="p-2 text-sm rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors text-center"
+                                onClick={() => setEmiTenure(months)}
+                                className={`p-2 text-sm rounded-lg border transition-colors text-center ${
+                                  emiTenure === months
+                                    ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                                    : "border-border hover:border-primary hover:bg-primary/5"
+                                }`}
                               >
                                 <div className="font-medium">{months} mo</div>
                                 <div className="text-xs text-muted-foreground">
@@ -969,6 +1000,12 @@ const Checkout = () => {
                             ))}
                           </div>
                         </div>
+                        {(emiBank || emiTenure > 0) && (
+                          <p className="text-xs text-green-500">
+                            ✓ {emiBank}{emiBank && emiTenure > 0 ? " · " : ""}
+                            {emiTenure > 0 ? `${emiTenure} months` : ""}
+                          </p>
+                        )}
                         <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
                           <div className="flex items-center gap-2 text-green-500 text-sm font-medium">
                             <CheckCircle className="h-4 w-4" />
@@ -1005,12 +1042,22 @@ const Checkout = () => {
                             <button
                               key={wallet}
                               type="button"
-                              className="p-3 text-sm rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors text-center"
+                              onClick={() => setWalletProvider(wallet)}
+                              className={`p-3 text-sm rounded-lg border transition-colors text-center ${
+                                walletProvider === wallet
+                                  ? "border-primary bg-primary/10 ring-2 ring-primary/30 font-medium"
+                                  : "border-border hover:border-primary hover:bg-primary/5"
+                              }`}
                             >
                               {wallet}
                             </button>
                           ))}
                         </div>
+                        {walletProvider && (
+                          <p className="text-xs text-green-500 mt-2">
+                            ✓ Selected: {walletProvider}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

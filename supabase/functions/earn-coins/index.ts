@@ -24,16 +24,18 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabaseAnon = Deno.env.get('SUPABASE_ANON_KEY')!;
 
-    // Verify user
+    // Fast local JWT validation via getClaims (no remote /user round-trip)
     const userClient = createClient(supabaseUrl, supabaseAnon, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: { user }, error: userError } = await userClient.auth.getUser();
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: 'Invalid token' }), {
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      return new Response(JSON.stringify({ error: 'Invalid or expired token' }), {
         status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    const user = { id: claimsData.claims.sub as string };
 
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
     const { action, ...payload } = await req.json();
