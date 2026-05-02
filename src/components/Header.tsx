@@ -61,9 +61,7 @@ export const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center gap-3 min-w-[200px] justify-end">
-            {authLoading ? (
-              <div className="h-9 w-[200px]" />
-            ) : user ? (
+            {user ? (
               <>
                 <Link to="/deal-coins"><DealCoinsDisplay /></Link>
                 
@@ -142,7 +140,7 @@ export const Header = () => {
 
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center gap-1">
-            {!authLoading && user && (
+            {user && (
               <>
                 <Link to="/deal-coins"><DealCoinsDisplay /></Link>
                 <Link to="/cart">
