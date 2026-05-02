@@ -87,6 +87,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
         scheduleExpiry(newSession);
+        // Always release loading once we've heard from auth — prevents
+        // header buttons from disappearing if getSession() hangs.
+        setLoading(false);
+        setAuthReady(true);
         if (event === 'TOKEN_REFRESHED') {
           console.info('[auth] token refreshed');
         }
@@ -105,9 +109,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setAuthReady(true);
     });
 
+    // Safety net: never keep the header in a loading state for more than 3s.
+    const safetyTimer = window.setTimeout(() => {
+      setLoading(false);
+      setAuthReady(true);
+    }, 3000);
+
     return () => {
       subscription.unsubscribe();
       if (expiryTimerRef.current) window.clearTimeout(expiryTimerRef.current);
+      window.clearTimeout(safetyTimer);
     };
   }, []);
 
