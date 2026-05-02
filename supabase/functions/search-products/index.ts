@@ -6,16 +6,27 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// Helper: fetch with timeout to keep total search latency bounded
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 // Source 1: Real-Time Product Search (existing)
 async function searchRealTimeProducts(query: string, rapidApiKey: string): Promise<any[]> {
   try {
     const url = `https://real-time-product-search.p.rapidapi.com/search-v2?q=${encodeURIComponent(query)}&country=in&language=en&limit=20`;
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       headers: {
         'X-RapidAPI-Key': rapidApiKey,
         'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
       },
-    });
+    }, 6000);
 
     if (!response.ok) {
       console.error('Real-Time Product Search error:', response.status);
@@ -58,12 +69,12 @@ async function searchRealTimeProducts(query: string, rapidApiKey: string): Promi
 async function searchGoogleShopping(query: string, rapidApiKey: string): Promise<any[]> {
   try {
     const url = `https://real-time-product-search.p.rapidapi.com/search?q=${encodeURIComponent(query)}&country=in&language=en&limit=15&sort_by=BEST_MATCH`;
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       headers: {
         'X-RapidAPI-Key': rapidApiKey,
         'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
       },
-    });
+    }, 6000);
 
     if (!response.ok) {
       console.error('Google Shopping Search error:', response.status);
@@ -97,64 +108,6 @@ async function searchGoogleShopping(query: string, rapidApiKey: string): Promise
     });
   } catch (e) {
     console.error('Google Shopping Search failed:', e);
-    return [];
-  }
-}
-
-// Source 3: Google Shopping offers/deals for a specific product
-async function searchProductOffers(query: string, rapidApiKey: string): Promise<any[]> {
-  try {
-    // First get a product ID from search
-    const searchUrl = `https://real-time-product-search.p.rapidapi.com/search?q=${encodeURIComponent(query)}&country=in&language=en&limit=3`;
-    const searchResponse = await fetch(searchUrl, {
-      headers: {
-        'X-RapidAPI-Key': rapidApiKey,
-        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
-      },
-    });
-
-    if (!searchResponse.ok) return [];
-    const searchData = await searchResponse.json();
-    const firstProduct = searchData?.data?.[0];
-    if (!firstProduct?.product_id) return [];
-
-    // Now get offers for this product
-    const offersUrl = `https://real-time-product-search.p.rapidapi.com/product-offers?product_id=${encodeURIComponent(firstProduct.product_id)}&country=in&language=en`;
-    const offersResponse = await fetch(offersUrl, {
-      headers: {
-        'X-RapidAPI-Key': rapidApiKey,
-        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
-      },
-    });
-
-    if (!offersResponse.ok) return [];
-    const offersData = await offersResponse.json();
-    const offers = offersData?.data || [];
-    if (!Array.isArray(offers)) return [];
-
-    return offers.slice(0, 10).map((offer: any, index: number) => {
-      const price = parseFloat(String(offer.price || '0').replace(/[^0-9.]/g, '')) || 0;
-      const originalPrice = parseFloat(String(offer.original_price || '0').replace(/[^0-9.]/g, '')) || price;
-      const discount = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
-
-      return {
-        id: `offer-${index}`,
-        name: firstProduct.product_title || query,
-        price,
-        originalPrice,
-        discount,
-        rating: parseFloat(firstProduct.product_rating) || 0,
-        reviews: parseInt(firstProduct.product_num_reviews) || 0,
-        store: offer.store_name || offer.merchant || 'Store',
-        category: firstProduct.product_category || 'General',
-        description: offer.delivery_info || '',
-        image: firstProduct.product_photos?.[0] || '',
-        link: offer.offer_page_url || '#',
-        source: 'Google Offers',
-      };
-    });
-  } catch (e) {
-    console.error('Product Offers search failed:', e);
     return [];
   }
 }
@@ -229,19 +182,21 @@ Deno.serve(async (req) => {
       );
     }
 
+    const t0 = Date.now();
     console.log('Multi-source search for:', sanitizedQuery, 'by user:', claimsData.claims.sub);
 
-    // Fire all sources in parallel
-    const [realTimeResults, googleShoppingResults, offerResults] = await Promise.all([
+    // Fire two fast sources in parallel (dropped the slow third source which
+    // chained two upstream calls). Both have 6s timeouts so total latency stays bounded.
+    const [realTimeResults, googleShoppingResults] = await Promise.all([
       searchRealTimeProducts(sanitizedQuery, rapidApiKey),
       searchGoogleShopping(sanitizedQuery, rapidApiKey),
-      searchProductOffers(sanitizedQuery, rapidApiKey),
     ]);
+    const offerResults: any[] = [];
 
-    console.log(`Results: RealTime=${realTimeResults.length}, GoogleShopping=${googleShoppingResults.length}, Offers=${offerResults.length}`);
+    console.log(`Results in ${Date.now() - t0}ms: RealTime=${realTimeResults.length}, GoogleShopping=${googleShoppingResults.length}`);
 
     // Merge and deduplicate
-    const allProducts = [...realTimeResults, ...googleShoppingResults, ...offerResults];
+    const allProducts = [...realTimeResults, ...googleShoppingResults];
     const products = deduplicateProducts(allProducts);
 
     // Filter out zero-price items and sort by relevance
