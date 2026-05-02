@@ -120,6 +120,14 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [orderNotes, setOrderNotes] = useState("");
 
+  // Sub-selections for payment methods
+  const [upiApp, setUpiApp] = useState<string>("");
+  const [upiId, setUpiId] = useState<string>("");
+  const [netBankingBank, setNetBankingBank] = useState<string>("");
+  const [emiBank, setEmiBank] = useState<string>("");
+  const [emiTenure, setEmiTenure] = useState<number>(0);
+  const [walletProvider, setWalletProvider] = useState<string>("");
+
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
