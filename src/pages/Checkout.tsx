@@ -751,7 +751,12 @@ const Checkout = () => {
                             <button
                               key={app.name}
                               type="button"
-                              className="flex flex-col items-center gap-1 p-2 rounded-lg border border-border hover:border-primary hover:bg-primary/5 transition-colors"
+                              onClick={() => setUpiApp(app.name)}
+                              className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-colors ${
+                                upiApp === app.name
+                                  ? "border-primary bg-primary/10 ring-2 ring-primary/30"
+                                  : "border-border hover:border-primary hover:bg-primary/5"
+                              }`}
                             >
                               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden border border-border">
                                 <img
@@ -772,10 +777,17 @@ const Checkout = () => {
                           </Label>
                           <Input
                             id="upiId"
+                            value={upiId}
+                            onChange={(e) => setUpiId(e.target.value)}
                             placeholder="yourname@upi"
                             className="bg-background"
                           />
                         </div>
+                        {(upiApp || upiId) && (
+                          <p className="text-xs text-green-500 mt-2">
+                            ✓ Selected: {upiApp || upiId}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
