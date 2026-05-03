@@ -1,7 +1,7 @@
 # DealWise - Complete Technical Documentation
 
 **Version:** 1.0.0  
-**Last Updated:** April 2026  
+**Last Updated:** May 2026  
 **Platform:** React + Vite + TypeScript + Supabase
 
 ---
