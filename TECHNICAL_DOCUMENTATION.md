@@ -907,7 +907,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 
 ### 6.1 Server Technology
 
-**Platform:** Lovable Cloud (Supabase)
+**Platform:** Supabase
 
 **Components:**
 - **PostgreSQL Database** - Primary data store
@@ -2431,7 +2431,7 @@ dealwise/
 
 ### 15.1 Hosting Platform
 
-**Platform:** Hostinger (with Lovable Cloud backend)
+**Platform:** Hostinger
 
 **URLs:**
 - Published: [https://www.dealwise.in/](https://www.dealwise.in/)
@@ -2441,7 +2441,7 @@ dealwise/
 
 ### 15.2 Environment Variables
 
-Auto-configured by Lovable Cloud:
+Auto-configured by Supabase:
 
 ```env
 VITE_SUPABASE_URL=https://{project-id}.supabase.co
@@ -2482,7 +2482,7 @@ npm run lint         # Run ESLint
 
 ### 15.4 Automatic Deployment
 
-Lovable handles deployment automatically:
+Supabase handles deployment automatically:
 1. Code changes in editor
 2. Hot reload in preview
 3. Click "Publish" for production
@@ -2495,7 +2495,7 @@ Lovable handles deployment automatically:
 Edge Functions deploy automatically when:
 1. Files added to `supabase/functions/`
 2. Configuration in `supabase/config.toml`
-3. Secrets configured in Lovable Cloud
+3. Secrets configured in Supabase
 
 ---
 
@@ -2586,7 +2586,7 @@ Edge Functions deploy automatically when:
 │  └───────────────────────────┼─────────────────────────────────────────┘   │
 │                              │                                             │
 │  ┌───────────────────────────┼─────────────────────────────────────────┐   │
-│  │                  BACKEND LAYER (Lovable Cloud / Supabase)           │   │
+│  │                  BACKEND LAYER (Supabase)                           │   │
 │  │                              │                                      │   │
 │  │  ┌───────────────────────────┼───────────────────────────────────┐  │   │
 │  │  │                           ▼                                   │  │   │
@@ -2770,10 +2770,9 @@ npx shadcn@latest add button card input (etc.)
 ```
 
 #### Step 5: Create Supabase Project
-1. Create Lovable Cloud project (or external Supabase)
-2. Create database tables (see schema section)
-3. Set up RLS policies
-4. Create Edge Functions
+1. Create database tables (see schema section)
+2. Set up RLS policies
+3. Create Edge Functions
 
 #### Step 6: Build Core Features
 1. Authentication (useAuth context)
@@ -2791,10 +2790,10 @@ npx shadcn@latest add button card input (etc.)
 4. Coupon system
 
 #### Step 8: Deploy
-1. Connect to Lovable Cloud
+1. Connect to Supabase
 2. Configure environment variables
 3. Deploy Edge Functions
-4. Publish application
+4. Publish application on Hostinger
 
 ---
 
