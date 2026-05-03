@@ -65,53 +65,6 @@ async function searchRealTimeProducts(query: string, rapidApiKey: string): Promi
   }
 }
 
-// Source 2: Google Shopping via Shopping Search API
-async function searchGoogleShopping(query: string, rapidApiKey: string): Promise<any[]> {
-  try {
-    const url = `https://real-time-product-search.p.rapidapi.com/search?q=${encodeURIComponent(query)}&country=in&language=en&limit=15&sort_by=BEST_MATCH`;
-    const response = await fetchWithTimeout(url, {
-      headers: {
-        'X-RapidAPI-Key': rapidApiKey,
-        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
-      },
-    }, 6000);
-
-    if (!response.ok) {
-      console.error('Google Shopping Search error:', response.status);
-      return [];
-    }
-
-    const data = await response.json();
-    const items = data?.data || [];
-    if (!Array.isArray(items)) return [];
-
-    return items.map((item: any, index: number) => {
-      const price = parseFloat(String(item.offer?.price || item.price || '0').replace(/[^0-9.]/g, '')) || 0;
-      const originalPrice = parseFloat(String(item.offer?.original_price || '0').replace(/[^0-9.]/g, '')) || price;
-      const discount = originalPrice > price ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
-
-      return {
-        id: item.product_id || `gs-${index}`,
-        name: item.product_title || 'Unknown Product',
-        price,
-        originalPrice,
-        discount,
-        rating: parseFloat(item.product_rating) || 0,
-        reviews: parseInt(item.product_num_reviews) || 0,
-        store: item.offer?.store_name || 'Google Shopping',
-        category: item.product_category || 'General',
-        description: item.product_description?.substring(0, 300) || '',
-        image: item.product_photos?.[0] || item.product_photo || '',
-        link: item.offer?.offer_page_url || item.product_page_url || '#',
-        source: 'Google',
-      };
-    });
-  } catch (e) {
-    console.error('Google Shopping Search failed:', e);
-    return [];
-  }
-}
-
 // Deduplicate products by store+name similarity
 function deduplicateProducts(products: any[]): any[] {
   const seen = new Map<string, any>();
@@ -183,21 +136,14 @@ Deno.serve(async (req) => {
     }
 
     const t0 = Date.now();
-    console.log('Multi-source search for:', sanitizedQuery, 'by user:', claimsData.claims.sub);
+    console.log('Search for:', sanitizedQuery, 'by user:', claimsData.claims.sub);
 
-    // Fire two fast sources in parallel (dropped the slow third source which
-    // chained two upstream calls). Both have 6s timeouts so total latency stays bounded.
-    const [realTimeResults, googleShoppingResults] = await Promise.all([
-      searchRealTimeProducts(sanitizedQuery, rapidApiKey),
-      searchGoogleShopping(sanitizedQuery, rapidApiKey),
-    ]);
-    const offerResults: any[] = [];
+    // Single working source: search-v2 (the legacy /search endpoint now returns 404).
+    const realTimeResults = await searchRealTimeProducts(sanitizedQuery, rapidApiKey);
 
-    console.log(`Results in ${Date.now() - t0}ms: RealTime=${realTimeResults.length}, GoogleShopping=${googleShoppingResults.length}`);
+    console.log(`Results in ${Date.now() - t0}ms: RealTime=${realTimeResults.length}`);
 
-    // Merge and deduplicate
-    const allProducts = [...realTimeResults, ...googleShoppingResults];
-    const products = deduplicateProducts(allProducts);
+    const products = deduplicateProducts(realTimeResults);
 
     // Filter out zero-price items and sort by relevance
     const validProducts = products
@@ -216,8 +162,8 @@ Deno.serve(async (req) => {
         products: validProducts,
         sources: {
           realTime: realTimeResults.length,
-          googleShopping: googleShoppingResults.length,
-          offers: offerResults.length,
+          googleShopping: 0,
+          offers: 0,
         }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
