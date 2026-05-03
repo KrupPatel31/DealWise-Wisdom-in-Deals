@@ -62,6 +62,20 @@ serve(async (req) => {
       );
     }
 
+    // Size & format guards
+    if (imageBase64 && typeof imageBase64 === 'string' && imageBase64.length > 5_000_000) {
+      return new Response(
+        JSON.stringify({ error: 'Image too large (max ~3 MB).' }),
+        { status: 413, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    if (imageUrl && (typeof imageUrl !== 'string' || !/^https:\/\//i.test(imageUrl) || imageUrl.length > 2048)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid image URL. Must be https and under 2048 characters.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Step 1: Use Lovable AI (Gemini vision) to identify the product
     console.log('Analyzing image with AI...');
 

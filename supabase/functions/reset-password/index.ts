@@ -107,8 +107,11 @@ Deno.serve(async (req) => {
     // Record this attempt
     await supabase.from("password_reset_attempts").insert({ email: normalizedEmail });
 
-    // Find user by email
-    const { data: usersData, error: listError } = await supabase.auth.admin.listUsers();
+    // Find user by email — use filter to avoid loading entire user table
+    const { data: usersData, error: listError } = await supabase.auth.admin.listUsers({
+      filter: `email.eq.${normalizedEmail}`,
+      perPage: 1,
+    } as any);
 
     if (listError) {
       console.error("Failed to query users:", listError);
@@ -132,18 +135,8 @@ Deno.serve(async (req) => {
 
     const newPassword = generateSecurePassword();
 
-    const { error: updateError } = await supabase.auth.admin.updateUserById(user.id, {
-      password: newPassword,
-    });
-
-    if (updateError) {
-      console.error("Failed to update password:", updateError);
-      return new Response(
-        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
+    // Send the email FIRST. If delivery fails we never touch the password,
+    // so the user is not locked out of their account.
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -193,6 +186,19 @@ Deno.serve(async (req) => {
     if (!emailResponse.ok) {
       const errBody = await emailResponse.text();
       console.error("Failed to send email:", errBody);
+      return new Response(
+        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Email delivered — now safe to update the password.
+    const { error: updateError } = await supabase.auth.admin.updateUserById(user.id, {
+      password: newPassword,
+    });
+
+    if (updateError) {
+      console.error("Failed to update password after email sent:", updateError);
       return new Response(
         JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
