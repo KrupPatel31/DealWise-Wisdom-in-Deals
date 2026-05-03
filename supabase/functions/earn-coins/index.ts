@@ -218,12 +218,15 @@ async function handleSubmitReview(adminClient: any, userId: string, payload: any
     });
   }
 
+  const safeProductId = String(product_id).slice(0, 100);
+  const safeProductName = String(product_name).slice(0, 200);
+
   // Check if already reviewed
   const { data: existing } = await adminClient
     .from('product_reviews')
     .select('id')
     .eq('user_id', userId)
-    .eq('product_id', product_id)
+    .eq('product_id', safeProductId)
     .maybeSingle();
 
   if (existing) {
@@ -240,7 +243,7 @@ async function handleSubmitReview(adminClient: any, userId: string, payload: any
 
   const hasOrdered = orders?.some((order: any) => {
     const items = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
-    return Array.isArray(items) && items.some((item: any) => item.product_id === product_id || item.id === product_id);
+    return Array.isArray(items) && items.some((item: any) => item.product_id === safeProductId || item.id === safeProductId);
   });
 
   if (!hasOrdered) {
@@ -251,8 +254,8 @@ async function handleSubmitReview(adminClient: any, userId: string, payload: any
 
   const { error } = await adminClient.from('product_reviews').insert({
     user_id: userId,
-    product_id,
-    product_name,
+    product_id: safeProductId,
+    product_name: safeProductName,
     rating: Math.min(5, Math.max(1, Math.floor(rating))),
     review_text: review_text?.substring(0, 1000) || null,
     coins_awarded: 20,
@@ -267,7 +270,7 @@ async function handleSubmitReview(adminClient: any, userId: string, payload: any
     throw error;
   }
 
-  await awardCoins(adminClient, userId, 20, `Review reward: ${product_name}`);
+  await awardCoins(adminClient, userId, 20, `Review reward: ${safeProductName}`);
 
   return new Response(JSON.stringify({ success: true, coins_awarded: 20, message: 'Review submitted! You earned 20 coins!' }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
