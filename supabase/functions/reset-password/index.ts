@@ -107,31 +107,33 @@ Deno.serve(async (req) => {
     // Record this attempt
     await supabase.from("password_reset_attempts").insert({ email: normalizedEmail });
 
-    // Find user by email — use filter to avoid loading entire user table
-    const { data: usersData, error: listError } = await supabase.auth.admin.listUsers({
-      filter: `email.eq.${normalizedEmail}`,
-      perPage: 1,
-    } as any);
+    // Look up user_id via the profiles table (indexed lookup, no full user-table scan).
+    // The previous approach used auth.admin.listUsers({ filter }) which is NOT supported
+    // by the admin API — it silently returned only the first page of users, so accounts
+    // beyond page 1 never received reset emails.
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("user_id")
+      .ilike("email", normalizedEmail)
+      .maybeSingle();
 
-    if (listError) {
-      console.error("Failed to query users:", listError);
+    if (profileError) {
+      console.error("Failed to query profile:", profileError);
       return new Response(
         JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const user = usersData.users.find(
-      (u: any) => u.email?.toLowerCase() === normalizedEmail
-    );
-
-    if (!user) {
+    if (!profile?.user_id) {
       // Don't reveal if email exists
       return new Response(
         JSON.stringify({ success: true, message: "If an account exists, a new password has been sent." }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const userId = profile.user_id as string;
 
     const newPassword = generateSecurePassword();
 
@@ -193,7 +195,7 @@ Deno.serve(async (req) => {
     }
 
     // Email delivered — now safe to update the password.
-    const { error: updateError } = await supabase.auth.admin.updateUserById(user.id, {
+    const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
       password: newPassword,
     });
 
