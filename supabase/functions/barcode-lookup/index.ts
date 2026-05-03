@@ -221,11 +221,14 @@ Deno.serve(async (req) => {
     }
 
     const { barcode } = await req.json();
-    if (!barcode || typeof barcode !== 'string') {
+    if (!barcode || typeof barcode !== 'string' || barcode.length > 256) {
       return new Response(JSON.stringify({ error: 'Barcode is required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const cleanBarcode = barcode.replace(/[^0-9a-zA-Z]/g, '');
+    const cleanBarcode = barcode.replace(/[^0-9a-zA-Z]/g, '').slice(0, 128);
+    if (cleanBarcode.length === 0) {
+      return new Response(JSON.stringify({ error: 'Invalid barcode' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
     const rapidApiKey = Deno.env.get('RAPIDAPI_KEY');
 
     // Fire ALL sources in parallel for maximum speed
