@@ -26,7 +26,7 @@ async function searchRealTimeProducts(query: string, rapidApiKey: string): Promi
         'X-RapidAPI-Key': rapidApiKey,
         'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
       },
-    }, 6000);
+    }, 20000);
 
     if (!response.ok) {
       console.error('Real-Time Product Search error:', response.status);
