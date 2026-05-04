@@ -18,18 +18,36 @@ async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: nu
 }
 
 // Source 1: Real-Time Product Search (existing)
-async function searchRealTimeProducts(query: string, rapidApiKey: string): Promise<any[]> {
-  try {
-    const url = `https://real-time-product-search.p.rapidapi.com/search-v2?q=${encodeURIComponent(query)}&country=in&language=en&limit=20`;
-    const response = await fetchWithTimeout(url, {
+async function callRapidApi(url: string): Promise<Response | null> {
+  const primary = Deno.env.get('RAPIDAPI_KEY');
+  const secondary = Deno.env.get('RAPIDAPI_KEY_2');
+  const keys = [primary, secondary].filter((k): k is string => !!k);
+  let lastResp: Response | null = null;
+  for (const key of keys) {
+    const resp = await fetchWithTimeout(url, {
       headers: {
-        'X-RapidAPI-Key': rapidApiKey,
+        'X-RapidAPI-Key': key,
         'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
       },
     }, 20000);
+    // Only fall back on quota/auth errors (429 = rate/quota exceeded, 403 = forbidden/quota)
+    if (resp.status === 429 || resp.status === 403) {
+      console.warn(`RapidAPI key exhausted (status ${resp.status}), trying next key...`);
+      lastResp = resp;
+      continue;
+    }
+    return resp;
+  }
+  return lastResp;
+}
 
-    if (!response.ok) {
-      console.error('Real-Time Product Search error:', response.status);
+async function searchRealTimeProducts(query: string): Promise<any[]> {
+  try {
+    const url = `https://real-time-product-search.p.rapidapi.com/search-v2?q=${encodeURIComponent(query)}&country=in&language=en&limit=20`;
+    const response = await callRapidApi(url);
+
+    if (!response || !response.ok) {
+      console.error('Real-Time Product Search error:', response?.status);
       return [];
     }
 
@@ -127,7 +145,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const rapidApiKey = Deno.env.get('RAPIDAPI_KEY');
+    const rapidApiKey = Deno.env.get('RAPIDAPI_KEY') || Deno.env.get('RAPIDAPI_KEY_2');
     if (!rapidApiKey) {
       return new Response(
         JSON.stringify({ error: 'API key not configured' }),
@@ -139,7 +157,7 @@ Deno.serve(async (req) => {
     console.log('Search for:', sanitizedQuery, 'by user:', claimsData.claims.sub);
 
     // Single working source: search-v2 (the legacy /search endpoint now returns 404).
-    const realTimeResults = await searchRealTimeProducts(sanitizedQuery, rapidApiKey);
+    const realTimeResults = await searchRealTimeProducts(sanitizedQuery);
 
     console.log(`Results in ${Date.now() - t0}ms: RealTime=${realTimeResults.length}`);
 

@@ -5,20 +5,31 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-async function lookupWithRapidAPI(barcode: string, rapidApiKey: string): Promise<any | null> {
+async function lookupWithRapidAPI(barcode: string, _unused?: string): Promise<any | null> {
   try {
-    const response = await fetch(
-      `https://real-time-product-search.p.rapidapi.com/search?q=${encodeURIComponent(barcode)}&country=in&language=en`,
-      {
+    const url = `https://real-time-product-search.p.rapidapi.com/search?q=${encodeURIComponent(barcode)}&country=in&language=en`;
+    const primary = Deno.env.get('RAPIDAPI_KEY');
+    const secondary = Deno.env.get('RAPIDAPI_KEY_2');
+    const keys = [primary, secondary].filter((k): k is string => !!k);
+    let response: Response | null = null;
+    for (const key of keys) {
+      const resp = await fetch(url, {
         headers: {
-          'x-rapidapi-key': rapidApiKey,
+          'x-rapidapi-key': key,
           'x-rapidapi-host': 'real-time-product-search.p.rapidapi.com',
         },
+      });
+      if (resp.status === 429 || resp.status === 403) {
+        console.warn(`RapidAPI key exhausted (${resp.status}), trying next...`);
+        response = resp;
+        continue;
       }
-    );
+      response = resp;
+      break;
+    }
 
-    if (!response.ok) {
-      console.error(`RapidAPI returned ${response.status}`);
+    if (!response || !response.ok) {
+      console.error(`RapidAPI returned ${response?.status}`);
       return null;
     }
 
@@ -229,7 +240,7 @@ Deno.serve(async (req) => {
     if (cleanBarcode.length === 0) {
       return new Response(JSON.stringify({ error: 'Invalid barcode' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
-    const rapidApiKey = Deno.env.get('RAPIDAPI_KEY');
+    const rapidApiKey = Deno.env.get('RAPIDAPI_KEY') || Deno.env.get('RAPIDAPI_KEY_2');
 
     // Fire ALL sources in parallel for maximum speed
     const [rapidResult, offResult, upcResult, beautyResult, petResult] = await Promise.all([
