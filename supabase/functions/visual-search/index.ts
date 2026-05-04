@@ -44,8 +44,9 @@ serve(async (req) => {
       );
     }
 
-    const rapidApiKey = Deno.env.get('RAPIDAPI_KEY');
-    if (!rapidApiKey) {
+    const primaryKey = Deno.env.get('RAPIDAPI_KEY');
+    const secondaryKey = Deno.env.get('RAPIDAPI_KEY_2');
+    if (!primaryKey && !secondaryKey) {
       return new Response(
         JSON.stringify({ error: 'Search API not configured' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -180,17 +181,28 @@ Do not include any other text, just the JSON.`
 
     const searchUrl = `https://real-time-product-search.p.rapidapi.com/search-v2?q=${encodeURIComponent(searchQuery)}&country=in&language=en&limit=20`;
 
-    const searchResponse = await fetch(searchUrl, {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': rapidApiKey,
-        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
-      },
-    });
+    const keys = [primaryKey, secondaryKey].filter((k): k is string => !!k);
+    let searchResponse: Response | null = null;
+    for (const key of keys) {
+      const resp = await fetch(searchUrl, {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': key,
+          'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
+        },
+      });
+      if (resp.status === 429 || resp.status === 403) {
+        console.warn(`RapidAPI key exhausted (${resp.status}), trying next...`);
+        searchResponse = resp;
+        continue;
+      }
+      searchResponse = resp;
+      break;
+    }
 
     let products: any[] = [];
 
-    if (searchResponse.ok) {
+    if (searchResponse && searchResponse.ok) {
       const searchData = await searchResponse.json();
       const rawItems = searchData?.data?.products || searchData?.data || searchData?.products || [];
       const items = Array.isArray(rawItems) ? rawItems : [];
