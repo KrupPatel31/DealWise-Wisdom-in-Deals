@@ -86,7 +86,8 @@ const variantConfig = {
   signup: {
     emoji: "📧",
     title: "Verify Your Email",
-    subtitle: "We've sent a verification link to your email address. Please check your inbox and click the link to activate your account.",
+    subtitle:
+      "We've sent a verification link to your email address. Please check your inbox and click the link to activate your account.",
     primaryAction: { label: "Go to Sign In", path: "/sign-in" },
     secondaryAction: null,
   },
@@ -106,7 +107,12 @@ const variantConfig = {
   },
 };
 
-export const SuccessOverlay = ({ show, onClose, variant, dealUrl }: SuccessOverlayProps) => {
+export const SuccessOverlay = ({
+  show,
+  onClose,
+  variant,
+  dealUrl,
+}: SuccessOverlayProps) => {
   const navigate = useNavigate();
   const config = variantConfig[variant];
 
@@ -155,7 +161,12 @@ export const SuccessOverlay = ({ show, onClose, variant, dealUrl }: SuccessOverl
             initial={{ scale: 0.85, y: 30, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, y: 20, opacity: 0 }}
-            transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
+            transition={{
+              delay: 0.1,
+              type: "spring",
+              stiffness: 260,
+              damping: 20,
+            }}
           >
             {/* Glow ring */}
             <div className="relative flex items-center justify-center">
@@ -173,7 +184,12 @@ export const SuccessOverlay = ({ show, onClose, variant, dealUrl }: SuccessOverl
               className="text-3xl sm:text-4xl"
               initial={{ scale: 0, rotate: -30 }}
               animate={{ scale: 1, rotate: 0 }}
-              transition={{ delay: 1.1, type: "spring", stiffness: 300, damping: 10 }}
+              transition={{
+                delay: 1.1,
+                type: "spring",
+                stiffness: 300,
+                damping: 10,
+              }}
             >
               {config.emoji}
             </motion.div>

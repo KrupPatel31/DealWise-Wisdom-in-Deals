@@ -1,6 +1,12 @@
-import { useState, useEffect, createContext, useContext, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './useAuth';
+import {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  useCallback,
+} from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "./useAuth";
 
 export interface CartItem {
   id: string;
@@ -15,7 +21,7 @@ export interface CartItem {
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (item: Omit<CartItem, 'quantity'>) => void;
+  addToCart: (item: Omit<CartItem, "quantity">) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
@@ -40,9 +46,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase
-        .from('cart_items')
-        .select('*')
-        .eq('user_id', user.id);
+        .from("cart_items")
+        .select("*")
+        .eq("user_id", user.id);
 
       if (error) {
         return;
@@ -54,8 +60,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         price: Number(item.price),
         originalPrice: Number(item.original_price),
         quantity: item.quantity,
-        image: item.image || '',
-        store: item.store || '',
+        image: item.image || "",
+        store: item.store || "",
         discount: Number(item.discount) || 0,
       }));
 
@@ -70,7 +76,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     loadCartFromDB();
   }, [loadCartFromDB]);
 
-  const addToCart = async (item: Omit<CartItem, 'quantity'>) => {
+  const addToCart = async (item: Omit<CartItem, "quantity">) => {
     if (!user) return;
 
     const existingItem = cartItems.find((i) => i.id === item.id);
@@ -83,7 +89,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Then sync to database
       try {
-        const { error } = await supabase.from('cart_items').insert({
+        const { error } = await supabase.from("cart_items").insert({
           user_id: user.id,
           product_id: item.id,
           name: item.name,
@@ -109,17 +115,17 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user) return;
 
     const itemToRemove = cartItems.find((item) => item.id === id);
-    
+
     // Update local state first
     setCartItems((prev) => prev.filter((item) => item.id !== id));
 
     // Then sync to database
     try {
       const { error } = await supabase
-        .from('cart_items')
+        .from("cart_items")
         .delete()
-        .eq('user_id', user.id)
-        .eq('product_id', id);
+        .eq("user_id", user.id)
+        .eq("product_id", id);
 
       if (error) {
         if (itemToRemove) {
@@ -142,26 +148,28 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const previousItem = cartItems.find((item) => item.id === id);
-    
+
     // Update local state first
     setCartItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+      prev.map((item) => (item.id === id ? { ...item, quantity } : item)),
     );
 
     // Then sync to database
     try {
       const { error } = await supabase
-        .from('cart_items')
+        .from("cart_items")
         .update({ quantity })
-        .eq('user_id', user.id)
-        .eq('product_id', id);
+        .eq("user_id", user.id)
+        .eq("product_id", id);
 
       if (error) {
         if (previousItem) {
           setCartItems((prev) =>
             prev.map((item) =>
-              item.id === id ? { ...item, quantity: previousItem.quantity } : item
-            )
+              item.id === id
+                ? { ...item, quantity: previousItem.quantity }
+                : item,
+            ),
           );
         }
       }
@@ -169,8 +177,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       if (previousItem) {
         setCartItems((prev) =>
           prev.map((item) =>
-            item.id === id ? { ...item, quantity: previousItem.quantity } : item
-          )
+            item.id === id
+              ? { ...item, quantity: previousItem.quantity }
+              : item,
+          ),
         );
       }
     }
@@ -180,16 +190,16 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user) return;
 
     const previousItems = [...cartItems];
-    
+
     // Clear local state first
     setCartItems([]);
 
     // Then sync to database
     try {
       const { error } = await supabase
-        .from('cart_items')
+        .from("cart_items")
         .delete()
-        .eq('user_id', user.id);
+        .eq("user_id", user.id);
 
       if (error) {
         setCartItems(previousItems);
@@ -221,7 +231,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 export const useCart = () => {
   const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 };

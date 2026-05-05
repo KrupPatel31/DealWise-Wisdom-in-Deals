@@ -30,9 +30,13 @@ const GalaxyButton = React.forwardRef<HTMLButtonElement, GalaxyButtonProps>(
     return (
       <button
         ref={(node) => {
-          (containerRef as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+          (
+            containerRef as React.MutableRefObject<HTMLButtonElement | null>
+          ).current = node;
           if (typeof ref === "function") ref(node);
-          else if (ref) (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+          else if (ref)
+            (ref as React.MutableRefObject<HTMLButtonElement | null>).current =
+              node;
         }}
         className={cn("galaxy-btn", className)}
         {...props}
@@ -49,7 +53,7 @@ const GalaxyButton = React.forwardRef<HTMLButtonElement, GalaxyButtonProps>(
         <span className="galaxy-text">{children}</span>
       </button>
     );
-  }
+  },
 );
 
 GalaxyButton.displayName = "GalaxyButton";

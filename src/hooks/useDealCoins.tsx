@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface DealCoinsData {
   balance: number;
@@ -11,7 +11,7 @@ export interface DealCoinsData {
 export interface CoinTransaction {
   id: string;
   amount: number;
-  type: 'earned' | 'spent' | 'refund';
+  type: "earned" | "spent" | "refund";
   description: string | null;
   order_id: string | null;
   created_at: string;
@@ -39,9 +39,9 @@ export const useDealCoins = () => {
 
     try {
       const { data, error } = await supabase
-        .from('deal_coins')
-        .select('*')
-        .eq('user_id', user.id)
+        .from("deal_coins")
+        .select("*")
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (error) {
@@ -69,10 +69,10 @@ export const useDealCoins = () => {
 
     try {
       const { data, error } = await supabase
-        .from('deal_coins_transactions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
+        .from("deal_coins_transactions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
         .limit(20);
 
       if (error) {
@@ -80,8 +80,7 @@ export const useDealCoins = () => {
       }
 
       setTransactions(data as CoinTransaction[]);
-    } catch {
-    }
+    } catch {}
   }, [user]);
 
   useEffect(() => {

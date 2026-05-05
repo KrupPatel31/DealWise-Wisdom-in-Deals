@@ -15,8 +15,8 @@ interface FakeStoreProduct {
 }
 
 const categoryMap: Record<string, string> = {
-  "electronics": "Electronics",
-  "jewelery": "Jewelery",
+  electronics: "Electronics",
+  jewelery: "Jewelery",
   "men's clothing": "Men's Clothing",
   "women's clothing": "Women's Clothing",
 };
@@ -39,8 +39,12 @@ export function useFakeStoreProducts() {
 
         const mapped: ProductData[] = data.map((p) => {
           const inrPrice = Math.round(p.price * 83);
-          const originalPrice = Math.round(inrPrice * (1 + Math.random() * 0.25));
-          const discountPct = Math.round(((originalPrice - inrPrice) / originalPrice) * 100);
+          const originalPrice = Math.round(
+            inrPrice * (1 + Math.random() * 0.25),
+          );
+          const discountPct = Math.round(
+            ((originalPrice - inrPrice) / originalPrice) * 100,
+          );
 
           return {
             id: `fakestore-${p.id}`,
@@ -66,7 +70,9 @@ export function useFakeStoreProducts() {
     }
 
     fetchProducts();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return { products, isLoading, error };

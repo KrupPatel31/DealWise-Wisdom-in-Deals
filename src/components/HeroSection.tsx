@@ -43,12 +43,20 @@ export const HeroSection = () => {
       </div>
 
       {/* Right Column - Feature Card */}
-      <div className="relative animate-slide-up hidden sm:block" style={{ animationDelay: "200ms" }}>
-        <div className="absolute -bottom-6 -left-6 z-20 animate-float hidden lg:block" style={{ animationDelay: "2s" }}>
+      <div
+        className="relative animate-slide-up hidden sm:block"
+        style={{ animationDelay: "200ms" }}
+      >
+        <div
+          className="absolute -bottom-6 -left-6 z-20 animate-float hidden lg:block"
+          style={{ animationDelay: "2s" }}
+        >
           <div className="glass p-3 sm:p-4 rounded-xl">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-accent rounded-full animate-glow-pulse"></div>
-              <span className="text-xs sm:text-sm font-medium">Live Price Updates</span>
+              <span className="text-xs sm:text-sm font-medium">
+                Live Price Updates
+              </span>
             </div>
           </div>
         </div>

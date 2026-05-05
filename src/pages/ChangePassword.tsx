@@ -7,10 +7,19 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { TrendingUp, Lock, CheckCircle, X, Eye, EyeOff } from "lucide-react";
-import { validatePassword, getPasswordStrength } from "@/utils/passwordValidation";
+import {
+  validatePassword,
+  getPasswordStrength,
+} from "@/utils/passwordValidation";
 
 const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -18,13 +27,14 @@ const ChangePassword = () => {
   const [loading, setLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const validation = validatePassword(newPassword);
   const strength = getPasswordStrength(newPassword);
-  const passwordsMatch = newPassword === confirmPassword && confirmPassword.length > 0;
+  const passwordsMatch =
+    newPassword === confirmPassword && confirmPassword.length > 0;
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -38,7 +48,7 @@ const ChangePassword = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validation.isValid) {
       toast.error("Please meet all password requirements");
       return;
@@ -53,7 +63,7 @@ const ChangePassword = () => {
 
     try {
       const { error } = await supabase.auth.updateUser({
-        password: newPassword
+        password: newPassword,
       });
 
       if (error) {
@@ -74,15 +84,19 @@ const ChangePassword = () => {
   return (
     <div className="min-h-screen dark">
       <Header />
-      
+
       <main className="flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-6 sm:mb-8">
             <div className="flex items-center justify-center gap-2 mb-4">
               <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-              <span className="text-xl sm:text-2xl font-bold text-primary">DEALWISE</span>
+              <span className="text-xl sm:text-2xl font-bold text-primary">
+                DEALWISE
+              </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Change Password</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
+              Change Password
+            </h1>
             <p className="text-sm sm:text-base text-muted-foreground">
               Enter your new password below
             </p>
@@ -98,11 +112,13 @@ const ChangePassword = () => {
                 Choose a strong password to keep your account secure
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword" className="text-foreground">New Password</Label>
+                  <Label htmlFor="newPassword" className="text-foreground">
+                    New Password
+                  </Label>
                   <div className="relative">
                     <Input
                       id="newPassword"
@@ -118,39 +134,60 @@ const ChangePassword = () => {
                       onClick={() => setShowNewPassword(!showNewPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
-                      {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showNewPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
-                  
+
                   {newPassword && (
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                          <div 
+                          <div
                             className={`h-full transition-all ${
-                              strength.strength <= 1 ? 'bg-red-500' :
-                              strength.strength === 2 ? 'bg-orange-500' :
-                              strength.strength === 3 ? 'bg-yellow-500' :
-                              strength.strength === 4 ? 'bg-blue-500' :
-                              'bg-green-500'
+                              strength.strength <= 1
+                                ? "bg-red-500"
+                                : strength.strength === 2
+                                  ? "bg-orange-500"
+                                  : strength.strength === 3
+                                    ? "bg-yellow-500"
+                                    : strength.strength === 4
+                                      ? "bg-blue-500"
+                                      : "bg-green-500"
                             }`}
-                            style={{ width: `${(strength.strength / 5) * 100}%` }}
+                            style={{
+                              width: `${(strength.strength / 5) * 100}%`,
+                            }}
                           />
                         </div>
-                        <span className={`text-xs font-medium ${strength.color}`}>
+                        <span
+                          className={`text-xs font-medium ${strength.color}`}
+                        >
                           {strength.label}
                         </span>
                       </div>
-                      
+
                       <ul className="space-y-1">
                         {validation.criteria.map((criterion, index) => (
-                          <li key={index} className="flex items-center gap-2 text-xs">
+                          <li
+                            key={index}
+                            className="flex items-center gap-2 text-xs"
+                          >
                             {criterion.met ? (
                               <CheckCircle className="h-3 w-3 text-green-500" />
                             ) : (
                               <X className="h-3 w-3 text-muted-foreground" />
                             )}
-                            <span className={criterion.met ? 'text-green-500' : 'text-muted-foreground'}>
+                            <span
+                              className={
+                                criterion.met
+                                  ? "text-green-500"
+                                  : "text-muted-foreground"
+                              }
+                            >
                               {criterion.label}
                             </span>
                           </li>
@@ -161,7 +198,9 @@ const ChangePassword = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword" className="text-foreground">
+                    Confirm Password
+                  </Label>
                   <div className="relative">
                     <Input
                       id="confirmPassword"
@@ -174,24 +213,34 @@ const ChangePassword = () => {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
-                  
+
                   {confirmPassword && (
                     <div className="flex items-center gap-2 text-xs">
                       {passwordsMatch ? (
                         <>
                           <CheckCircle className="h-3 w-3 text-green-500" />
-                          <span className="text-green-500">Passwords match</span>
+                          <span className="text-green-500">
+                            Passwords match
+                          </span>
                         </>
                       ) : (
                         <>
                           <X className="h-3 w-3 text-red-500" />
-                          <span className="text-red-500">Passwords do not match</span>
+                          <span className="text-red-500">
+                            Passwords do not match
+                          </span>
                         </>
                       )}
                     </div>
@@ -199,7 +248,7 @@ const ChangePassword = () => {
                 </div>
 
                 <Button
-                  type="submit" 
+                  type="submit"
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   disabled={loading || !validation.isValid || !passwordsMatch}
                 >
@@ -210,7 +259,7 @@ const ChangePassword = () => {
           </Card>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

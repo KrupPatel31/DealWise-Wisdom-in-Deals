@@ -1,6 +1,20 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Search, Filter, SortAsc, Star, ShoppingCart, Tag, Plus, Minus, Loader2, BarChart3, ScanLine, Mic, MicOff } from "lucide-react";
+import {
+  Search,
+  Filter,
+  SortAsc,
+  Star,
+  ShoppingCart,
+  Tag,
+  Plus,
+  Minus,
+  Loader2,
+  BarChart3,
+  ScanLine,
+  Mic,
+  MicOff,
+} from "lucide-react";
 import { GalaxyButton } from "@/components/ui/galaxy-button";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -27,31 +41,42 @@ import { ShareDeal } from "@/components/ShareDeal";
 
 export const ProductSearchBar = () => {
   // Restore persisted search state from sessionStorage
-  const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem("search_query") || "");
+  const [searchQuery, setSearchQuery] = useState(
+    () => sessionStorage.getItem("search_query") || "",
+  );
   const [products, setProducts] = useState<ProductData[]>(() => {
     try {
       const saved = sessionStorage.getItem("search_products");
       return saved ? JSON.parse(saved) : [];
-    } catch { return []; }
+    } catch {
+      return [];
+    }
   });
   const [filteredProducts, setFilteredProducts] = useState<ProductData[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>(() => sessionStorage.getItem("search_category") || "all");
-  const [sortBy, setSortBy] = useState<string>(() => sessionStorage.getItem("search_sort") || "relevance");
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    () => sessionStorage.getItem("search_category") || "all",
+  );
+  const [sortBy, setSortBy] = useState<string>(
+    () => sessionStorage.getItem("search_sort") || "relevance",
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [isSearchingApi, setIsSearchingApi] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
   const hasRestoredSearch = useRef(false);
-  
+
   const { user } = useAuth();
   const { addToCart, cartItems, updateQuantity } = useCart();
-  const { products: fakeStoreProducts, isLoading: isFakeStoreLoading } = useFakeStoreProducts();
+  const { products: fakeStoreProducts, isLoading: isFakeStoreLoading } =
+    useFakeStoreProducts();
   const navigate = useNavigate();
 
   // Voice search using Web Speech API
   const toggleVoiceSearch = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
     if (!SpeechRecognition) {
       toast.error("Voice search is not supported in your browser");
       return;
@@ -84,7 +109,9 @@ export const ProductSearchBar = () => {
     recognition.onerror = (event: any) => {
       setIsListening(false);
       if (event.error === "not-allowed") {
-        toast.error("Microphone access denied. Please allow microphone permission.");
+        toast.error(
+          "Microphone access denied. Please allow microphone permission.",
+        );
       } else {
         toast.error("Voice search failed. Please try again.");
       }
@@ -120,7 +147,7 @@ export const ProductSearchBar = () => {
       navigate("/sign-in");
       return;
     }
-    
+
     const cartItem = {
       id: product.id,
       name: product.title,
@@ -130,7 +157,7 @@ export const ProductSearchBar = () => {
       store: product.store || "Unknown",
       discount: parseDiscount(product.discount),
     };
-    
+
     addToCart(cartItem);
     toast.success(`${product.title} added to cart!`);
   };
@@ -141,7 +168,7 @@ export const ProductSearchBar = () => {
       navigate("/sign-in");
       return;
     }
-    
+
     const currentQty = getCartItemQuantity(product.id);
     if (currentQty === 0) {
       handleAddToCart(product);
@@ -158,74 +185,92 @@ export const ProductSearchBar = () => {
   };
 
   // Fetch products from RapidAPI
-  const fetchProductsFromApi = useCallback(async (query: string) => {
-    if (!query.trim()) return;
-    
-    // Check if user is authenticated
-    if (!user) {
-      toast.error("Please sign in to search products");
-      navigate("/sign-in");
-      return;
-    }
-    
-    setIsSearchingApi(true);
-    try {
-      // Get the current session to use the user's access token
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData?.session?.access_token;
-      
-      if (!accessToken) {
-        toast.error("Session expired. Please sign in again.");
+  const fetchProductsFromApi = useCallback(
+    async (query: string) => {
+      if (!query.trim()) return;
+
+      // Check if user is authenticated
+      if (!user) {
+        toast.error("Please sign in to search products");
         navigate("/sign-in");
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('search-products', {
-        body: { query },
-        headers: {
-          Authorization: `Bearer ${accessToken}`
+      setIsSearchingApi(true);
+      try {
+        // Get the current session to use the user's access token
+        const { data: sessionData } = await supabase.auth.getSession();
+        const accessToken = sessionData?.session?.access_token;
+
+        if (!accessToken) {
+          toast.error("Session expired. Please sign in again.");
+          navigate("/sign-in");
+          return;
         }
-      });
 
-      if (error) {
-        toast.error('Failed to fetch products from API');
-        return;
-      }
+        const { data, error } = await supabase.functions.invoke(
+          "search-products",
+          {
+            body: { query },
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
 
-      if (data?.products && data.products.length > 0) {
-        const transformedProducts: ProductData[] = data.products.map((p: any) => ({
-          id: p.id,
-          title: p.name,
-          price: `₹${p.price.toLocaleString('en-IN')}`,
-          originalPrice: p.originalPrice > p.price ? `₹${p.originalPrice.toLocaleString('en-IN')}` : undefined,
-          discount: p.discount ? `${p.discount}% off` : undefined,
-          rating: p.rating?.toString(),
-          store: p.store,
-          category: p.category,
-          description: p.description,
-          image: p.image,
-          link: p.link,
-          source: p.source,
-        }));
-        
-        setProducts(transformedProducts);
-        setFilteredProducts(transformedProducts);
-        // Persist search results
-        sessionStorage.setItem("search_products", JSON.stringify(transformedProducts));
-        sessionStorage.setItem("search_query", searchQuery);
-        
-        const sources = data.sources;
-        const sourceInfo = sources ? ` (${sources.realTime + sources.googleShopping + sources.offers} from ${Object.values(sources).filter((v: any) => v > 0).length} sources)` : '';
-        toast.success(`Found ${transformedProducts.length} products${sourceInfo}`);
-      } else {
-        toast.info('No products found, showing local results');
+        if (error) {
+          toast.error("Failed to fetch products from API");
+          return;
+        }
+
+        if (data?.products && data.products.length > 0) {
+          const transformedProducts: ProductData[] = data.products.map(
+            (p: any) => ({
+              id: p.id,
+              title: p.name,
+              price: `₹${p.price.toLocaleString("en-IN")}`,
+              originalPrice:
+                p.originalPrice > p.price
+                  ? `₹${p.originalPrice.toLocaleString("en-IN")}`
+                  : undefined,
+              discount: p.discount ? `${p.discount}% off` : undefined,
+              rating: p.rating?.toString(),
+              store: p.store,
+              category: p.category,
+              description: p.description,
+              image: p.image,
+              link: p.link,
+              source: p.source,
+            }),
+          );
+
+          setProducts(transformedProducts);
+          setFilteredProducts(transformedProducts);
+          // Persist search results
+          sessionStorage.setItem(
+            "search_products",
+            JSON.stringify(transformedProducts),
+          );
+          sessionStorage.setItem("search_query", searchQuery);
+
+          const sources = data.sources;
+          const sourceInfo = sources
+            ? ` (${sources.realTime + sources.googleShopping + sources.offers} from ${Object.values(sources).filter((v: any) => v > 0).length} sources)`
+            : "";
+          toast.success(
+            `Found ${transformedProducts.length} products${sourceInfo}`,
+          );
+        } else {
+          toast.info("No products found, showing local results");
+        }
+      } catch {
+        toast.error("Search failed, showing local results");
+      } finally {
+        setIsSearchingApi(false);
       }
-    } catch {
-      toast.error('Search failed, showing local results');
-    } finally {
-      setIsSearchingApi(false);
-    }
-  }, [user, navigate]);
+    },
+    [user, navigate],
+  );
 
   // Merge mock + Fake Store products (only if no restored search results)
   useEffect(() => {
@@ -252,7 +297,7 @@ export const ProductSearchBar = () => {
 
   // Handle Enter key press
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
@@ -278,7 +323,7 @@ export const ProductSearchBar = () => {
     if (selectedCategory !== "all") {
       filtered = filtered.filter(
         (product) =>
-          product.category?.toLowerCase() === selectedCategory.toLowerCase()
+          product.category?.toLowerCase() === selectedCategory.toLowerCase(),
       );
     }
 
@@ -291,12 +336,12 @@ export const ProductSearchBar = () => {
         break;
       case "rating":
         filtered.sort(
-          (a, b) => parseFloat(b.rating || "0") - parseFloat(a.rating || "0")
+          (a, b) => parseFloat(b.rating || "0") - parseFloat(a.rating || "0"),
         );
         break;
       case "discount":
         filtered.sort(
-          (a, b) => parseDiscount(b.discount) - parseDiscount(a.discount)
+          (a, b) => parseDiscount(b.discount) - parseDiscount(a.discount),
         );
         break;
       default:
@@ -333,7 +378,9 @@ export const ProductSearchBar = () => {
     <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Search Header */}
       <div className="text-center space-y-2 sm:space-y-4">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Find Best Deals</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+          Find Best Deals
+        </h1>
         <p className="text-sm sm:text-base text-muted-foreground">
           Compare prices across multiple stores
         </p>
@@ -349,7 +396,9 @@ export const ProductSearchBar = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder={isListening ? "Listening..." : "Search products..."}
+                placeholder={
+                  isListening ? "Listening..." : "Search products..."
+                }
                 className={`pl-10 sm:pl-12 h-10 sm:h-12 text-base sm:text-lg ${isListening ? "ring-2 ring-red-500/50" : ""}`}
               />
             </div>
@@ -359,9 +408,13 @@ export const ProductSearchBar = () => {
               className="h-10 sm:h-12 px-3"
               title={isListening ? "Stop listening" : "Voice search"}
             >
-              {isListening ? <MicOff className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" /> : <Mic className="h-4 w-4 sm:h-5 sm:w-5" />}
+              {isListening ? (
+                <MicOff className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" />
+              ) : (
+                <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
+              )}
             </Button>
-            <GalaxyButton 
+            <GalaxyButton
               onClick={handleSearch}
               disabled={isSearchingApi}
               className="h-10 sm:h-12 px-4 sm:px-6"
@@ -376,7 +429,11 @@ export const ProductSearchBar = () => {
               )}
             </GalaxyButton>
             <Link to="/scan">
-              <Button variant="outline" className="h-10 sm:h-12 px-3" title="Scan Barcode">
+              <Button
+                variant="outline"
+                className="h-10 sm:h-12 px-3"
+                title="Scan Barcode"
+              >
                 <ScanLine className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </Link>
@@ -434,8 +491,8 @@ export const ProductSearchBar = () => {
             {isSearchingApi
               ? "Searching live products..."
               : isLoading
-              ? "Filtering..."
-              : `Showing ${filteredProducts.length} products`}
+                ? "Filtering..."
+                : `Showing ${filteredProducts.length} products`}
           </p>
         </div>
         {searchQuery && (
@@ -467,189 +524,215 @@ export const ProductSearchBar = () => {
       {/* Products by Category */}
       {Object.keys(productsByCategory).length > 0 ? (
         <div className="space-y-8">
-          {Object.entries(productsByCategory).map(([category, categoryProducts]) => (
-            <div key={category} className="space-y-4">
-              {/* Category Header */}
-              <div className="flex items-center justify-between border-b pb-2">
-                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                  <Badge variant="secondary" className="text-sm px-3 py-1">
-                    {category}
-                  </Badge>
-                  <span className="text-sm font-normal text-muted-foreground">
-                    ({categoryProducts.length} products)
-                  </span>
-                </h2>
-              </div>
-              
-              {/* Category Products Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {categoryProducts.map((product) => {
-                  const quantity = getCartItemQuantity(product.id);
-                  
-                  return (
-                    <Card
-                      key={product.id}
-                      className="hover:shadow-lg transition-all duration-300 group h-full flex flex-col"
-                    >
-                      <CardContent className="p-4 flex-1 flex flex-col">
-                        <div className="flex flex-col h-full">
-                          {/* Product Image */}
-                          <Link to={`/product/${encodeURIComponent(product.id)}`}>
-                            <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3 cursor-pointer">
-                              <img
-                                src={product.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"}
-                                alt={product.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                onError={(e) => {
-                                  e.currentTarget.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400";
-                                }}
-                              />
-                            </div>
-                          </Link>
+          {Object.entries(productsByCategory).map(
+            ([category, categoryProducts]) => (
+              <div key={category} className="space-y-4">
+                {/* Category Header */}
+                <div className="flex items-center justify-between border-b pb-2">
+                  <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                    <Badge variant="secondary" className="text-sm px-3 py-1">
+                      {category}
+                    </Badge>
+                    <span className="text-sm font-normal text-muted-foreground">
+                      ({categoryProducts.length} products)
+                    </span>
+                  </h2>
+                </div>
 
-                          {/* Product Info */}
-                          <div className="flex-1 space-y-2">
-                          <div className="flex items-start justify-between gap-1">
-                            <Link to={`/product/${encodeURIComponent(product.id)}`}>
-                              <h3 className="font-semibold line-clamp-2 text-sm leading-tight hover:text-primary transition-colors">
-                                {product.title}
-                              </h3>
+                {/* Category Products Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {categoryProducts.map((product) => {
+                    const quantity = getCartItemQuantity(product.id);
+
+                    return (
+                      <Card
+                        key={product.id}
+                        className="hover:shadow-lg transition-all duration-300 group h-full flex flex-col"
+                      >
+                        <CardContent className="p-4 flex-1 flex flex-col">
+                          <div className="flex flex-col h-full">
+                            {/* Product Image */}
+                            <Link
+                              to={`/product/${encodeURIComponent(product.id)}`}
+                            >
+                              <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-3 cursor-pointer">
+                                <img
+                                  src={
+                                    product.image ||
+                                    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"
+                                  }
+                                  alt={product.title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  onError={(e) => {
+                                    e.currentTarget.src =
+                                      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400";
+                                  }}
+                                />
+                              </div>
                             </Link>
-                            <ShareDeal
-                              title={product.title}
-                              price={product.price}
-                              store={product.store}
-                              url={`${window.location.origin}/product/${encodeURIComponent(product.id)}`}
-                              variant="icon"
-                            />
-                          </div>
 
-                            {/* Price */}
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-lg font-bold text-primary">
-                                {product.price}
-                              </span>
-                              {product.originalPrice && (
-                                <span className="text-sm text-muted-foreground line-through">
-                                  {product.originalPrice}
+                            {/* Product Info */}
+                            <div className="flex-1 space-y-2">
+                              <div className="flex items-start justify-between gap-1">
+                                <Link
+                                  to={`/product/${encodeURIComponent(product.id)}`}
+                                >
+                                  <h3 className="font-semibold line-clamp-2 text-sm leading-tight hover:text-primary transition-colors">
+                                    {product.title}
+                                  </h3>
+                                </Link>
+                                <ShareDeal
+                                  title={product.title}
+                                  price={product.price}
+                                  store={product.store}
+                                  url={`${window.location.origin}/product/${encodeURIComponent(product.id)}`}
+                                  variant="icon"
+                                />
+                              </div>
+
+                              {/* Price */}
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-lg font-bold text-primary">
+                                  {product.price}
                                 </span>
-                              )}
-                            </div>
-
-                            {/* Discount Badge */}
-                            {product.discount && (
-                              <Badge
-                                variant="secondary"
-                                className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                              >
-                                <Tag className="h-3 w-3 mr-1" />
-                                {product.discount}
-                              </Badge>
-                            )}
-
-                            {/* Rating */}
-                            {product.rating && (
-                              <div className="flex items-center gap-1">
-                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                <span className="text-sm font-medium">
-                                  {product.rating}
-                                </span>
-                                <span className="text-xs text-muted-foreground">/5</span>
-                                {product.ratingCount && (
-                                  <span className="text-xs text-muted-foreground">
-                                    ({product.ratingCount})
+                                {product.originalPrice && (
+                                  <span className="text-sm text-muted-foreground line-through">
+                                    {product.originalPrice}
                                   </span>
                                 )}
                               </div>
-                            )}
 
-                            {/* Store & Source */}
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {product.store && (
-                                <div className="flex items-center gap-1">
-                                  <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                                  <span className="text-sm text-muted-foreground">
-                                    {product.store}
-                                  </span>
-                                </div>
-                              )}
-                              {(product as any).source && (
-                                <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                                  {(product as any).source}
+                              {/* Discount Badge */}
+                              {product.discount && (
+                                <Badge
+                                  variant="secondary"
+                                  className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                >
+                                  <Tag className="h-3 w-3 mr-1" />
+                                  {product.discount}
                                 </Badge>
                               )}
-                            </div>
 
-                            {/* Description */}
-                            {product.description && (
-                              <p className="text-xs text-muted-foreground line-clamp-2">
-                                {product.description}
-                              </p>
-                            )}
-                          </div>
+                              {/* Rating */}
+                              {product.rating && (
+                                <div className="flex items-center gap-1">
+                                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                  <span className="text-sm font-medium">
+                                    {product.rating}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    /5
+                                  </span>
+                                  {product.ratingCount && (
+                                    <span className="text-xs text-muted-foreground">
+                                      ({product.ratingCount})
+                                    </span>
+                                  )}
+                                </div>
+                              )}
 
-                          {/* Action Buttons */}
-                          <div className="flex flex-col gap-2 mt-auto pt-4">
-                            <div className="flex gap-2">
-                              <Link 
-                                to={`/compare-prices?name=${encodeURIComponent(product.title)}&price=${parsePrice(product.price)}&image=${encodeURIComponent(product.image || '')}&store=${encodeURIComponent(product.store || '')}`}
-                                className="flex-1"
-                              >
-                                <Button className="w-full text-xs px-2" size="sm">
-                                  <BarChart3 className="h-3 w-3 mr-1" />
-                                  Compare
-                                </Button>
-                              </Link>
-                              <Link to={`/product/${encodeURIComponent(product.id)}`} className="flex-1">
-                                <Button variant="outline" className="w-full text-xs px-2" size="sm">
-                                  View Details
-                                </Button>
-                              </Link>
-                            </div>
-                            
-                            {quantity === 0 ? (
-                              <GalaxyButton 
-                                className="w-full text-xs px-2 text-sm"
-                                onClick={() => handleAddToCart(product)}
-                              >
-                                <Plus className="h-4 w-4 mr-1" />
-                                Add to Cart
-                              </GalaxyButton>
-                            ) : (
-                              <div className="flex items-center justify-center gap-1 bg-emerald-600 rounded-md">
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost"
-                                  className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
-                                  onClick={() => handleDecrement(product.id)}
-                                >
-                                  <Minus className="h-4 w-4" />
-                                </Button>
-                                <span className="text-primary-foreground font-bold min-w-[24px] text-center">
-                                  {quantity}
-                                </span>
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost"
-                                  className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
-                                  onClick={() => handleIncrement(product)}
-                                >
-                                  <Plus className="h-4 w-4" />
-                                </Button>
+                              {/* Store & Source */}
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {product.store && (
+                                  <div className="flex items-center gap-1">
+                                    <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                                    <span className="text-sm text-muted-foreground">
+                                      {product.store}
+                                    </span>
+                                  </div>
+                                )}
+                                {(product as any).source && (
+                                  <Badge
+                                    variant="outline"
+                                    className="text-[10px] px-1.5 py-0"
+                                  >
+                                    {(product as any).source}
+                                  </Badge>
+                                )}
                               </div>
-                            )}
+
+                              {/* Description */}
+                              {product.description && (
+                                <p className="text-xs text-muted-foreground line-clamp-2">
+                                  {product.description}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex flex-col gap-2 mt-auto pt-4">
+                              <div className="flex gap-2">
+                                <Link
+                                  to={`/compare-prices?name=${encodeURIComponent(product.title)}&price=${parsePrice(product.price)}&image=${encodeURIComponent(product.image || "")}&store=${encodeURIComponent(product.store || "")}`}
+                                  className="flex-1"
+                                >
+                                  <Button
+                                    className="w-full text-xs px-2"
+                                    size="sm"
+                                  >
+                                    <BarChart3 className="h-3 w-3 mr-1" />
+                                    Compare
+                                  </Button>
+                                </Link>
+                                <Link
+                                  to={`/product/${encodeURIComponent(product.id)}`}
+                                  className="flex-1"
+                                >
+                                  <Button
+                                    variant="outline"
+                                    className="w-full text-xs px-2"
+                                    size="sm"
+                                  >
+                                    View Details
+                                  </Button>
+                                </Link>
+                              </div>
+
+                              {quantity === 0 ? (
+                                <GalaxyButton
+                                  className="w-full text-xs px-2 text-sm"
+                                  onClick={() => handleAddToCart(product)}
+                                >
+                                  <Plus className="h-4 w-4 mr-1" />
+                                  Add to Cart
+                                </GalaxyButton>
+                              ) : (
+                                <div className="flex items-center justify-center gap-1 bg-emerald-600 rounded-md">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
+                                    onClick={() => handleDecrement(product.id)}
+                                  >
+                                    <Minus className="h-4 w-4" />
+                                  </Button>
+                                  <span className="text-primary-foreground font-bold min-w-[24px] text-center">
+                                    {quantity}
+                                  </span>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
+                                    onClick={() => handleIncrement(product)}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            ),
+          )}
         </div>
       ) : (
-        !isLoading && !isFakeStoreLoading && (
+        !isLoading &&
+        !isFakeStoreLoading && (
           <div className="text-center py-12">
             <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No products found</h3>

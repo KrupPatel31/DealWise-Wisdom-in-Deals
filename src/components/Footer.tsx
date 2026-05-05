@@ -13,7 +13,7 @@ import qrCode from "@/assets/qr-code-styled.png";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
-  
+
   return (
     <footer className="bg-gradient-to-br from-card via-background to-muted/20 border-t border-border/50">
       <div className="container mx-auto px-4 sm:px-6 py-10 sm:py-16">
@@ -69,30 +69,35 @@ export const Footer = () => {
               Categories
             </h3>
             <nav className="space-y-2 sm:space-y-3">
-              {[
-                "Electronics",
-                "Gaming",
-                "Home & Kitchen",
-                "Fashion",
-              ].map((category) => (
-                <Link
-                  key={category}
-                  to="/search"
-                  className="block text-sm sm:text-base text-muted-foreground hover:text-accent transition-colors"
-                >
-                  {category}
-                </Link>
-              ))}
+              {["Electronics", "Gaming", "Home & Kitchen", "Fashion"].map(
+                (category) => (
+                  <Link
+                    key={category}
+                    to="/search"
+                    className="block text-sm sm:text-base text-muted-foreground hover:text-accent transition-colors"
+                  >
+                    {category}
+                  </Link>
+                ),
+              )}
             </nav>
           </div>
 
           {/* QR Code & Support */}
           <div className="space-y-3 sm:space-y-4">
-            <h3 className="font-semibold text-foreground text-base sm:text-lg">Scan & Visit</h3>
+            <h3 className="font-semibold text-foreground text-base sm:text-lg">
+              Scan & Visit
+            </h3>
             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-lg overflow-hidden border border-border/50 shadow-glow">
-              <img src={qrCode} alt="Scan QR code to visit DealWise" className="w-full h-full object-cover" />
+              <img
+                src={qrCode}
+                alt="Scan QR code to visit DealWise"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <p className="text-xs text-muted-foreground">Scan to open DealWise</p>
+            <p className="text-xs text-muted-foreground">
+              Scan to open DealWise
+            </p>
           </div>
         </div>
 
@@ -102,7 +107,9 @@ export const Footer = () => {
         <div className="flex flex-col items-center gap-4 sm:gap-6">
           {/* Social Links */}
           <div className="flex items-center gap-2 sm:gap-4">
-            <span className="text-xs sm:text-sm text-muted-foreground">Follow us:</span>
+            <span className="text-xs sm:text-sm text-muted-foreground">
+              Follow us:
+            </span>
             <div className="flex gap-1 sm:gap-2">
               {[
                 { icon: Facebook, name: "Facebook" },

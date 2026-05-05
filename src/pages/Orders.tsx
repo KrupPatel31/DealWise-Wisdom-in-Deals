@@ -5,17 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Package, 
-  Truck, 
-  CheckCircle, 
+import {
+  Package,
+  Truck,
+  CheckCircle,
   Clock,
   ShoppingBag,
   MapPin,
   ChevronDown,
   ChevronUp,
   FileText,
-  Download
+  Download,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
@@ -70,10 +70,10 @@ const Orders = () => {
 
       try {
         const { data, error } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+          .from("orders")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
 
         if (error) throw error;
 
@@ -84,11 +84,12 @@ const Orders = () => {
           subtotal: Number(order.subtotal),
           shipping: Number(order.shipping),
           total: Number(order.total),
-          shipping_address: order.shipping_address as unknown as ShippingAddress,
+          shipping_address:
+            order.shipping_address as unknown as ShippingAddress,
           payment_method: order.payment_method,
           status: order.status,
           notes: order.notes,
-          created_at: order.created_at
+          created_at: order.created_at,
         }));
 
         setOrders(typedOrders);
@@ -104,13 +105,13 @@ const Orders = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'placed':
+      case "placed":
         return <Clock className="h-4 w-4" />;
-      case 'processing':
+      case "processing":
         return <Package className="h-4 w-4" />;
-      case 'shipped':
+      case "shipped":
         return <Truck className="h-4 w-4" />;
-      case 'delivered':
+      case "delivered":
         return <CheckCircle className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
@@ -119,37 +120,37 @@ const Orders = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'placed':
-        return 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30';
-      case 'processing':
-        return 'bg-blue-500/20 text-blue-500 border-blue-500/30';
-      case 'shipped':
-        return 'bg-purple-500/20 text-purple-500 border-purple-500/30';
-      case 'delivered':
-        return 'bg-green-500/20 text-green-500 border-green-500/30';
+      case "placed":
+        return "bg-yellow-500/20 text-yellow-500 border-yellow-500/30";
+      case "processing":
+        return "bg-blue-500/20 text-blue-500 border-blue-500/30";
+      case "shipped":
+        return "bg-purple-500/20 text-purple-500 border-purple-500/30";
+      case "delivered":
+        return "bg-green-500/20 text-green-500 border-green-500/30";
       default:
-        return 'bg-muted text-muted-foreground';
+        return "bg-muted text-muted-foreground";
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getPaymentMethodLabel = (method: string) => {
     switch (method) {
-      case 'cod':
-        return 'Cash on Delivery';
-      case 'upi':
-        return 'UPI Payment';
-      case 'card':
-        return 'Credit/Debit Card';
+      case "cod":
+        return "Cash on Delivery";
+      case "upi":
+        return "UPI Payment";
+      case "card":
+        return "Credit/Debit Card";
       default:
         return method;
     }
@@ -187,9 +188,7 @@ const Orders = () => {
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">My Orders</h1>
-          <p className="text-muted-foreground">
-            Track and manage your orders
-          </p>
+          <p className="text-muted-foreground">Track and manage your orders</p>
         </div>
 
         {isLoading ? (
@@ -214,7 +213,10 @@ const Orders = () => {
         ) : (
           <div className="space-y-4">
             {orders.map((order) => (
-              <Card key={order.id} className="border-border bg-card/50 backdrop-blur-sm">
+              <Card
+                key={order.id}
+                className="border-border bg-card/50 backdrop-blur-sm"
+              >
                 <CardContent className="p-4 sm:p-6">
                   {/* Order Header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
@@ -223,7 +225,9 @@ const Orders = () => {
                         <h3 className="font-semibold text-foreground">
                           Order #{order.order_number}
                         </h3>
-                        <Badge className={`${getStatusColor(order.status)} capitalize`}>
+                        <Badge
+                          className={`${getStatusColor(order.status)} capitalize`}
+                        >
                           {getStatusIcon(order.status)}
                           <span className="ml-1">{order.status}</span>
                         </Badge>
@@ -238,7 +242,11 @@ const Orders = () => {
                           ₹{order.total.toLocaleString()}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {order.items.reduce((sum, item) => sum + item.quantity, 0)} items
+                          {order.items.reduce(
+                            (sum, item) => sum + item.quantity,
+                            0,
+                          )}{" "}
+                          items
                         </p>
                       </div>
                       <Button
@@ -276,7 +284,11 @@ const Orders = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+                    onClick={() =>
+                      setExpandedOrder(
+                        expandedOrder === order.id ? null : order.id,
+                      )
+                    }
                     className="w-full"
                   >
                     {expandedOrder === order.id ? (
@@ -313,7 +325,8 @@ const Orders = () => {
                                 {item.store}
                               </p>
                               <p className="text-sm text-foreground">
-                                Qty: {item.quantity} × ₹{item.price.toLocaleString()}
+                                Qty: {item.quantity} × ₹
+                                {item.price.toLocaleString()}
                               </p>
                             </div>
                             <div className="text-right">
@@ -334,13 +347,17 @@ const Orders = () => {
                           Shipping Address
                         </h4>
                         <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
-                          <p className="font-medium text-foreground">{order.shipping_address.fullName}</p>
+                          <p className="font-medium text-foreground">
+                            {order.shipping_address.fullName}
+                          </p>
                           <p>{order.shipping_address.addressLine1}</p>
                           {order.shipping_address.addressLine2 && (
                             <p>{order.shipping_address.addressLine2}</p>
                           )}
                           <p>
-                            {order.shipping_address.city}, {order.shipping_address.state} - {order.shipping_address.pincode}
+                            {order.shipping_address.city},{" "}
+                            {order.shipping_address.state} -{" "}
+                            {order.shipping_address.pincode}
                           </p>
                           <p>Phone: {order.shipping_address.phone}</p>
                           {order.shipping_address.landmark && (
@@ -354,25 +371,43 @@ const Orders = () => {
                       {/* Payment & Price Summary */}
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div>
-                          <h4 className="font-medium text-foreground mb-2">Payment</h4>
+                          <h4 className="font-medium text-foreground mb-2">
+                            Payment
+                          </h4>
                           <p className="text-sm text-muted-foreground">
                             {getPaymentMethodLabel(order.payment_method)}
                           </p>
                         </div>
                         <div className="space-y-1">
                           <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Subtotal</span>
-                            <span className="text-foreground">₹{order.subtotal.toLocaleString()}</span>
+                            <span className="text-muted-foreground">
+                              Subtotal
+                            </span>
+                            <span className="text-foreground">
+                              ₹{order.subtotal.toLocaleString()}
+                            </span>
                           </div>
                           <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Shipping</span>
-                            <span className={order.shipping === 0 ? "text-green-600" : "text-foreground"}>
-                              {order.shipping === 0 ? "Free" : `₹${order.shipping}`}
+                            <span className="text-muted-foreground">
+                              Shipping
+                            </span>
+                            <span
+                              className={
+                                order.shipping === 0
+                                  ? "text-green-600"
+                                  : "text-foreground"
+                              }
+                            >
+                              {order.shipping === 0
+                                ? "Free"
+                                : `₹${order.shipping}`}
                             </span>
                           </div>
                           <div className="flex justify-between font-medium pt-1 border-t border-border">
                             <span className="text-foreground">Total</span>
-                            <span className="text-foreground">₹{order.total.toLocaleString()}</span>
+                            <span className="text-foreground">
+                              ₹{order.total.toLocaleString()}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -381,8 +416,12 @@ const Orders = () => {
                         <>
                           <Separator className="bg-border" />
                           <div>
-                            <h4 className="font-medium text-foreground mb-2">Delivery Notes</h4>
-                            <p className="text-sm text-muted-foreground">{order.notes}</p>
+                            <h4 className="font-medium text-foreground mb-2">
+                              Delivery Notes
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              {order.notes}
+                            </p>
                           </div>
                         </>
                       )}

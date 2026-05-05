@@ -37,6 +37,7 @@
 ### 1.2 Problem Statement
 
 Online shoppers face several challenges:
+
 - **Price Opacity:** Same products have vastly different prices across Amazon, Flipkart, Croma, etc.
 - **Coupon Discovery:** Finding valid, working coupon codes is time-consuming
 - **No Reward for Loyalty:** Traditional shopping doesn't incentivize users to stay engaged
@@ -46,16 +47,17 @@ DealWise solves all these problems in a single, unified platform.
 
 ### 1.3 Target Users
 
-| User Type | Description |
-|-----------|-------------|
-| **Shoppers** | Price-conscious consumers looking for best deals |
-| **Deal Hunters** | Users who actively seek discounts and coupons |
+| User Type            | Description                                                              |
+| -------------------- | ------------------------------------------------------------------------ |
+| **Shoppers**         | Price-conscious consumers looking for best deals                         |
+| **Deal Hunters**     | Users who actively seek discounts and coupons                            |
 | **Tech-Savvy Users** | Users who want advanced features like visual search and barcode scanning |
-| **Loyalty Seekers** | Users who want rewards for their shopping activities |
+| **Loyalty Seekers**  | Users who want rewards for their shopping activities                     |
 
 ### 1.4 Platform Type
 
 DealWise is a **Consumer-Facing Price Comparison Platform** with:
+
 - **B2C Focus:** Direct-to-consumer service
 - **Aggregation Model:** Pulls data from multiple sources
 - **Gamification Layer:** Deal Coins reward system
@@ -81,20 +83,22 @@ DealWise is a **Consumer-Facing Price Comparison Platform** with:
 
 ### 2.1 Authentication System
 
-| Feature | Description | Users | How It Works |
-|---------|-------------|-------|--------------|
-| **Email Sign Up** | Register with email/password | All visitors | Supabase Auth with email verification |
-| **Email Sign In** | Login with credentials | Registered users | JWT-based session management |
-| **Password Reset** | Forgot password recovery | Registered users | Edge Function generates secure password, sends via Resend |
-| **Change Password** | Update existing password | Authenticated users | Supabase `updateUser` API |
-| **Session Persistence** | Stay logged in | All users | LocalStorage + auto-refresh tokens |
+| Feature                 | Description                  | Users               | How It Works                                              |
+| ----------------------- | ---------------------------- | ------------------- | --------------------------------------------------------- |
+| **Email Sign Up**       | Register with email/password | All visitors        | Supabase Auth with email verification                     |
+| **Email Sign In**       | Login with credentials       | Registered users    | JWT-based session management                              |
+| **Password Reset**      | Forgot password recovery     | Registered users    | Edge Function generates secure password, sends via Resend |
+| **Change Password**     | Update existing password     | Authenticated users | Supabase `updateUser` API                                 |
+| **Session Persistence** | Stay logged in               | All users           | LocalStorage + auto-refresh tokens                        |
 
 **Internal Components:**
+
 - `useAuth.tsx` - Authentication context provider
 - `SignIn.tsx`, `SignUp.tsx` - Auth pages
 - `reset-password` Edge Function - Secure password reset
 
 **Security Features:**
+
 - Email verification required before sign-in
 - Rate-limited password reset (3 attempts/hour/email)
 - Secure 8-character generated passwords (uppercase, lowercase, number, special char)
@@ -104,22 +108,24 @@ DealWise is a **Consumer-Facing Price Comparison Platform** with:
 
 ### 2.2 Product Search System
 
-| Feature | Description | Components |
-|---------|-------------|------------|
-| **Text Search** | Keyword-based product search | `ProductSearchBar.tsx`, `search-products` Edge Function |
-| **Visual Search** | AI-powered image search | `VisualSearch.tsx`, `visual-search` Edge Function |
-| **Barcode Scan** | Camera-based barcode lookup | `BarcodeScanner.tsx`, `barcode-lookup` Edge Function |
-| **Category Filters** | Filter by product category | Search page filtering logic |
-| **Sort Options** | Sort by price, discount, rating | Client-side sorting |
+| Feature              | Description                     | Components                                              |
+| -------------------- | ------------------------------- | ------------------------------------------------------- |
+| **Text Search**      | Keyword-based product search    | `ProductSearchBar.tsx`, `search-products` Edge Function |
+| **Visual Search**    | AI-powered image search         | `VisualSearch.tsx`, `visual-search` Edge Function       |
+| **Barcode Scan**     | Camera-based barcode lookup     | `BarcodeScanner.tsx`, `barcode-lookup` Edge Function    |
+| **Category Filters** | Filter by product category      | Search page filtering logic                             |
+| **Sort Options**     | Sort by price, discount, rating | Client-side sorting                                     |
 
 **Visual Search Flow:**
+
 ```
-User uploads image → Base64 encoding → Gemini 2.5 Flash AI → 
-Product metadata extraction → RapidAPI product search → 
+User uploads image → Base64 encoding → Gemini 2.5 Flash AI →
+Product metadata extraction → RapidAPI product search →
 Results with similarity scores → Display ranked products
 ```
 
 **Search Sources:**
+
 1. **FakeStore API** - External product catalog with USD→INR conversion
 2. **RapidAPI** - Real-time product data for visual search
 3. **Internal Database** - Price history and deals
@@ -128,22 +134,24 @@ Results with similarity scores → Display ranked products
 
 ### 2.3 Price Comparison Engine
 
-| Feature | Description | Implementation |
-|---------|-------------|----------------|
-| **Multi-Store Comparison** | Compare prices across 15+ stores | `ComparePrices.tsx` |
-| **Lowest Price Badge** | Highlight best deal | Green border + "🏆 Lowest Price" badge |
-| **Official Store Tag** | Identify manufacturer stores | Blue highlight + shield icon |
-| **EMI Calculator** | Show financing options | Bank-wise EMI breakdown |
-| **Bank Offers** | Credit/debit card discounts | Static offer catalog |
-| **Price History** | Historical price tracking | `PriceHistoryChart.tsx` with Recharts |
+| Feature                    | Description                      | Implementation                         |
+| -------------------------- | -------------------------------- | -------------------------------------- |
+| **Multi-Store Comparison** | Compare prices across 15+ stores | `ComparePrices.tsx`                    |
+| **Lowest Price Badge**     | Highlight best deal              | Green border + "🏆 Lowest Price" badge |
+| **Official Store Tag**     | Identify manufacturer stores     | Blue highlight + shield icon           |
+| **EMI Calculator**         | Show financing options           | Bank-wise EMI breakdown                |
+| **Bank Offers**            | Credit/debit card discounts      | Static offer catalog                   |
+| **Price History**          | Historical price tracking        | `PriceHistoryChart.tsx` with Recharts  |
 
 **Store Coverage:**
+
 - Amazon India, Flipkart, Croma, Reliance Digital
 - Tata CLiQ, JioMart, Vijay Sales
 - Brand stores: Apple, Samsung, Xiaomi, Nike, Dyson
 - Fashion: Myntra, Ajio
 
 **Price Variation Algorithm:**
+
 ```typescript
 const priceVariation = basePrice * (store.variation / 100);
 const storePrice = Math.round(basePrice + priceVariation);
@@ -155,20 +163,22 @@ const storePrice = Math.round(basePrice + priceVariation);
 
 The gamified rewards system where **1 Deal Coin = ₹1**.
 
-| Earning Method | Coins | Condition |
-|----------------|-------|-----------|
-| **Shopping** | 2% of order total | Automatic on order completion |
-| **Daily Login** | 10 coins | Once per day claim |
-| **Referrals (Referrer)** | 50 coins | When friend signs up |
-| **Referrals (Referee)** | 25 coins | Using a referral code |
-| **Product Reviews** | 20 coins | After purchasing product |
+| Earning Method           | Coins             | Condition                     |
+| ------------------------ | ----------------- | ----------------------------- |
+| **Shopping**             | 2% of order total | Automatic on order completion |
+| **Daily Login**          | 10 coins          | Once per day claim            |
+| **Referrals (Referrer)** | 50 coins          | When friend signs up          |
+| **Referrals (Referee)**  | 25 coins          | Using a referral code         |
+| **Product Reviews**      | 20 coins          | After purchasing product      |
 
 **Redemption Options:**
+
 - Use at checkout (direct discount)
 - Free shipping redemption
 - Exclusive member deals access
 
 **Security Implementation:**
+
 - All coin operations via Edge Functions (server-side only)
 - Client cannot INSERT/UPDATE `deal_coins` or `deal_coins_transactions`
 - User ID derived from `auth.uid()` - no client-supplied IDs accepted
@@ -178,15 +188,16 @@ The gamified rewards system where **1 Deal Coin = ₹1**.
 
 ### 2.5 Shopping Cart System
 
-| Feature | Description | Security |
-|---------|-------------|----------|
-| **Add to Cart** | Add products with quantities | RLS: user_id = auth.uid() |
-| **Quantity Management** | Increment/decrement items | Price fields immutable (UPDATE blocked) |
-| **Price Protection** | Prevent manipulation | Server-side price verification at checkout |
-| **Persistent Cart** | Cart survives sessions | Stored in Supabase `cart_items` table |
-| **Cross-Device Sync** | Access cart anywhere | Database-backed, not localStorage |
+| Feature                 | Description                  | Security                                   |
+| ----------------------- | ---------------------------- | ------------------------------------------ |
+| **Add to Cart**         | Add products with quantities | RLS: user_id = auth.uid()                  |
+| **Quantity Management** | Increment/decrement items    | Price fields immutable (UPDATE blocked)    |
+| **Price Protection**    | Prevent manipulation         | Server-side price verification at checkout |
+| **Persistent Cart**     | Cart survives sessions       | Stored in Supabase `cart_items` table      |
+| **Cross-Device Sync**   | Access cart anywhere         | Database-backed, not localStorage          |
 
 **Cart Security:**
+
 ```sql
 -- Users CANNOT modify price fields
 WITH CHECK (
@@ -200,16 +211,17 @@ WITH CHECK (
 
 ### 2.6 Checkout & Order System
 
-| Feature | Description |
-|---------|-------------|
-| **Multi-Step Form** | Address, payment, review |
-| **Form Validation** | Phone (10 digits), Pincode (6 digits), text limits |
-| **Coupon Application** | Database-validated discount codes |
-| **Deal Coins Redemption** | Use coins at checkout |
-| **Server-Side Order Creation** | Prevents price manipulation |
-| **Invoice Generation** | PDF bill download |
+| Feature                        | Description                                        |
+| ------------------------------ | -------------------------------------------------- |
+| **Multi-Step Form**            | Address, payment, review                           |
+| **Form Validation**            | Phone (10 digits), Pincode (6 digits), text limits |
+| **Coupon Application**         | Database-validated discount codes                  |
+| **Deal Coins Redemption**      | Use coins at checkout                              |
+| **Server-Side Order Creation** | Prevents price manipulation                        |
+| **Invoice Generation**         | PDF bill download                                  |
 
 **Order Flow:**
+
 ```
 Client checkout request → validate-order Edge Function →
 ├── Read cart from DB (not client)
@@ -226,15 +238,16 @@ Client checkout request → validate-order Edge Function →
 
 ### 2.7 Coupon System
 
-| Feature | Description |
-|---------|-------------|
-| **Coupon Discovery** | Browse active coupons by store/category |
-| **Real-Time Validation** | Server-side coupon verification |
-| **Expiry Handling** | Auto-filter expired coupons |
-| **Usage Tracking** | Count how many times used |
-| **Copy-to-Clipboard** | One-click coupon copying |
+| Feature                  | Description                             |
+| ------------------------ | --------------------------------------- |
+| **Coupon Discovery**     | Browse active coupons by store/category |
+| **Real-Time Validation** | Server-side coupon verification         |
+| **Expiry Handling**      | Auto-filter expired coupons             |
+| **Usage Tracking**       | Count how many times used               |
+| **Copy-to-Clipboard**    | One-click coupon copying                |
 
 **Coupon Types:**
+
 - `percentage` - X% off
 - `flat` - ₹X off
 - `cashback` - Earn X% back
@@ -244,23 +257,23 @@ Client checkout request → validate-order Edge Function →
 
 ### 2.8 Daily Deals
 
-| Feature | Description |
-|---------|-------------|
-| **Deal of the Day** | Featured time-limited deal |
-| **Countdown Timer** | Live expiry countdown |
-| **Featured Deals Grid** | Curated deal collection |
-| **Store Filtering** | Filter by retailer |
+| Feature                 | Description                |
+| ----------------------- | -------------------------- |
+| **Deal of the Day**     | Featured time-limited deal |
+| **Countdown Timer**     | Live expiry countdown      |
+| **Featured Deals Grid** | Curated deal collection    |
+| **Store Filtering**     | Filter by retailer         |
 
 ---
 
 ### 2.9 Order History
 
-| Feature | Description |
-|---------|-------------|
-| **Order List** | View all past orders |
-| **Order Details** | Full breakdown per order |
+| Feature              | Description               |
+| -------------------- | ------------------------- |
+| **Order List**       | View all past orders      |
+| **Order Details**    | Full breakdown per order  |
 | **Invoice Download** | Re-download bills anytime |
-| **Status Tracking** | Order status display |
+| **Status Tracking**  | Order status display      |
 
 ---
 
@@ -271,6 +284,7 @@ Client checkout request → validate-order Edge Function →
 **Purpose:** Landing page showcasing platform value proposition
 
 **Components Used:**
+
 - `Header` - Navigation + auth state
 - `HeroSection` - Hero banner with CTA
 - `DealOfTheDay` - Featured daily deal
@@ -279,11 +293,13 @@ Client checkout request → validate-order Edge Function →
 - `Footer` - Links + branding
 
 **Data Displayed:**
+
 - Active daily deals from `daily_deals` table
 - Static feature cards
 - User auth state (logged in/out)
 
 **User Actions:**
+
 - Navigate to search/features
 - Sign up / Sign in
 - Browse deals
@@ -295,11 +311,13 @@ Client checkout request → validate-order Edge Function →
 **Purpose:** User authentication
 
 **Components:**
+
 - `Header`, `Footer`
 - `Card`, `Input`, `Button` from shadcn/ui
 - `SuccessOverlay` - Post-login animation
 
 **Authentication Logic:**
+
 ```typescript
 const { error } = await signIn(email, password);
 if (error) {
@@ -310,11 +328,13 @@ if (error) {
 ```
 
 **Form Validation:**
+
 - Email format validation (HTML5)
 - Required field checks
 - Password visibility toggle
 
 **Security:**
+
 - JWT tokens stored in localStorage
 - Auto-redirect if already authenticated
 - Rate limiting via Supabase
@@ -326,11 +346,13 @@ if (error) {
 **Purpose:** New user registration
 
 **Components:**
+
 - Full name, email, password inputs
 - Password strength requirements display
 - Terms acceptance checkbox
 
 **Flow:**
+
 1. User fills form
 2. Password validated (8+ chars, uppercase, lowercase, number, special)
 3. `supabase.auth.signUp()` called
@@ -338,6 +360,7 @@ if (error) {
 5. User redirected to check email message
 
 **Database Trigger:**
+
 ```sql
 CREATE FUNCTION handle_new_user() RETURNS trigger AS $$
 BEGIN
@@ -355,15 +378,18 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 **Purpose:** Product discovery
 
 **Components:**
+
 - `ProductSearchBar` - Search input
 - `ProductCardSkeleton` - Loading state
 - `DealCard` - Product cards
 
 **API Calls:**
+
 1. `search-products` Edge Function
 2. `FakeStore API` directly
 
 **Features:**
+
 - Category filtering
 - Price range sorting
 - Pagination
@@ -376,6 +402,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 **Purpose:** Image-based product search
 
 **Flow:**
+
 1. User uploads image (drag-drop, file, camera)
 2. Image converted to base64
 3. `visual-search` Edge Function called
@@ -384,11 +411,16 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 6. Results displayed with similarity scores
 
 **AI Integration:**
+
 ```typescript
 // Edge Function
 const response = await fetch(
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
-  { body: JSON.stringify({ contents: [{ parts: [{ inlineData: { mimeType, data } }] }] }) }
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+  {
+    body: JSON.stringify({
+      contents: [{ parts: [{ inlineData: { mimeType, data } }] }],
+    }),
+  },
 );
 ```
 
@@ -399,11 +431,13 @@ const response = await fetch(
 **Purpose:** Scan product barcodes to find deals
 
 **Components:**
+
 - `html5-qrcode` library integration
 - Camera permission handling
 - Result display cards
 
 **Flow:**
+
 1. Camera activated
 2. Barcode detected
 3. `barcode-lookup` Edge Function called
@@ -417,12 +451,14 @@ const response = await fetch(
 **Purpose:** Multi-store price comparison
 
 **URL Parameters:**
+
 - `name` - Product name
 - `price` - Base price
 - `image` - Product image URL
 - `store` - Original store name
 
 **Sections:**
+
 1. Product header with lowest price highlight
 2. Store comparison cards (sorted by price)
 3. EMI calculator (bank-wise breakdown)
@@ -430,10 +466,11 @@ const response = await fetch(
 5. Price history chart
 
 **Add to Cart:**
+
 ```typescript
 const handleAddToCart = (storePrice: StorePrice) => {
   addToCart({
-    id: `${productName}-${storePrice.store}`.replace(/\s+/g, '-').toLowerCase(),
+    id: `${productName}-${storePrice.store}`.replace(/\s+/g, "-").toLowerCase(),
     name: productName,
     price: storePrice.price,
     // ...
@@ -448,6 +485,7 @@ const handleAddToCart = (storePrice: StorePrice) => {
 **Purpose:** Review items before checkout
 
 **Features:**
+
 - Item list with images
 - Quantity +/- controls
 - Remove item
@@ -455,11 +493,12 @@ const handleAddToCart = (storePrice: StorePrice) => {
 - Proceed to checkout button
 
 **Data Source:**
+
 ```typescript
 const { data } = await supabase
-  .from('cart_items')
-  .select('*')
-  .eq('user_id', user.id);
+  .from("cart_items")
+  .select("*")
+  .eq("user_id", user.id);
 ```
 
 ---
@@ -469,6 +508,7 @@ const { data } = await supabase
 **Purpose:** Complete purchase
 
 **Sections:**
+
 1. **Shipping Address Form**
    - Full name, phone, address lines
    - City, state, pincode, landmark
@@ -490,8 +530,9 @@ const { data } = await supabase
    - Discount display
 
 **Server-Side Validation:**
+
 ```typescript
-const { data, error } = await supabase.functions.invoke('validate-order', {
+const { data, error } = await supabase.functions.invoke("validate-order", {
   body: {
     discountCode,
     coinsToUse,
@@ -509,6 +550,7 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 **Purpose:** Loyalty rewards dashboard
 
 **Sections:**
+
 1. **Balance Display**
    - 3D spinning coin animation
    - Animated counter
@@ -538,6 +580,7 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 **Purpose:** View order history
 
 **Features:**
+
 - Order cards with status
 - Order number, date, total
 - Expand to see items
@@ -550,6 +593,7 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 **Purpose:** Browse available coupons
 
 **Features:**
+
 - Store filter tabs
 - Category filters
 - Coupon cards with:
@@ -563,13 +607,13 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 
 ### 3.13 Static Pages
 
-| Page | Route | Purpose |
-|------|-------|---------|
-| Features | `/features` | Platform capabilities |
-| How It Works | `/how-it-works` | User guide |
-| About | `/about` | Company info, team |
-| Contact | `/contact` | Support form |
-| Not Found | `/*` | 404 handling |
+| Page         | Route           | Purpose               |
+| ------------ | --------------- | --------------------- |
+| Features     | `/features`     | Platform capabilities |
+| How It Works | `/how-it-works` | User guide            |
+| About        | `/about`        | Company info, team    |
+| Contact      | `/contact`      | Support form          |
+| Not Found    | `/*`            | 404 handling          |
 
 ---
 
@@ -584,6 +628,7 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 **Props:** None (uses hooks)
 
 **Features:**
+
 - Logo + brand name
 - Navigation links
 - Auth state display (login/signup or user menu)
@@ -592,11 +637,13 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 - Mobile hamburger menu
 
 **Hooks Used:**
+
 - `useAuth()` - Authentication state
 - `useCart()` - Cart item count
 - `useProfile()` - User profile data
 
 **Responsive Behavior:**
+
 - Desktop: Full nav links, account dropdown
 - Mobile: Hamburger menu with Sheet component
 
@@ -607,6 +654,7 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 **Purpose:** Site-wide footer
 
 **Sections:**
+
 - Brand info
 - Quick links
 - Contact info
@@ -617,22 +665,22 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 
 ### 4.2 UI Components (shadcn/ui)
 
-| Component | Location | Usage |
-|-----------|----------|-------|
-| `Button` | `ui/button.tsx` | CTAs, form submits |
-| `Card` | `ui/card.tsx` | Content containers |
-| `Input` | `ui/input.tsx` | Text inputs |
-| `Label` | `ui/label.tsx` | Form labels |
-| `Badge` | `ui/badge.tsx` | Tags, status |
-| `Sheet` | `ui/sheet.tsx` | Mobile menu |
-| `DropdownMenu` | `ui/dropdown-menu.tsx` | Account menu |
-| `Select` | `ui/select.tsx` | Dropdowns |
-| `RadioGroup` | `ui/radio-group.tsx` | Payment options |
-| `Checkbox` | `ui/checkbox.tsx` | Terms acceptance |
-| `Textarea` | `ui/textarea.tsx` | Multi-line input |
-| `Skeleton` | `ui/skeleton.tsx` | Loading states |
-| `Separator` | `ui/separator.tsx` | Visual dividers |
-| `Tooltip` | `ui/tooltip.tsx` | Hover info |
+| Component      | Location               | Usage              |
+| -------------- | ---------------------- | ------------------ |
+| `Button`       | `ui/button.tsx`        | CTAs, form submits |
+| `Card`         | `ui/card.tsx`          | Content containers |
+| `Input`        | `ui/input.tsx`         | Text inputs        |
+| `Label`        | `ui/label.tsx`         | Form labels        |
+| `Badge`        | `ui/badge.tsx`         | Tags, status       |
+| `Sheet`        | `ui/sheet.tsx`         | Mobile menu        |
+| `DropdownMenu` | `ui/dropdown-menu.tsx` | Account menu       |
+| `Select`       | `ui/select.tsx`        | Dropdowns          |
+| `RadioGroup`   | `ui/radio-group.tsx`   | Payment options    |
+| `Checkbox`     | `ui/checkbox.tsx`      | Terms acceptance   |
+| `Textarea`     | `ui/textarea.tsx`      | Multi-line input   |
+| `Skeleton`     | `ui/skeleton.tsx`      | Loading states     |
+| `Separator`    | `ui/separator.tsx`     | Visual dividers    |
+| `Tooltip`      | `ui/tooltip.tsx`       | Hover info         |
 
 ---
 
@@ -643,11 +691,13 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 **Purpose:** Product card display
 
 **Props:**
+
 - `product` - Product data object
 - `onCompare` - Comparison handler
 - `onAddToCart` - Cart handler
 
 **Displays:**
+
 - Product image
 - Title
 - Price (current + original)
@@ -674,6 +724,7 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 **Purpose:** Compact coin balance in header
 
 **Features:**
+
 - Coin icon
 - Balance number
 - Link to Deal Coins page
@@ -685,6 +736,7 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 **Purpose:** Post-action celebration animation
 
 **Variants:**
+
 - `login` - Welcome back message
 - `signup` - Account created
 
@@ -697,6 +749,7 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 **Purpose:** Social sharing for deals
 
 **Platforms:**
+
 - WhatsApp
 - Twitter
 - Facebook
@@ -711,6 +764,7 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 **Purpose:** Premium animated CTA button
 
 **Features:**
+
 - 3D galaxy effect on hover
 - Orbiting stars animation
 - Gradient background shift
@@ -732,19 +786,19 @@ const { data, error } = await supabase.functions.invoke('validate-order', {
 
 ### 5.1 Technology Stack
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **React** | 18.3.1 | UI framework |
-| **Vite** | 5.4.19 | Build tool + dev server |
-| **TypeScript** | 5.8.3 | Type safety |
-| **Tailwind CSS** | 3.4.17 | Utility-first styling |
-| **shadcn/ui** | Latest | Component library |
-| **Framer Motion** | 12.35.1 | Animations |
-| **React Router** | 6.30.1 | Client-side routing |
-| **TanStack Query** | 5.83.0 | Server state management |
-| **Recharts** | 2.15.4 | Data visualization |
-| **Sonner** | 1.7.4 | Toast notifications |
-| **Zod** | 3.25.76 | Schema validation |
+| Technology         | Version | Purpose                 |
+| ------------------ | ------- | ----------------------- |
+| **React**          | 18.3.1  | UI framework            |
+| **Vite**           | 5.4.19  | Build tool + dev server |
+| **TypeScript**     | 5.8.3   | Type safety             |
+| **Tailwind CSS**   | 3.4.17  | Utility-first styling   |
+| **shadcn/ui**      | Latest  | Component library       |
+| **Framer Motion**  | 12.35.1 | Animations              |
+| **React Router**   | 6.30.1  | Client-side routing     |
+| **TanStack Query** | 5.83.0  | Server state management |
+| **Recharts**       | 2.15.4  | Data visualization      |
+| **Sonner**         | 1.7.4   | Toast notifications     |
+| **Zod**            | 3.25.76 | Schema validation       |
 
 ---
 
@@ -784,6 +838,7 @@ src/
 **Context Providers:**
 
 1. **AuthProvider** (`useAuth.tsx`)
+
    ```typescript
    const AuthContext = createContext<AuthContextType>({
      user: null,
@@ -818,6 +873,7 @@ src/
 **Library:** React Router v6
 
 **Route Configuration:**
+
 ```typescript
 <Routes>
   <Route path="/" element={<Index />} />
@@ -846,29 +902,37 @@ src/
 **Validation Approach:** Custom validation functions + HTML5 validation
 
 **Example - Checkout Form:**
+
 ```typescript
 const validateForm = () => {
   // Required fields check
-  const required = ["fullName", "phone", "addressLine1", "city", "state", "pincode"];
+  const required = [
+    "fullName",
+    "phone",
+    "addressLine1",
+    "city",
+    "state",
+    "pincode",
+  ];
   for (const field of required) {
     if (!shippingAddress[field].trim()) {
       toast.error(`Please fill in ${field}`);
       return false;
     }
   }
-  
+
   // Phone: exactly 10 digits
   if (!/^\d{10}$/.test(shippingAddress.phone)) {
     toast.error("Please enter a valid 10-digit phone number");
     return false;
   }
-  
+
   // Pincode: exactly 6 digits
   if (!/^\d{6}$/.test(shippingAddress.pincode)) {
     toast.error("Please enter a valid 6-digit pincode");
     return false;
   }
-  
+
   return true;
 };
 ```
@@ -878,22 +942,26 @@ const validateForm = () => {
 ### 5.6 Frontend-Backend Communication
 
 **Supabase Client:**
+
 ```typescript
 import { supabase } from "@/integrations/supabase/client";
 
 // Direct database query
 const { data, error } = await supabase
-  .from('cart_items')
-  .select('*')
-  .eq('user_id', user.id);
+  .from("cart_items")
+  .select("*")
+  .eq("user_id", user.id);
 
 // Edge Function call
-const { data, error } = await supabase.functions.invoke('validate-order', {
-  body: { /* payload */ },
+const { data, error } = await supabase.functions.invoke("validate-order", {
+  body: {
+    /* payload */
+  },
 });
 ```
 
 **Auth State Listener:**
+
 ```typescript
 supabase.auth.onAuthStateChange((event, session) => {
   setSession(session);
@@ -910,6 +978,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 **Platform:** Supabase
 
 **Components:**
+
 - **PostgreSQL Database** - Primary data store
 - **Edge Functions** - Deno-based serverless functions
 - **Auth System** - Supabase Auth with JWT
@@ -923,8 +992,9 @@ supabase.auth.onAuthStateChange((event, session) => {
 **API Style:** RESTful with Supabase client + Edge Functions
 
 **Authentication Flow:**
+
 ```
-Client Request → Supabase Client → 
+Client Request → Supabase Client →
 ├── Authorization Header (JWT) →
 ├── Supabase Auth Verification →
 ├── RLS Policy Check →
@@ -935,14 +1005,14 @@ Client Request → Supabase Client →
 
 ### 6.3 Edge Functions
 
-| Function | File | Purpose | Auth Required |
-|----------|------|---------|---------------|
-| `validate-order` | `/supabase/functions/validate-order/index.ts` | Secure order creation | Yes |
-| `earn-coins` | `/supabase/functions/earn-coins/index.ts` | Coin earning actions | Yes |
-| `reset-password` | `/supabase/functions/reset-password/index.ts` | Password reset | No |
-| `search-products` | `/supabase/functions/search-products/index.ts` | Product search | No |
-| `visual-search` | `/supabase/functions/visual-search/index.ts` | AI image search | No |
-| `barcode-lookup` | `/supabase/functions/barcode-lookup/index.ts` | Barcode scanning | No |
+| Function          | File                                           | Purpose               | Auth Required |
+| ----------------- | ---------------------------------------------- | --------------------- | ------------- |
+| `validate-order`  | `/supabase/functions/validate-order/index.ts`  | Secure order creation | Yes           |
+| `earn-coins`      | `/supabase/functions/earn-coins/index.ts`      | Coin earning actions  | Yes           |
+| `reset-password`  | `/supabase/functions/reset-password/index.ts`  | Password reset        | No            |
+| `search-products` | `/supabase/functions/search-products/index.ts` | Product search        | No            |
+| `visual-search`   | `/supabase/functions/visual-search/index.ts`   | AI image search       | No            |
+| `barcode-lookup`  | `/supabase/functions/barcode-lookup/index.ts`  | Barcode scanning      | No            |
 
 ---
 
@@ -951,6 +1021,7 @@ Client Request → Supabase Client →
 **Purpose:** Secure order processing with fraud prevention
 
 **Flow:**
+
 1. Verify JWT token
 2. Read cart from database (not client)
 3. Verify prices against FakeStore API
@@ -962,9 +1033,10 @@ Client Request → Supabase Client →
 9. Return confirmation
 
 **Security Measures:**
+
 ```typescript
 // Price verification against external API
-const apiRes = await fetch('https://fakestoreapi.com/products');
+const apiRes = await fetch("https://fakestoreapi.com/products");
 const apiProducts = await apiRes.json();
 for (const p of apiProducts) {
   trustedPrices[`fakestore-${p.id}`] = Math.round(p.price * 83); // USD to INR
@@ -972,9 +1044,9 @@ for (const p of apiProducts) {
 
 // Server-side cart reading (not client-supplied)
 const { data: dbCartItems } = await supabaseAdmin
-  .from('cart_items')
-  .select('*')
-  .eq('user_id', userId);
+  .from("cart_items")
+  .select("*")
+  .eq("user_id", userId);
 
 // Max item price guard
 const MAX_ITEM_PRICE = 500000; // ₹5,00,000
@@ -987,23 +1059,25 @@ const MAX_ITEM_PRICE = 500000; // ₹5,00,000
 **Purpose:** Handle all coin-earning actions
 
 **Actions Supported:**
+
 - `daily_login` - Claim daily 10 coins
 - `claim_referral_code` - Generate user's referral code
 - `use_referral` - Apply friend's referral code (25 coins)
 - `submit_review` - Review product for 20 coins
 
 **Anti-Fraud:**
+
 ```typescript
 // Check if already claimed today
 const { data: existing } = await adminClient
-  .from('daily_login_claims')
-  .select('id')
-  .eq('user_id', userId)
-  .eq('claimed_date', today)
+  .from("daily_login_claims")
+  .select("id")
+  .eq("user_id", userId)
+  .eq("claimed_date", today)
   .maybeSingle();
 
 if (existing) {
-  return { success: false, message: 'Already claimed today' };
+  return { success: false, message: "Already claimed today" };
 }
 
 // Verify user purchased product before review
@@ -1020,6 +1094,7 @@ const hasOrdered = orders?.some((order) => {
 **Purpose:** Secure password reset without user interaction
 
 **Flow:**
+
 1. Check rate limit (3 attempts/hour/email)
 2. Look up user by email
 3. Generate secure 8-char password (CSPRNG)
@@ -1032,20 +1107,22 @@ const hasOrdered = orders?.some((order) => {
 ### 6.7 Middleware & Error Handling
 
 **CORS Headers:**
+
 ```typescript
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, ...',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, ...",
 };
 ```
 
 **Error Response Format:**
+
 ```typescript
-return new Response(
-  JSON.stringify({ error: 'Error message' }),
-  { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-);
+return new Response(JSON.stringify({ error: "Error message" }), {
+  status: 400,
+  headers: { ...corsHeaders, "Content-Type": "application/json" },
+});
 ```
 
 ---
@@ -1082,31 +1159,31 @@ return new Response(
 
 #### profiles
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| user_id | uuid | No | - | FK to auth.users |
-| full_name | text | Yes | - | Display name |
-| email | text | Yes | - | User email |
-| referral_code | text | Yes | - | User's referral code |
-| is_active | boolean | No | true | Account status |
-| deleted_at | timestamptz | Yes | - | Soft delete |
-| created_at | timestamptz | No | now() | - |
-| updated_at | timestamptz | No | now() | - |
+| Column        | Type        | Nullable | Default           | Description          |
+| ------------- | ----------- | -------- | ----------------- | -------------------- |
+| id            | uuid        | No       | gen_random_uuid() | Primary key          |
+| user_id       | uuid        | No       | -                 | FK to auth.users     |
+| full_name     | text        | Yes      | -                 | Display name         |
+| email         | text        | Yes      | -                 | User email           |
+| referral_code | text        | Yes      | -                 | User's referral code |
+| is_active     | boolean     | No       | true              | Account status       |
+| deleted_at    | timestamptz | Yes      | -                 | Soft delete          |
+| created_at    | timestamptz | No       | now()             | -                    |
+| updated_at    | timestamptz | No       | now()             | -                    |
 
 ---
 
 #### deal_coins
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| user_id | uuid | No | - | FK to auth.users |
-| balance | integer | No | 0 | Current balance |
-| total_earned | integer | No | 0 | Lifetime earnings |
-| total_spent | integer | No | 0 | Lifetime spending |
-| created_at | timestamptz | No | now() | - |
-| updated_at | timestamptz | No | now() | - |
+| Column       | Type        | Nullable | Default           | Description       |
+| ------------ | ----------- | -------- | ----------------- | ----------------- |
+| id           | uuid        | No       | gen_random_uuid() | Primary key       |
+| user_id      | uuid        | No       | -                 | FK to auth.users  |
+| balance      | integer     | No       | 0                 | Current balance   |
+| total_earned | integer     | No       | 0                 | Lifetime earnings |
+| total_spent  | integer     | No       | 0                 | Lifetime spending |
+| created_at   | timestamptz | No       | now()             | -                 |
+| updated_at   | timestamptz | No       | now()             | -                 |
 
 **Unique Constraint:** `user_id`
 
@@ -1114,110 +1191,110 @@ return new Response(
 
 #### deal_coins_transactions
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| user_id | uuid | No | - | FK to auth.users |
-| amount | integer | No | - | Coins (+/-) |
-| type | text | No | - | earned/spent/refund |
-| description | text | Yes | - | Transaction detail |
-| order_id | uuid | Yes | - | Related order |
-| created_at | timestamptz | No | now() | - |
+| Column      | Type        | Nullable | Default           | Description         |
+| ----------- | ----------- | -------- | ----------------- | ------------------- |
+| id          | uuid        | No       | gen_random_uuid() | Primary key         |
+| user_id     | uuid        | No       | -                 | FK to auth.users    |
+| amount      | integer     | No       | -                 | Coins (+/-)         |
+| type        | text        | No       | -                 | earned/spent/refund |
+| description | text        | Yes      | -                 | Transaction detail  |
+| order_id    | uuid        | Yes      | -                 | Related order       |
+| created_at  | timestamptz | No       | now()             | -                   |
 
 ---
 
 #### orders
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| user_id | uuid | No | - | FK to auth.users |
-| order_number | text | No | - | Display number (DW...) |
-| items | jsonb | No | - | Array of cart items |
-| subtotal | numeric | No | - | Pre-discount total |
-| shipping | numeric | No | 0 | Shipping cost |
-| total | numeric | No | - | Final amount |
-| shipping_address | jsonb | No | - | Address object |
-| payment_method | text | No | - | cod/upi/card |
-| status | text | No | 'placed' | Order status |
-| notes | text | Yes | - | User notes |
-| created_at | timestamptz | No | now() | - |
-| updated_at | timestamptz | No | now() | - |
+| Column           | Type        | Nullable | Default           | Description            |
+| ---------------- | ----------- | -------- | ----------------- | ---------------------- |
+| id               | uuid        | No       | gen_random_uuid() | Primary key            |
+| user_id          | uuid        | No       | -                 | FK to auth.users       |
+| order_number     | text        | No       | -                 | Display number (DW...) |
+| items            | jsonb       | No       | -                 | Array of cart items    |
+| subtotal         | numeric     | No       | -                 | Pre-discount total     |
+| shipping         | numeric     | No       | 0                 | Shipping cost          |
+| total            | numeric     | No       | -                 | Final amount           |
+| shipping_address | jsonb       | No       | -                 | Address object         |
+| payment_method   | text        | No       | -                 | cod/upi/card           |
+| status           | text        | No       | 'placed'          | Order status           |
+| notes            | text        | Yes      | -                 | User notes             |
+| created_at       | timestamptz | No       | now()             | -                      |
+| updated_at       | timestamptz | No       | now()             | -                      |
 
 ---
 
 #### cart_items
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| user_id | uuid | No | - | FK to auth.users |
-| product_id | text | No | - | External product ID |
-| name | text | No | - | Product name |
-| price | numeric | No | - | Current price |
-| original_price | numeric | No | - | MRP |
-| quantity | integer | No | 1 | Item count |
-| discount | numeric | Yes | 0 | Discount % |
-| image | text | Yes | - | Image URL |
-| store | text | Yes | - | Store name |
-| created_at | timestamptz | No | now() | - |
-| updated_at | timestamptz | No | now() | - |
+| Column         | Type        | Nullable | Default           | Description         |
+| -------------- | ----------- | -------- | ----------------- | ------------------- |
+| id             | uuid        | No       | gen_random_uuid() | Primary key         |
+| user_id        | uuid        | No       | -                 | FK to auth.users    |
+| product_id     | text        | No       | -                 | External product ID |
+| name           | text        | No       | -                 | Product name        |
+| price          | numeric     | No       | -                 | Current price       |
+| original_price | numeric     | No       | -                 | MRP                 |
+| quantity       | integer     | No       | 1                 | Item count          |
+| discount       | numeric     | Yes      | 0                 | Discount %          |
+| image          | text        | Yes      | -                 | Image URL           |
+| store          | text        | Yes      | -                 | Store name          |
+| created_at     | timestamptz | No       | now()             | -                   |
+| updated_at     | timestamptz | No       | now()             | -                   |
 
 ---
 
 #### coupons
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| code | text | No | - | Coupon code |
-| store | text | No | - | Store name |
-| description | text | No | - | Coupon description |
-| coupon_type | text | No | - | percentage/flat/cashback/freeShipping |
-| discount_type | text | No | - | percentage/fixed/none |
-| discount_value | numeric | No | 0 | Discount amount |
-| min_purchase | numeric | No | 0 | Minimum cart value |
-| max_discount | numeric | Yes | - | Cap on discount |
-| expires_at | timestamptz | No | - | Expiry date |
-| is_active | boolean | No | true | Active status |
-| verified | boolean | No | true | Verified working |
-| used_count | integer | No | 0 | Usage counter |
-| category | text | No | 'All' | Product category |
-| created_at | timestamptz | No | now() | - |
-| updated_at | timestamptz | No | now() | - |
+| Column         | Type        | Nullable | Default           | Description                           |
+| -------------- | ----------- | -------- | ----------------- | ------------------------------------- |
+| id             | uuid        | No       | gen_random_uuid() | Primary key                           |
+| code           | text        | No       | -                 | Coupon code                           |
+| store          | text        | No       | -                 | Store name                            |
+| description    | text        | No       | -                 | Coupon description                    |
+| coupon_type    | text        | No       | -                 | percentage/flat/cashback/freeShipping |
+| discount_type  | text        | No       | -                 | percentage/fixed/none                 |
+| discount_value | numeric     | No       | 0                 | Discount amount                       |
+| min_purchase   | numeric     | No       | 0                 | Minimum cart value                    |
+| max_discount   | numeric     | Yes      | -                 | Cap on discount                       |
+| expires_at     | timestamptz | No       | -                 | Expiry date                           |
+| is_active      | boolean     | No       | true              | Active status                         |
+| verified       | boolean     | No       | true              | Verified working                      |
+| used_count     | integer     | No       | 0                 | Usage counter                         |
+| category       | text        | No       | 'All'             | Product category                      |
+| created_at     | timestamptz | No       | now()             | -                                     |
+| updated_at     | timestamptz | No       | now()             | -                                     |
 
 ---
 
 #### daily_deals
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| title | text | No | - | Deal title |
-| description | text | Yes | - | Deal description |
-| image_url | text | Yes | - | Product image |
-| store | text | No | - | Store name |
-| original_price | numeric | No | - | MRP |
-| deal_price | numeric | No | - | Sale price |
-| discount_percent | integer | No | - | % off |
-| product_link | text | Yes | - | External link |
-| category | text | Yes | - | Product category |
-| starts_at | timestamptz | No | now() | Start time |
-| ends_at | timestamptz | No | - | End time |
-| is_active | boolean | No | true | Active status |
-| created_at | timestamptz | No | now() | - |
-| updated_at | timestamptz | No | now() | - |
+| Column           | Type        | Nullable | Default           | Description      |
+| ---------------- | ----------- | -------- | ----------------- | ---------------- |
+| id               | uuid        | No       | gen_random_uuid() | Primary key      |
+| title            | text        | No       | -                 | Deal title       |
+| description      | text        | Yes      | -                 | Deal description |
+| image_url        | text        | Yes      | -                 | Product image    |
+| store            | text        | No       | -                 | Store name       |
+| original_price   | numeric     | No       | -                 | MRP              |
+| deal_price       | numeric     | No       | -                 | Sale price       |
+| discount_percent | integer     | No       | -                 | % off            |
+| product_link     | text        | Yes      | -                 | External link    |
+| category         | text        | Yes      | -                 | Product category |
+| starts_at        | timestamptz | No       | now()             | Start time       |
+| ends_at          | timestamptz | No       | -                 | End time         |
+| is_active        | boolean     | No       | true              | Active status    |
+| created_at       | timestamptz | No       | now()             | -                |
+| updated_at       | timestamptz | No       | now()             | -                |
 
 ---
 
 #### referral_codes
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| user_id | uuid | No | - | FK to auth.users |
-| code | text | No | - | Unique referral code |
-| created_at | timestamptz | No | now() | - |
+| Column     | Type        | Nullable | Default           | Description          |
+| ---------- | ----------- | -------- | ----------------- | -------------------- |
+| id         | uuid        | No       | gen_random_uuid() | Primary key          |
+| user_id    | uuid        | No       | -                 | FK to auth.users     |
+| code       | text        | No       | -                 | Unique referral code |
+| created_at | timestamptz | No       | now()             | -                    |
 
 **Unique Constraint:** `code`
 
@@ -1225,15 +1302,15 @@ return new Response(
 
 #### referrals
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| referrer_id | uuid | No | - | User who referred |
-| referred_id | uuid | No | - | New user |
-| referral_code | text | No | - | Code used |
-| coins_awarded | integer | No | 50 | Coins given |
-| status | text | No | 'completed' | Status |
-| created_at | timestamptz | No | now() | - |
+| Column        | Type        | Nullable | Default           | Description       |
+| ------------- | ----------- | -------- | ----------------- | ----------------- |
+| id            | uuid        | No       | gen_random_uuid() | Primary key       |
+| referrer_id   | uuid        | No       | -                 | User who referred |
+| referred_id   | uuid        | No       | -                 | New user          |
+| referral_code | text        | No       | -                 | Code used         |
+| coins_awarded | integer     | No       | 50                | Coins given       |
+| status        | text        | No       | 'completed'       | Status            |
+| created_at    | timestamptz | No       | now()             | -                 |
 
 **Unique Constraint:** `referred_id` (user can only use one referral)
 
@@ -1241,13 +1318,13 @@ return new Response(
 
 #### daily_login_claims
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| user_id | uuid | No | - | FK to auth.users |
-| claimed_date | date | No | CURRENT_DATE | Claim date |
-| coins_awarded | integer | No | 10 | Coins given |
-| created_at | timestamptz | No | now() | - |
+| Column        | Type        | Nullable | Default           | Description      |
+| ------------- | ----------- | -------- | ----------------- | ---------------- |
+| id            | uuid        | No       | gen_random_uuid() | Primary key      |
+| user_id       | uuid        | No       | -                 | FK to auth.users |
+| claimed_date  | date        | No       | CURRENT_DATE      | Claim date       |
+| coins_awarded | integer     | No       | 10                | Coins given      |
+| created_at    | timestamptz | No       | now()             | -                |
 
 **Unique Constraint:** `(user_id, claimed_date)`
 
@@ -1255,16 +1332,16 @@ return new Response(
 
 #### product_reviews
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| user_id | uuid | No | - | FK to auth.users |
-| product_id | text | No | - | Product identifier |
-| product_name | text | No | - | Product name |
-| rating | integer | No | - | 1-5 stars |
-| review_text | text | Yes | - | Review content |
-| coins_awarded | integer | No | 20 | Coins given |
-| created_at | timestamptz | No | now() | - |
+| Column        | Type        | Nullable | Default           | Description        |
+| ------------- | ----------- | -------- | ----------------- | ------------------ |
+| id            | uuid        | No       | gen_random_uuid() | Primary key        |
+| user_id       | uuid        | No       | -                 | FK to auth.users   |
+| product_id    | text        | No       | -                 | Product identifier |
+| product_name  | text        | No       | -                 | Product name       |
+| rating        | integer     | No       | -                 | 1-5 stars          |
+| review_text   | text        | Yes      | -                 | Review content     |
+| coins_awarded | integer     | No       | 20                | Coins given        |
+| created_at    | timestamptz | No       | now()             | -                  |
 
 **Unique Constraint:** `(user_id, product_id)`
 
@@ -1272,24 +1349,24 @@ return new Response(
 
 #### price_history
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| product_name | text | No | - | Product identifier |
-| store | text | No | - | Store name |
-| price | numeric | No | - | Price at time |
-| recorded_at | timestamptz | No | now() | Timestamp |
-| created_at | timestamptz | No | now() | - |
+| Column       | Type        | Nullable | Default           | Description        |
+| ------------ | ----------- | -------- | ----------------- | ------------------ |
+| id           | uuid        | No       | gen_random_uuid() | Primary key        |
+| product_name | text        | No       | -                 | Product identifier |
+| store        | text        | No       | -                 | Store name         |
+| price        | numeric     | No       | -                 | Price at time      |
+| recorded_at  | timestamptz | No       | now()             | Timestamp          |
+| created_at   | timestamptz | No       | now()             | -                  |
 
 ---
 
 #### password_reset_attempts
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| email | text | No | - | User email |
-| attempted_at | timestamptz | No | now() | Attempt time |
+| Column       | Type        | Nullable | Default           | Description  |
+| ------------ | ----------- | -------- | ----------------- | ------------ |
+| id           | uuid        | No       | gen_random_uuid() | Primary key  |
+| email        | text        | No       | -                 | User email   |
+| attempted_at | timestamptz | No       | now()             | Attempt time |
 
 **Purpose:** Rate limiting password resets
 
@@ -1297,13 +1374,13 @@ return new Response(
 
 #### view_counter
 
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | uuid | No | gen_random_uuid() | Primary key |
-| page_path | text | No | '/' | Page URL |
-| view_count | bigint | No | 0 | View counter |
-| created_at | timestamptz | No | now() | - |
-| updated_at | timestamptz | No | now() | - |
+| Column     | Type        | Nullable | Default           | Description  |
+| ---------- | ----------- | -------- | ----------------- | ------------ |
+| id         | uuid        | No       | gen_random_uuid() | Primary key  |
+| page_path  | text        | No       | '/'               | Page URL     |
+| view_count | bigint      | No       | 0                 | View counter |
+| created_at | timestamptz | No       | now()             | -            |
+| updated_at | timestamptz | No       | now()             | -            |
 
 ---
 
@@ -1328,14 +1405,14 @@ BEGIN
   SELECT balance INTO current_balance
   FROM public.deal_coins
   WHERE user_id = p_user_id;
-  
+
   IF NOT FOUND THEN
     INSERT INTO public.deal_coins (user_id, balance, total_earned, total_spent)
     VALUES (p_user_id, 0, 0, 0)
     ON CONFLICT (user_id) DO NOTHING;
     current_balance := 0;
   END IF;
-  
+
   RETURN current_balance;
 END;
 $$;
@@ -1356,12 +1433,12 @@ DECLARE
 BEGIN
   INSERT INTO public.view_counter (page_path, view_count)
   VALUES (page, 1)
-  ON CONFLICT (page_path) 
-  DO UPDATE SET 
+  ON CONFLICT (page_path)
+  DO UPDATE SET
     view_count = view_counter.view_count + 1,
     updated_at = now()
   RETURNING view_count INTO current_count;
-  
+
   RETURN current_count;
 END;
 $$;
@@ -1463,6 +1540,7 @@ Response: []
 **Purpose:** Create secure order
 
 **Request:**
+
 ```json
 {
   "discountCode": "SAVE10",
@@ -1483,6 +1561,7 @@ Response: []
 ```
 
 **Response (Success):**
+
 ```json
 {
   "success": true,
@@ -1500,6 +1579,7 @@ Response: []
 ```
 
 **Response (Error):**
+
 ```json
 {
   "error": "Cart is empty"
@@ -1541,11 +1621,13 @@ Response: { "success": true, "coins_awarded": 20 }
 #### POST /functions/v1/reset-password
 
 **Request:**
+
 ```json
 { "email": "user@example.com" }
 ```
 
 **Response:**
+
 ```json
 { "success": true, "message": "If an account exists..." }
 ```
@@ -1555,6 +1637,7 @@ Response: { "success": true, "coins_awarded": 20 }
 #### POST /functions/v1/search-products
 
 **Request:**
+
 ```json
 {
   "query": "laptop",
@@ -1563,6 +1646,7 @@ Response: { "success": true, "coins_awarded": 20 }
 ```
 
 **Response:**
+
 ```json
 {
   "products": [
@@ -1582,6 +1666,7 @@ Response: { "success": true, "coins_awarded": 20 }
 #### POST /functions/v1/visual-search
 
 **Request:**
+
 ```json
 {
   "image": "base64-encoded-image-data",
@@ -1590,6 +1675,7 @@ Response: { "success": true, "coins_awarded": 20 }
 ```
 
 **Response:**
+
 ```json
 {
   "products": [
@@ -1611,10 +1697,10 @@ Response: { "success": true, "coins_awarded": 20 }
 
 DealWise uses a **single user role** model (consumer-facing platform).
 
-| Role | Description | Permissions |
-|------|-------------|-------------|
-| **Anonymous** | Non-authenticated visitor | View products, search, browse deals |
-| **Authenticated** | Logged-in user | All anonymous + cart, checkout, orders, coins |
+| Role              | Description               | Permissions                                   |
+| ----------------- | ------------------------- | --------------------------------------------- |
+| **Anonymous**     | Non-authenticated visitor | View products, search, browse deals           |
+| **Authenticated** | Logged-in user            | All anonymous + cart, checkout, orders, coins |
 
 ---
 
@@ -1756,6 +1842,7 @@ WITH CHECK (false);
 **Theme:** Dark mode with vibrant accents
 
 **Aesthetic Direction:**
+
 - Modern, premium feel
 - High contrast for readability
 - Accent colors for action items
@@ -1771,40 +1858,40 @@ Defined in `src/index.css`:
 ```css
 :root {
   /* Base - Dark Blue-Gray */
-  --background: 220 27% 8%;      /* #0f1219 */
-  --foreground: 210 40% 98%;     /* #f8fafc */
-  
+  --background: 220 27% 8%; /* #0f1219 */
+  --foreground: 210 40% 98%; /* #f8fafc */
+
   /* Cards */
-  --card: 220 27% 12%;           /* #171c26 */
+  --card: 220 27% 12%; /* #171c26 */
   --card-foreground: 210 40% 98%;
-  
+
   /* Primary - Electric Blue */
-  --primary: 213 89% 60%;        /* #4499f0 */
+  --primary: 213 89% 60%; /* #4499f0 */
   --primary-foreground: 210 40% 98%;
-  
+
   /* Secondary - Lime Green */
-  --secondary: 84 81% 58%;       /* #a3e635 */
+  --secondary: 84 81% 58%; /* #a3e635 */
   --secondary-foreground: 220 27% 8%;
-  
+
   /* Muted */
   --muted: 220 27% 15%;
   --muted-foreground: 215 20.2% 65.1%;
-  
+
   /* Accent - Same as Secondary */
   --accent: 84 81% 58%;
-  
+
   /* Destructive - Red */
   --destructive: 0 84.2% 60.2%;
-  
+
   /* Borders & Inputs */
   --border: 220 27% 20%;
   --input: 220 27% 15%;
   --ring: 213 89% 60%;
-  
+
   /* Deal-Specific */
-  --price-current: 84 81% 58%;   /* Green - sale price */
+  --price-current: 84 81% 58%; /* Green - sale price */
   --price-original: 215 20.2% 65.1%; /* Gray - strikethrough */
-  --discount-bg: 213 89% 60%;    /* Blue - discount badge */
+  --discount-bg: 213 89% 60%; /* Blue - discount badge */
 }
 ```
 
@@ -1813,12 +1900,14 @@ Defined in `src/index.css`:
 ### 10.3 Typography
 
 **Font Stack:**
+
 ```css
-font-family: 'Inter', system-ui, sans-serif;      /* Body */
-font-family: 'Poppins', 'Inter', system-ui, sans-serif; /* Display */
+font-family: "Inter", system-ui, sans-serif; /* Body */
+font-family: "Poppins", "Inter", system-ui, sans-serif; /* Display */
 ```
 
 **Scale:**
+
 - `text-xs` - 12px (labels, timestamps)
 - `text-sm` - 14px (body text)
 - `text-base` - 16px (default)
@@ -1833,6 +1922,7 @@ font-family: 'Poppins', 'Inter', system-ui, sans-serif; /* Display */
 ### 10.4 Layout System
 
 **Container:**
+
 ```typescript
 container: {
   center: true,
@@ -1842,11 +1932,13 @@ container: {
 ```
 
 **Grid System:**
+
 - 1 column (mobile)
 - 2 columns (tablet)
 - 3-4 columns (desktop)
 
 **Spacing Scale:**
+
 - `gap-2` (8px) - tight grouping
 - `gap-4` (16px) - standard
 - `gap-6` (24px) - section spacing
@@ -1859,6 +1951,7 @@ container: {
 **Library:** Framer Motion
 
 **Page Transitions:**
+
 ```typescript
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -1876,6 +1969,7 @@ const pageVariants = {
 ```
 
 **Micro-Interactions:**
+
 ```css
 .hover-lift {
   @apply transition-all duration-300 
@@ -1893,6 +1987,7 @@ const pageVariants = {
 ```
 
 **Custom Animations:**
+
 - 3D Spinning Coin (CSS `@keyframes deal-coin-spin`)
 - Galaxy Button (CSS variables + keyframes)
 - Animated Counter (React `useEffect` interval)
@@ -1911,15 +2006,16 @@ xl: '1280px'  // Large desktop
 ```
 
 **Mobile-First Approach:**
+
 ```html
 <!-- Stack on mobile, grid on larger -->
 <div class="flex flex-col md:flex-row">
-  
-<!-- Full width mobile, constrained desktop -->
-<div class="w-full md:w-48">
-
-<!-- Hide on mobile, show on desktop -->
-<nav class="hidden lg:flex">
+  <!-- Full width mobile, constrained desktop -->
+  <div class="w-full md:w-48">
+    <!-- Hide on mobile, show on desktop -->
+    <nav class="hidden lg:flex"></nav>
+  </div>
+</div>
 ```
 
 ---
@@ -1927,11 +2023,13 @@ xl: '1280px'  // Large desktop
 ### 10.7 Component Design Patterns
 
 **Cards:**
+
 ```html
-<Card class="border-border bg-card/50 backdrop-blur-sm">
+<Card class="border-border bg-card/50 backdrop-blur-sm"></Card>
 ```
 
 **Glass Effect:**
+
 ```css
 .glass {
   @apply bg-card/20 backdrop-blur-md border border-white/10;
@@ -1939,6 +2037,7 @@ xl: '1280px'  // Large desktop
 ```
 
 **Gradient Text:**
+
 ```css
 .gradient-text {
   background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
@@ -1953,36 +2052,36 @@ xl: '1280px'  // Large desktop
 
 ### 11.1 Authentication Security
 
-| Measure | Implementation |
-|---------|----------------|
-| **Password Hashing** | Supabase Auth (bcrypt) |
-| **Session Tokens** | JWT with auto-refresh |
-| **Email Verification** | Required before sign-in |
-| **Secure Password Reset** | 8-char CSPRNG passwords |
-| **No Email Enumeration** | Silent failures on signup/reset |
+| Measure                   | Implementation                  |
+| ------------------------- | ------------------------------- |
+| **Password Hashing**      | Supabase Auth (bcrypt)          |
+| **Session Tokens**        | JWT with auto-refresh           |
+| **Email Verification**    | Required before sign-in         |
+| **Secure Password Reset** | 8-char CSPRNG passwords         |
+| **No Email Enumeration**  | Silent failures on signup/reset |
 
 ---
 
 ### 11.2 API Security
 
-| Measure | Implementation |
-|---------|----------------|
-| **Authentication** | JWT Bearer tokens |
-| **Authorization** | Row-Level Security policies |
+| Measure              | Implementation                           |
+| -------------------- | ---------------------------------------- |
+| **Authentication**   | JWT Bearer tokens                        |
+| **Authorization**    | Row-Level Security policies              |
 | **Input Validation** | Server-side validation in Edge Functions |
-| **Rate Limiting** | 3 password resets/hour/email |
-| **CORS** | Permissive for SPA (`*` origin) |
+| **Rate Limiting**    | 3 password resets/hour/email             |
+| **CORS**             | Permissive for SPA (`*` origin)          |
 
 ---
 
 ### 11.3 Data Security
 
-| Measure | Implementation |
-|---------|----------------|
-| **Owner-Only Access** | RLS: `auth.uid() = user_id` |
-| **Immutable Fields** | Cart prices cannot be modified |
-| **Server-Side Mutations** | Orders/coins via Edge Functions only |
-| **Price Verification** | External API validation at checkout |
+| Measure                      | Implementation                            |
+| ---------------------------- | ----------------------------------------- |
+| **Owner-Only Access**        | RLS: `auth.uid() = user_id`               |
+| **Immutable Fields**         | Cart prices cannot be modified            |
+| **Server-Side Mutations**    | Orders/coins via Edge Functions only      |
+| **Price Verification**       | External API validation at checkout       |
 | **SQL Injection Prevention** | Parameterized queries via Supabase client |
 
 ---
@@ -1990,19 +2089,21 @@ xl: '1280px'  // Large desktop
 ### 11.4 Price Manipulation Prevention
 
 **Client-Side:**
+
 - Prices displayed from database
 - Cannot modify cart item prices
 
 **Server-Side (validate-order):**
+
 ```typescript
 // 1. Read cart from DB, not client
 const { data: dbCartItems } = await supabaseAdmin
-  .from('cart_items')
-  .select('*')
-  .eq('user_id', userId);
+  .from("cart_items")
+  .select("*")
+  .eq("user_id", userId);
 
 // 2. Verify against external API
-const apiRes = await fetch('https://fakestoreapi.com/products');
+const apiRes = await fetch("https://fakestoreapi.com/products");
 const apiProducts = await apiRes.json();
 for (const p of apiProducts) {
   trustedPrices[`fakestore-${p.id}`] = Math.round(p.price * 83);
@@ -2039,25 +2140,27 @@ const price = verifiedPrice !== undefined ? verifiedPrice : Number(row.price);
 
 ### 12.1 Frontend Optimizations
 
-| Technique | Implementation |
-|-----------|----------------|
-| **Code Splitting** | React.lazy + Suspense (potential) |
-| **Tree Shaking** | Vite automatic |
-| **Minification** | Vite production build |
-| **CSS Purging** | Tailwind JIT mode |
-| **Image Optimization** | External CDN URLs |
+| Technique              | Implementation                    |
+| ---------------------- | --------------------------------- |
+| **Code Splitting**     | React.lazy + Suspense (potential) |
+| **Tree Shaking**       | Vite automatic                    |
+| **Minification**       | Vite production build             |
+| **CSS Purging**        | Tailwind JIT mode                 |
+| **Image Optimization** | External CDN URLs                 |
 
 ---
 
 ### 12.2 Loading States
 
 **Skeleton Loaders:**
+
 ```typescript
 <ProductCardSkeleton />
 // Renders shimmer animation while loading
 ```
 
 **Loading Spinners:**
+
 ```html
 <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
 ```
@@ -2066,22 +2169,24 @@ const price = verifiedPrice !== undefined ? verifiedPrice : Number(row.price);
 
 ### 12.3 Database Optimizations
 
-| Technique | Implementation |
-|-----------|----------------|
-| **Indexes** | Primary keys, unique constraints |
-| **Selective Queries** | `.select('id, name')` not `*` |
-| **Query Limits** | `.limit(20)` on transactions |
-| **Single Row Fetch** | `.single()` / `.maybeSingle()` |
+| Technique             | Implementation                   |
+| --------------------- | -------------------------------- |
+| **Indexes**           | Primary keys, unique constraints |
+| **Selective Queries** | `.select('id, name')` not `*`    |
+| **Query Limits**      | `.limit(20)` on transactions     |
+| **Single Row Fetch**  | `.single()` / `.maybeSingle()`   |
 
 ---
 
 ### 12.4 Caching Strategy
 
 **Client-Side:**
+
 - TanStack Query caching (staleTime, cacheTime)
 - LocalStorage for auth session
 
 **Server-Side:**
+
 - Supabase connection pooling
 - Edge Function cold start optimization
 
@@ -2089,11 +2194,11 @@ const price = verifiedPrice !== undefined ? verifiedPrice : Number(row.price);
 
 ### 12.5 Network Optimization
 
-| Technique | Implementation |
-|-----------|----------------|
-| **Batch Operations** | Multiple inserts in single query |
-| **Optimistic Updates** | Immediate UI feedback |
-| **Debounced Search** | Delay API calls while typing |
+| Technique              | Implementation                   |
+| ---------------------- | -------------------------------- |
+| **Batch Operations**   | Multiple inserts in single query |
+| **Optimistic Updates** | Immediate UI feedback            |
+| **Debounced Search**   | Delay API calls while typing     |
 
 ---
 
@@ -2434,8 +2539,8 @@ dealwise/
 **Platform:** Hostinger
 
 **URLs:**
-- Published: [https://www.dealwise.in/](https://www.dealwise.in/)
 
+- Published: [https://www.dealwise.in/](https://www.dealwise.in/)
 
 ---
 
@@ -2450,6 +2555,7 @@ VITE_SUPABASE_PROJECT_ID={project-id}
 ```
 
 **Edge Function Secrets:**
+
 - `SUPABASE_URL`
 - `SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
@@ -2474,6 +2580,7 @@ npm run lint         # Run ESLint
 ```
 
 **Build Output:**
+
 - `dist/` folder
 - Minified JS/CSS
 - Static assets
@@ -2483,6 +2590,7 @@ npm run lint         # Run ESLint
 ### 15.4 Automatic Deployment
 
 Supabase handles deployment automatically:
+
 1. Code changes in editor
 2. Hot reload in preview
 3. Click "Publish" for production
@@ -2493,6 +2601,7 @@ Supabase handles deployment automatically:
 ### 15.5 Edge Function Deployment
 
 Edge Functions deploy automatically when:
+
 1. Files added to `supabase/functions/`
 2. Configuration in `supabase/config.toml`
 3. Secrets configured in Supabase
@@ -2503,59 +2612,59 @@ Edge Functions deploy automatically when:
 
 ### 16.1 AI Features
 
-| Feature | Description | Technology |
-|---------|-------------|------------|
-| **Price Prediction** | ML-based price forecasting | Time series models |
+| Feature                   | Description                      | Technology              |
+| ------------------------- | -------------------------------- | ----------------------- |
+| **Price Prediction**      | ML-based price forecasting       | Time series models      |
 | **Smart Recommendations** | Personalized product suggestions | Collaborative filtering |
-| **Chatbot Assistant** | Conversational deal finder | GPT integration |
-| **Image Recognition V2** | Multi-object detection | Advanced vision models |
+| **Chatbot Assistant**     | Conversational deal finder       | GPT integration         |
+| **Image Recognition V2**  | Multi-object detection           | Advanced vision models  |
 
 ---
 
 ### 16.2 Analytics Enhancements
 
-| Feature | Description |
-|---------|-------------|
+| Feature                    | Description              |
+| -------------------------- | ------------------------ |
 | **User Behavior Tracking** | Page views, time on page |
-| **Conversion Funnels** | Cart → Checkout → Order |
-| **A/B Testing** | Feature flag system |
-| **Real-Time Dashboard** | Admin analytics view |
+| **Conversion Funnels**     | Cart → Checkout → Order  |
+| **A/B Testing**            | Feature flag system      |
+| **Real-Time Dashboard**    | Admin analytics view     |
 
 ---
 
 ### 16.3 Scalability Improvements
 
-| Area | Improvement |
-|------|-------------|
-| **Database** | Read replicas, connection pooling |
-| **CDN** | Global edge caching |
-| **Search** | Elasticsearch/Algolia integration |
-| **Real-Time** | WebSocket subscriptions |
+| Area          | Improvement                       |
+| ------------- | --------------------------------- |
+| **Database**  | Read replicas, connection pooling |
+| **CDN**       | Global edge caching               |
+| **Search**    | Elasticsearch/Algolia integration |
+| **Real-Time** | WebSocket subscriptions           |
 
 ---
 
 ### 16.4 Feature Additions
 
-| Feature | Description |
-|---------|-------------|
-| **Wishlists** | Save products for later |
-| **Price Alerts** | Notify when price drops |
-| **Social Features** | Share deals with friends |
-| **Browser Extension** | Auto price comparison |
-| **Mobile App** | React Native version |
-| **Multi-Currency** | International support |
-| **Admin Dashboard** | Content management |
+| Feature               | Description              |
+| --------------------- | ------------------------ |
+| **Wishlists**         | Save products for later  |
+| **Price Alerts**      | Notify when price drops  |
+| **Social Features**   | Share deals with friends |
+| **Browser Extension** | Auto price comparison    |
+| **Mobile App**        | React Native version     |
+| **Multi-Currency**    | International support    |
+| **Admin Dashboard**   | Content management       |
 
 ---
 
 ### 16.5 Performance Improvements
 
-| Area | Improvement |
-|------|-------------|
-| **SSR/SSG** | Next.js migration for SEO |
-| **Image CDN** | Cloudflare Images integration |
-| **Service Worker** | Offline capability |
-| **Bundle Splitting** | Route-based code splitting |
+| Area                 | Improvement                   |
+| -------------------- | ----------------------------- |
+| **SSR/SSG**          | Next.js migration for SEO     |
+| **Image CDN**        | Cloudflare Images integration |
+| **Service Worker**   | Offline capability            |
+| **Bundle Splitting** | Route-based code splitting    |
 
 ---
 
@@ -2575,7 +2684,7 @@ Edge Functions deploy automatically when:
 │  │  │  ┌────────────┐  ┌────────────┐  ┌────────────┐              │   │   │
 │  │  │  │   Pages    │  │ Components │  │   Hooks    │              │   │   │
 │  │  │  └──────┬─────┘  └──────┬─────┘  └──────┬─────┘              │   │   │
-│  │  │         │               │               │                    │   │   │ 
+│  │  │         │               │               │                    │   │   │
 │  │  │         └───────────────┼───────────────┘                    │   │   │
 │  │  │                         │                                    │   │   │
 │  │  │                         ▼                                    │   │   │
@@ -2743,6 +2852,7 @@ USER                    FRONTEND                    BACKEND                 DATA
 To rebuild DealWise from scratch:
 
 #### Step 1: Initialize Project
+
 ```bash
 npm create vite@latest dealwise -- --template react-ts
 cd dealwise
@@ -2750,8 +2860,9 @@ npm install
 ```
 
 #### Step 2: Install Dependencies
+
 ```bash
-npm install @supabase/supabase-js @tanstack/react-query react-router-dom 
+npm install @supabase/supabase-js @tanstack/react-query react-router-dom
 npm install framer-motion recharts sonner zod html5-qrcode
 npm install @radix-ui/react-* (all primitives)
 npm install tailwindcss postcss autoprefixer
@@ -2759,22 +2870,26 @@ npm install class-variance-authority clsx tailwind-merge tailwindcss-animate
 ```
 
 #### Step 3: Configure Tailwind
+
 - Create `tailwind.config.ts` with design tokens
 - Create `src/index.css` with CSS variables
 - Set up dark theme configuration
 
 #### Step 4: Set Up shadcn/ui
+
 ```bash
 npx shadcn@latest init
 npx shadcn@latest add button card input (etc.)
 ```
 
 #### Step 5: Create Supabase Project
+
 1. Create database tables (see schema section)
 2. Set up RLS policies
 3. Create Edge Functions
 
 #### Step 6: Build Core Features
+
 1. Authentication (useAuth context)
 2. Routing (React Router)
 3. Layout (Header, Footer)
@@ -2784,12 +2899,14 @@ npx shadcn@latest add button card input (etc.)
 7. Deal Coins system
 
 #### Step 7: Add Advanced Features
+
 1. Visual search (Gemini AI)
 2. Barcode scanning
 3. Price comparison
 4. Coupon system
 
 #### Step 8: Deploy
+
 1. Connect to Supabase
 2. Configure environment variables
 3. Deploy Edge Functions
@@ -2799,31 +2916,31 @@ npx shadcn@latest add button card input (etc.)
 
 ## Appendix A: Technology Decision Rationale
 
-| Decision | Why |
-|----------|-----|
-| **React 18** | Component model, hooks, ecosystem |
-| **Vite** | Fast HMR, optimized builds |
-| **TypeScript** | Type safety, better DX |
-| **Tailwind** | Utility-first, consistent design |
-| **shadcn/ui** | Accessible, customizable components |
-| **Supabase** | Full backend without server management |
-| **Framer Motion** | Declarative animations |
-| **TanStack Query** | Server state management |
+| Decision           | Why                                    |
+| ------------------ | -------------------------------------- |
+| **React 18**       | Component model, hooks, ecosystem      |
+| **Vite**           | Fast HMR, optimized builds             |
+| **TypeScript**     | Type safety, better DX                 |
+| **Tailwind**       | Utility-first, consistent design       |
+| **shadcn/ui**      | Accessible, customizable components    |
+| **Supabase**       | Full backend without server management |
+| **Framer Motion**  | Declarative animations                 |
+| **TanStack Query** | Server state management                |
 
 ---
 
 ## Appendix B: Glossary
 
-| Term | Definition |
-|------|------------|
-| **RLS** | Row-Level Security - database access control |
-| **JWT** | JSON Web Token - authentication standard |
-| **Edge Function** | Serverless function at CDN edge |
-| **CSPRNG** | Cryptographically Secure Pseudo-Random Number Generator |
-| **INR** | Indian Rupee |
-| **EMI** | Equated Monthly Installment |
-| **Deal Coin** | Loyalty points (1 coin = ₹1) |
-| **FakeStore API** | Mock e-commerce API for testing |
+| Term              | Definition                                              |
+| ----------------- | ------------------------------------------------------- |
+| **RLS**           | Row-Level Security - database access control            |
+| **JWT**           | JSON Web Token - authentication standard                |
+| **Edge Function** | Serverless function at CDN edge                         |
+| **CSPRNG**        | Cryptographically Secure Pseudo-Random Number Generator |
+| **INR**           | Indian Rupee                                            |
+| **EMI**           | Equated Monthly Installment                             |
+| **Deal Coin**     | Loyalty points (1 coin = ₹1)                            |
+| **FakeStore API** | Mock e-commerce API for testing                         |
 
 ---
 
@@ -2836,4 +2953,4 @@ npx shadcn@latest add button card input (etc.)
 
 ---
 
-*This documentation is intended for developers who need to understand, maintain, or extend the DealWise platform. For user documentation, see the Help Center.*
+_This documentation is intended for developers who need to understand, maintain, or extend the DealWise platform. For user documentation, see the Help Center._

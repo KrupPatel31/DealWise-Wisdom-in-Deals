@@ -36,14 +36,14 @@ export const ShareDeal = ({
   const handleWhatsApp = () => {
     window.open(
       `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`,
-      "_blank"
+      "_blank",
     );
   };
 
   const handleTwitter = () => {
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
-      "_blank"
+      "_blank",
     );
   };
 
@@ -87,7 +87,12 @@ export const ShareDeal = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         {variant === "icon" ? (
-          <Button variant="ghost" size={size} className="h-8 w-8 p-0" title="Share deal">
+          <Button
+            variant="ghost"
+            size={size}
+            className="h-8 w-8 p-0"
+            title="Share deal"
+          >
             <Share2 className="h-4 w-4" />
           </Button>
         ) : (

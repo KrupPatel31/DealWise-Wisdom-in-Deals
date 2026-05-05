@@ -7,14 +7,18 @@ const DEFAULT_ATTEMPTS = 3;
 const DEFAULT_TIMEOUT_MS = 10_000;
 
 export class AuthTimeoutError extends Error {
-  constructor(message = "Request timed out. Please check your connection and try again.") {
+  constructor(
+    message = "Request timed out. Please check your connection and try again.",
+  ) {
     super(message);
     this.name = "AuthTimeoutError";
   }
 }
 
 export class AuthOfflineError extends Error {
-  constructor(message = "You appear to be offline. Your request was queued and will retry when the connection is restored.") {
+  constructor(
+    message = "You appear to be offline. Your request was queued and will retry when the connection is restored.",
+  ) {
     super(message);
     this.name = "AuthOfflineError";
   }

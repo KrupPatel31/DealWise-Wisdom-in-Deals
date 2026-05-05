@@ -919,17 +919,30 @@ const Checkout = () => {
                             </button>
                           ))}
                         </div>
-                        <Select value={netBankingBank} onValueChange={setNetBankingBank}>
+                        <Select
+                          value={netBankingBank}
+                          onValueChange={setNetBankingBank}
+                        >
                           <SelectTrigger className="bg-background">
                             <SelectValue placeholder="Select other bank" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Punjab National Bank">Punjab National Bank</SelectItem>
-                            <SelectItem value="Bank of Baroda">Bank of Baroda</SelectItem>
-                            <SelectItem value="Canara Bank">Canara Bank</SelectItem>
-                            <SelectItem value="Union Bank">Union Bank</SelectItem>
+                            <SelectItem value="Punjab National Bank">
+                              Punjab National Bank
+                            </SelectItem>
+                            <SelectItem value="Bank of Baroda">
+                              Bank of Baroda
+                            </SelectItem>
+                            <SelectItem value="Canara Bank">
+                              Canara Bank
+                            </SelectItem>
+                            <SelectItem value="Union Bank">
+                              Union Bank
+                            </SelectItem>
                             <SelectItem value="IDBI Bank">IDBI Bank</SelectItem>
-                            <SelectItem value="Federal Bank">Federal Bank</SelectItem>
+                            <SelectItem value="Federal Bank">
+                              Federal Bank
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         {netBankingBank && (
@@ -969,11 +982,19 @@ const Checkout = () => {
                               <SelectValue placeholder="Choose your bank" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="HDFC Bank">HDFC Bank</SelectItem>
-                              <SelectItem value="ICICI Bank">ICICI Bank</SelectItem>
+                              <SelectItem value="HDFC Bank">
+                                HDFC Bank
+                              </SelectItem>
+                              <SelectItem value="ICICI Bank">
+                                ICICI Bank
+                              </SelectItem>
                               <SelectItem value="SBI Card">SBI Card</SelectItem>
-                              <SelectItem value="Axis Bank">Axis Bank</SelectItem>
-                              <SelectItem value="Kotak Bank">Kotak Bank</SelectItem>
+                              <SelectItem value="Axis Bank">
+                                Axis Bank
+                              </SelectItem>
+                              <SelectItem value="Kotak Bank">
+                                Kotak Bank
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -1002,7 +1023,8 @@ const Checkout = () => {
                         </div>
                         {(emiBank || emiTenure > 0) && (
                           <p className="text-xs text-green-500">
-                            ✓ {emiBank}{emiBank && emiTenure > 0 ? " · " : ""}
+                            ✓ {emiBank}
+                            {emiBank && emiTenure > 0 ? " · " : ""}
                             {emiTenure > 0 ? `${emiTenure} months` : ""}
                           </p>
                         )}

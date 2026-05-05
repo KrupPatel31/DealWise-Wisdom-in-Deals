@@ -50,7 +50,10 @@ Deno.serve(async (req) => {
     if (!email || typeof email !== "string") {
       return new Response(
         JSON.stringify({ error: "Valid email is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -59,7 +62,10 @@ Deno.serve(async (req) => {
     if (!emailRegex.test(email) || email.length > 255) {
       return new Response(
         JSON.stringify({ error: "Valid email is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -70,8 +76,13 @@ Deno.serve(async (req) => {
     if (!supabaseUrl || !serviceRoleKey || !resendApiKey) {
       console.error("Missing required configuration");
       return new Response(
-        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({
+          error: "An unexpected error occurred. Please try again.",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -92,20 +103,32 @@ Deno.serve(async (req) => {
     if (rateError) {
       console.error("Rate limit check failed:", rateError);
       return new Response(
-        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({
+          error: "An unexpected error occurred. Please try again.",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     if (recentAttempts && recentAttempts.length >= 3) {
       return new Response(
-        JSON.stringify({ error: "Too many reset attempts. Please try again later." }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({
+          error: "Too many reset attempts. Please try again later.",
+        }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     // Record this attempt
-    await supabase.from("password_reset_attempts").insert({ email: normalizedEmail });
+    await supabase
+      .from("password_reset_attempts")
+      .insert({ email: normalizedEmail });
 
     // Look up user_id via the profiles table (indexed lookup, no full user-table scan).
     // The previous approach used auth.admin.listUsers({ filter }) which is NOT supported
@@ -120,16 +143,27 @@ Deno.serve(async (req) => {
     if (profileError) {
       console.error("Failed to query profile:", profileError);
       return new Response(
-        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({
+          error: "An unexpected error occurred. Please try again.",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     if (!profile?.user_id) {
       // Don't reveal if email exists
       return new Response(
-        JSON.stringify({ success: true, message: "If an account exists, a new password has been sent." }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({
+          success: true,
+          message: "If an account exists, a new password has been sent.",
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -189,33 +223,57 @@ Deno.serve(async (req) => {
       const errBody = await emailResponse.text();
       console.error("Failed to send email:", errBody);
       return new Response(
-        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({
+          error: "An unexpected error occurred. Please try again.",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     // Email delivered — now safe to update the password.
-    const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
-      password: newPassword,
-    });
+    const { error: updateError } = await supabase.auth.admin.updateUserById(
+      userId,
+      {
+        password: newPassword,
+      },
+    );
 
     if (updateError) {
       console.error("Failed to update password after email sent:", updateError);
       return new Response(
-        JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({
+          error: "An unexpected error occurred. Please try again.",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     return new Response(
-      JSON.stringify({ success: true, message: "If an account exists, a new password has been sent." }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({
+        success: true,
+        message: "If an account exists, a new password has been sent.",
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   } catch (error) {
     console.error("Reset password error:", error);
     return new Response(
-      JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({
+        error: "An unexpected error occurred. Please try again.",
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 });

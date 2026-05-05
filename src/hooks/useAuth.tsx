@@ -1,8 +1,8 @@
-import { useState, useEffect, createContext, useContext, useRef } from 'react';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import type { User, Session } from '@supabase/supabase-js';
-import { runAuthWithRetry } from '@/utils/authRetry';
+import { useState, useEffect, createContext, useContext, useRef } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import type { User, Session } from "@supabase/supabase-js";
+import { runAuthWithRetry } from "@/utils/authRetry";
 
 interface AuthContextType {
   user: User | null;
@@ -10,7 +10,11 @@ interface AuthContextType {
   loading: boolean;
   online: boolean;
   authReady: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string,
+  ) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
@@ -18,7 +22,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 type QueuedRequest = {
-  type: 'signIn' | 'signUp';
+  type: "signIn" | "signUp";
   payload: any;
   resolve: (v: any) => void;
 };
@@ -29,7 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [authReady, setAuthReady] = useState(false);
   const [online, setOnline] = useState<boolean>(
-    typeof navigator !== 'undefined' ? navigator.onLine : true,
+    typeof navigator !== "undefined" ? navigator.onLine : true,
   );
   const queueRef = useRef<QueuedRequest[]>([]);
   const expiryTimerRef = useRef<number | null>(null);
@@ -39,17 +43,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const url = (import.meta as any).env?.VITE_SUPABASE_URL;
     const key = (import.meta as any).env?.VITE_SUPABASE_PUBLISHABLE_KEY;
     if (!url || !key) {
-      console.error('[auth:diagnostics] Missing Supabase environment variables', { hasUrl: !!url, hasKey: !!key });
-      toast.error('Authentication service is not configured. Please contact support.');
+      console.error(
+        "[auth:diagnostics] Missing Supabase environment variables",
+        { hasUrl: !!url, hasKey: !!key },
+      );
+      toast.error(
+        "Authentication service is not configured. Please contact support.",
+      );
     } else {
-      console.info('[auth:diagnostics] Supabase env loaded');
+      console.info("[auth:diagnostics] Supabase env loaded");
       // Lightweight reachability check
       supabase.auth
         .getSession()
-        .then(() => console.info('[auth:diagnostics] Auth service reachable at', new Date().toISOString()))
+        .then(() =>
+          console.info(
+            "[auth:diagnostics] Auth service reachable at",
+            new Date().toISOString(),
+          ),
+        )
         .catch((e) => {
-          console.error('[auth:diagnostics] Auth service unreachable:', e);
-          toast.error('Cannot reach authentication service. Some features may be unavailable.');
+          console.error("[auth:diagnostics] Auth service unreachable:", e);
+          toast.error(
+            "Cannot reach authentication service. Some features may be unavailable.",
+          );
         });
     }
   }, []);
@@ -66,48 +82,54 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const delay = Math.max(0, expiresAtMs - now);
     if (delay === 0) return;
     expiryTimerRef.current = window.setTimeout(async () => {
-      console.warn('[auth] session expired, signing out');
+      console.warn("[auth] session expired, signing out");
       try {
         await supabase.auth.signOut();
       } catch (e) {
-        console.warn('[auth] signOut on expiry failed:', e);
+        console.warn("[auth] signOut on expiry failed:", e);
       }
-      toast.error('Your session has expired. Please sign in again.');
-      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/sign-in')) {
-        window.location.href = '/sign-in';
+      toast.error("Your session has expired. Please sign in again.");
+      if (
+        typeof window !== "undefined" &&
+        !window.location.pathname.startsWith("/sign-in")
+      ) {
+        window.location.href = "/sign-in";
       }
     }, delay);
   };
 
   // ---- Auth state wiring ----
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
-        console.info(`[auth] ${event} @ ${new Date().toISOString()}`);
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-        scheduleExpiry(newSession);
-        // Always release loading once we've heard from auth — prevents
-        // header buttons from disappearing if getSession() hangs.
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
+      console.info(`[auth] ${event} @ ${new Date().toISOString()}`);
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
+      scheduleExpiry(newSession);
+      // Always release loading once we've heard from auth — prevents
+      // header buttons from disappearing if getSession() hangs.
+      setLoading(false);
+      setAuthReady(true);
+      if (event === "TOKEN_REFRESHED") {
+        console.info("[auth] token refreshed");
+      }
+    });
+
+    supabase.auth
+      .getSession()
+      .then(({ data: { session: existing } }) => {
+        setSession(existing);
+        setUser(existing?.user ?? null);
+        scheduleExpiry(existing);
         setLoading(false);
         setAuthReady(true);
-        if (event === 'TOKEN_REFRESHED') {
-          console.info('[auth] token refreshed');
-        }
-      },
-    );
-
-    supabase.auth.getSession().then(({ data: { session: existing } }) => {
-      setSession(existing);
-      setUser(existing?.user ?? null);
-      scheduleExpiry(existing);
-      setLoading(false);
-      setAuthReady(true);
-    }).catch((e) => {
-      console.error('[auth] getSession failed:', e);
-      setLoading(false);
-      setAuthReady(true);
-    });
+      })
+      .catch((e) => {
+        console.error("[auth] getSession failed:", e);
+        setLoading(false);
+        setAuthReady(true);
+      });
 
     // Safety net: never keep the header in a loading state for more than 3s.
     const safetyTimer = window.setTimeout(() => {
@@ -126,14 +148,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const drain = async () => {
       if (queueRef.current.length === 0) return;
-      console.info(`[auth] draining ${queueRef.current.length} queued auth request(s)`);
+      console.info(
+        `[auth] draining ${queueRef.current.length} queued auth request(s)`,
+      );
       const queue = queueRef.current.splice(0, queueRef.current.length);
       for (const item of queue) {
         try {
           const result =
-            item.type === 'signIn'
+            item.type === "signIn"
               ? await doSignIn(item.payload.email, item.payload.password)
-              : await doSignUp(item.payload.email, item.payload.password, item.payload.fullName);
+              : await doSignUp(
+                  item.payload.email,
+                  item.payload.password,
+                  item.payload.fullName,
+                );
           item.resolve(result);
         } catch (err) {
           item.resolve({ error: err });
@@ -142,23 +170,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
     const goOnline = () => {
       setOnline(true);
-      toast.success('Back online.');
+      toast.success("Back online.");
       drain();
     };
     const goOffline = () => {
       setOnline(false);
-      toast.error('You are offline. Auth requests will be queued.');
+      toast.error("You are offline. Auth requests will be queued.");
     };
-    window.addEventListener('online', goOnline);
-    window.addEventListener('offline', goOffline);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
     return () => {
-      window.removeEventListener('online', goOnline);
-      window.removeEventListener('offline', goOffline);
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const doSignUp = async (email: string, password: string, fullName: string) => {
+  const doSignUp = async (
+    email: string,
+    password: string,
+    fullName: string,
+  ) => {
     const redirectUrl = `${window.location.origin}/`;
     const result = await runAuthWithRetry(
       () =>
@@ -170,7 +202,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             data: { full_name: fullName },
           },
         }),
-      { label: 'signUp' },
+      { label: "signUp" },
     );
     return { error: result.error };
   };
@@ -178,17 +210,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const doSignIn = async (email: string, password: string) => {
     const result = await runAuthWithRetry(
       () => supabase.auth.signInWithPassword({ email, password }),
-      { label: 'signIn' },
+      { label: "signIn" },
     );
     return { error: result.error };
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      console.warn('[auth] offline, queueing signUp');
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      console.warn("[auth] offline, queueing signUp");
       return new Promise<{ error: any }>((resolve) => {
-        queueRef.current.push({ type: 'signUp', payload: { email, password, fullName }, resolve });
-        toast.message('You are offline. We saved your request and will retry when you reconnect.');
+        queueRef.current.push({
+          type: "signUp",
+          payload: { email, password, fullName },
+          resolve,
+        });
+        toast.message(
+          "You are offline. We saved your request and will retry when you reconnect.",
+        );
       });
     }
     try {
@@ -199,11 +237,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signIn = async (email: string, password: string) => {
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      console.warn('[auth] offline, queueing signIn');
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      console.warn("[auth] offline, queueing signIn");
       return new Promise<{ error: any }>((resolve) => {
-        queueRef.current.push({ type: 'signIn', payload: { email, password }, resolve });
-        toast.message('You are offline. We saved your request and will retry when you reconnect.');
+        queueRef.current.push({
+          type: "signIn",
+          payload: { email, password },
+          resolve,
+        });
+        toast.message(
+          "You are offline. We saved your request and will retry when you reconnect.",
+        );
       });
     }
     try {
@@ -217,21 +261,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await supabase.auth.signOut();
     } catch (e) {
-      console.warn('[auth] signOut failed:', e);
+      console.warn("[auth] signOut failed:", e);
     }
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      session,
-      loading,
-      online,
-      authReady,
-      signUp,
-      signIn,
-      signOut,
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        loading,
+        online,
+        authReady,
+        signUp,
+        signIn,
+        signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -240,7 +286,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

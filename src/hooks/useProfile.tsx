@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export interface UserProfile {
   id: string;
@@ -27,12 +27,12 @@ export const useProfile = () => {
 
   const fetchProfile = async () => {
     if (!user) return;
-    
+
     setLoading(true);
     const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', user.id)
+      .from("profiles")
+      .select("*")
+      .eq("user_id", user.id)
       .single();
 
     if (!error && data) {

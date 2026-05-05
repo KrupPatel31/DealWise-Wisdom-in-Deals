@@ -92,7 +92,7 @@ const VisualSearch = () => {
       setDragActive(false);
       if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
     },
-    [handleFile]
+    [handleFile],
   );
 
   const handlePasteUrl = () => {
@@ -124,7 +124,9 @@ const VisualSearch = () => {
         body.imageUrl = preview;
       }
 
-      const { data, error } = await supabase.functions.invoke("visual-search", { body });
+      const { data, error } = await supabase.functions.invoke("visual-search", {
+        body,
+      });
 
       if (error) throw error;
 
@@ -192,7 +194,9 @@ const VisualSearch = () => {
                 type="file"
                 accept=".jpg,.jpeg,.png,.webp"
                 className="hidden"
-                onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+                onChange={(e) =>
+                  e.target.files?.[0] && handleFile(e.target.files[0])
+                }
               />
               <div className="flex flex-col items-center gap-4">
                 <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -225,7 +229,9 @@ const VisualSearch = () => {
                 accept="image/*"
                 capture="environment"
                 className="hidden"
-                onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+                onChange={(e) =>
+                  e.target.files?.[0] && handleFile(e.target.files[0])
+                }
               />
               <Button
                 variant="outline"
@@ -246,7 +252,11 @@ const VisualSearch = () => {
                 onKeyDown={(e) => e.key === "Enter" && handlePasteUrl()}
                 className="flex-1"
               />
-              <Button variant="secondary" onClick={handlePasteUrl} disabled={!imageUrl.trim()}>
+              <Button
+                variant="secondary"
+                onClick={handlePasteUrl}
+                disabled={!imageUrl.trim()}
+              >
                 <LinkIcon className="h-4 w-4" />
               </Button>
             </div>
@@ -332,14 +342,18 @@ const VisualSearch = () => {
               </h2>
               {productInfo && (
                 <p className="text-sm text-muted-foreground hidden sm:block">
-                  Searching for: <span className="text-foreground font-medium">{productInfo.product_name}</span>
+                  Searching for:{" "}
+                  <span className="text-foreground font-medium">
+                    {productInfo.product_name}
+                  </span>
                 </p>
               )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {products.map((product) => {
-                const isBestPrice = product.price > 0 && product.price === lowestPrice;
+                const isBestPrice =
+                  product.price > 0 && product.price === lowestPrice;
                 const savings = product.originalPrice - product.price;
 
                 return (
@@ -391,7 +405,8 @@ const VisualSearch = () => {
                         <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
                         <span className="text-sm text-muted-foreground">
                           {product.rating.toFixed(1)}{" "}
-                          {product.reviews > 0 && `(${product.reviews.toLocaleString()})`}
+                          {product.reviews > 0 &&
+                            `(${product.reviews.toLocaleString()})`}
                         </span>
                       </div>
 
@@ -446,7 +461,9 @@ const VisualSearch = () => {
         {!loading && hasSearched && products.length === 0 && (
           <div className="mt-16 text-center">
             <ImageIcon className="h-16 w-16 mx-auto text-muted-foreground/30 mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-1">No products found</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-1">
+              No products found
+            </h3>
             <p className="text-sm text-muted-foreground">
               Try uploading a clearer image or a different product.
             </p>

@@ -1,13 +1,17 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 // Helper: fetch with timeout to keep total search latency bounded
-async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -19,20 +23,26 @@ async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: nu
 
 // Source 1: Real-Time Product Search (existing)
 async function callRapidApi(url: string): Promise<Response | null> {
-  const primary = Deno.env.get('RAPIDAPI_KEY');
-  const secondary = Deno.env.get('RAPIDAPI_KEY_2');
+  const primary = Deno.env.get("RAPIDAPI_KEY");
+  const secondary = Deno.env.get("RAPIDAPI_KEY_2");
   const keys = [primary, secondary].filter((k): k is string => !!k);
   let lastResp: Response | null = null;
   for (const key of keys) {
-    const resp = await fetchWithTimeout(url, {
-      headers: {
-        'X-RapidAPI-Key': key,
-        'X-RapidAPI-Host': 'real-time-product-search.p.rapidapi.com',
+    const resp = await fetchWithTimeout(
+      url,
+      {
+        headers: {
+          "X-RapidAPI-Key": key,
+          "X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com",
+        },
       },
-    }, 20000);
+      20000,
+    );
     // Only fall back on quota/auth errors (429 = rate/quota exceeded, 403 = forbidden/quota)
     if (resp.status === 429 || resp.status === 403) {
-      console.warn(`RapidAPI key exhausted (status ${resp.status}), trying next key...`);
+      console.warn(
+        `RapidAPI key exhausted (status ${resp.status}), trying next key...`,
+      );
       lastResp = resp;
       continue;
     }
@@ -47,7 +57,7 @@ async function searchRealTimeProducts(query: string): Promise<any[]> {
     const response = await callRapidApi(url);
 
     if (!response || !response.ok) {
-      console.error('Real-Time Product Search error:', response?.status);
+      console.error("Real-Time Product Search error:", response?.status);
       return [];
     }
 
@@ -56,29 +66,33 @@ async function searchRealTimeProducts(query: string): Promise<any[]> {
     if (!Array.isArray(items)) return [];
 
     return items.map((item: any, index: number) => {
-      const offerPriceStr = item.offer?.price ?? item.price ?? '';
-      const typicalHighStr = item.typical_price_range?.[1] ?? item.typical_price_range?.[0] ?? '';
-      const price = parseFloat(String(offerPriceStr).replace(/[^0-9.]/g, '')) || 0;
-      const originalPrice = parseFloat(String(typicalHighStr).replace(/[^0-9.]/g, '')) || price;
+      const offerPriceStr = item.offer?.price ?? item.price ?? "";
+      const typicalHighStr =
+        item.typical_price_range?.[1] ?? item.typical_price_range?.[0] ?? "";
+      const price =
+        parseFloat(String(offerPriceStr).replace(/[^0-9.]/g, "")) || 0;
+      const originalPrice =
+        parseFloat(String(typicalHighStr).replace(/[^0-9.]/g, "")) || price;
 
       return {
         id: item.product_id || `rtp-${index}`,
-        name: item.product_title || item.title || 'Unknown Product',
+        name: item.product_title || item.title || "Unknown Product",
         price,
         originalPrice,
         discount: item.offer?.discount || 0,
         rating: parseFloat(item.product_rating) || parseFloat(item.rating) || 0,
         reviews: parseInt(item.product_num_reviews) || 0,
-        store: item.offer?.store_name || item.product_source || 'Online Store',
-        category: item.product_category || 'General',
-        description: item.product_description || item.description || '',
-        image: item.product_photos?.[0] || item.product_photo || item.image || '',
-        link: item.offer?.offer_page_url || item.product_page_url || '#',
-        source: 'Google Shopping',
+        store: item.offer?.store_name || item.product_source || "Online Store",
+        category: item.product_category || "General",
+        description: item.product_description || item.description || "",
+        image:
+          item.product_photos?.[0] || item.product_photo || item.image || "",
+        link: item.offer?.offer_page_url || item.product_page_url || "#",
+        source: "Google Shopping",
       };
     });
   } catch (e) {
-    console.error('Real-Time Product Search failed:', e);
+    console.error("Real-Time Product Search failed:", e);
     return [];
   }
 }
@@ -86,112 +100,139 @@ async function searchRealTimeProducts(query: string): Promise<any[]> {
 // Deduplicate products by store+name similarity
 function deduplicateProducts(products: any[]): any[] {
   const seen = new Map<string, any>();
-  
+
   for (const product of products) {
     const key = `${product.store.toLowerCase()}-${product.name.toLowerCase().substring(0, 50)}`;
     const existing = seen.get(key);
-    
-    if (!existing || (product.price > 0 && product.price < (existing.price || Infinity))) {
+
+    if (
+      !existing ||
+      (product.price > 0 && product.price < (existing.price || Infinity))
+    ) {
       seen.set(key, product);
     }
   }
-  
+
   return Array.from(seen.values());
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     // Auth
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
-        JSON.stringify({ error: 'Authentication required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: "Authentication required" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } },
     );
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: authError } = await supabase.auth.getClaims(token);
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: authError } =
+      await supabase.auth.getClaims(token);
     if (authError || !claimsData?.claims) {
       return new Response(
-        JSON.stringify({ error: 'Invalid or expired token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: "Invalid or expired token" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     const { query } = await req.json();
-    if (!query || typeof query !== 'string') {
+    if (!query || typeof query !== "string") {
       return new Response(
-        JSON.stringify({ error: 'Invalid query parameter' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: "Invalid query parameter" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     const sanitizedQuery = query.trim().slice(0, 200);
     if (sanitizedQuery.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'Query cannot be empty' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: "Query cannot be empty" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const rapidApiKey = Deno.env.get('RAPIDAPI_KEY') || Deno.env.get('RAPIDAPI_KEY_2');
+    const rapidApiKey =
+      Deno.env.get("RAPIDAPI_KEY") || Deno.env.get("RAPIDAPI_KEY_2");
     if (!rapidApiKey) {
-      return new Response(
-        JSON.stringify({ error: 'API key not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: "API key not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const t0 = Date.now();
-    console.log('Search for:', sanitizedQuery, 'by user:', claimsData.claims.sub);
+    console.log(
+      "Search for:",
+      sanitizedQuery,
+      "by user:",
+      claimsData.claims.sub,
+    );
 
     // Single working source: search-v2 (the legacy /search endpoint now returns 404).
     const realTimeResults = await searchRealTimeProducts(sanitizedQuery);
 
-    console.log(`Results in ${Date.now() - t0}ms: RealTime=${realTimeResults.length}`);
+    console.log(
+      `Results in ${Date.now() - t0}ms: RealTime=${realTimeResults.length}`,
+    );
 
     const products = deduplicateProducts(realTimeResults);
 
     // Filter out zero-price items and sort by relevance
     const validProducts = products
-      .filter(p => p.price > 0)
+      .filter((p) => p.price > 0)
       .sort((a, b) => {
         // Prioritize products with images and ratings
-        const scoreA = (a.image ? 2 : 0) + (a.rating > 0 ? 1 : 0) + (a.discount > 0 ? 1 : 0);
-        const scoreB = (b.image ? 2 : 0) + (b.rating > 0 ? 1 : 0) + (b.discount > 0 ? 1 : 0);
+        const scoreA =
+          (a.image ? 2 : 0) + (a.rating > 0 ? 1 : 0) + (a.discount > 0 ? 1 : 0);
+        const scoreB =
+          (b.image ? 2 : 0) + (b.rating > 0 ? 1 : 0) + (b.discount > 0 ? 1 : 0);
         return scoreB - scoreA;
       });
 
-    console.log('Final products after dedup:', validProducts.length);
+    console.log("Final products after dedup:", validProducts.length);
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         products: validProducts,
         sources: {
           realTime: realTimeResults.length,
           googleShopping: 0,
           offers: 0,
-        }
+        },
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
-
   } catch (error) {
-    console.error('Error in search-products function:', error);
+    console.error("Error in search-products function:", error);
     return new Response(
-      JSON.stringify({ error: 'An error occurred while processing your request' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({
+        error: "An error occurred while processing your request",
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 });

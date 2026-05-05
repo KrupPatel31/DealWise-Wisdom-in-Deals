@@ -2,7 +2,17 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Eye, ShoppingCart, TrendingUp, Camera, ScanBarcode, Coins, Tag, Zap } from "lucide-react";
+import {
+  Search,
+  Eye,
+  ShoppingCart,
+  TrendingUp,
+  Camera,
+  ScanBarcode,
+  Coins,
+  Tag,
+  Zap,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -12,49 +22,57 @@ const steps = [
     icon: Search,
     title: "SEARCH",
     description: "Search by product name or paste a URL from any retailer",
-    details: "Our AI-powered engine matches products across thousands of online stores instantly",
+    details:
+      "Our AI-powered engine matches products across thousands of online stores instantly",
   },
   {
     number: "02",
     icon: Camera,
     title: "VISUAL SEARCH",
     description: "Upload a product image and let AI find it for you",
-    details: "Snap a photo or drag-and-drop an image — our Gemini-powered engine identifies products and finds the best prices",
+    details:
+      "Snap a photo or drag-and-drop an image — our Gemini-powered engine identifies products and finds the best prices",
   },
   {
     number: "03",
     icon: ScanBarcode,
     title: "SCAN BARCODE",
     description: "Use your camera to scan any product barcode instantly",
-    details: "Point your phone at a barcode and get real-time price comparisons from multiple stores",
+    details:
+      "Point your phone at a barcode and get real-time price comparisons from multiple stores",
   },
   {
     number: "04",
     icon: Eye,
     title: "COMPARE",
     description: "View real-time prices from multiple platforms side by side",
-    details: "See current prices, shipping costs, taxes, and total costs with historical price charts",
+    details:
+      "See current prices, shipping costs, taxes, and total costs with historical price charts",
   },
   {
     number: "05",
     icon: Tag,
     title: "APPLY COUPONS",
     description: "Browse verified coupon codes and apply them at checkout",
-    details: "Access hundreds of verified discount codes across categories — automatically applied to maximize savings",
+    details:
+      "Access hundreds of verified discount codes across categories — automatically applied to maximize savings",
   },
   {
     number: "06",
     icon: Coins,
     title: "EARN DEAL COINS",
     description: "Earn rewards on every purchase, daily login, and referral",
-    details: "Collect Deal Coins (1 coin = ₹1) through purchases (2% cashback), daily logins, referrals, and product reviews",
+    details:
+      "Collect Deal Coins (1 coin = ₹1) through purchases (2% cashback), daily logins, referrals, and product reviews",
   },
   {
     number: "07",
     icon: ShoppingCart,
     title: "SAVE & BUY",
-    description: "Redeem coins, checkout at the best price, and track your orders",
-    details: "Use Deal Coins as discounts, get order confirmation with downloadable invoices, and track delivery status",
+    description:
+      "Redeem coins, checkout at the best price, and track your orders",
+    details:
+      "Use Deal Coins as discounts, get order confirmation with downloadable invoices, and track delivery status",
   },
 ];
 
@@ -87,9 +105,16 @@ const HowItWorks = () => {
         {/* Highlight Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 sm:mb-16 lg:mb-20">
           {highlights.map((item, i) => (
-            <Card key={i} className="p-4 sm:p-6 bg-deal border-deal-border text-center">
-              <p className="text-2xl sm:text-3xl font-bold hero-gradient">{item.value}</p>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">{item.label}</p>
+            <Card
+              key={i}
+              className="p-4 sm:p-6 bg-deal border-deal-border text-center"
+            >
+              <p className="text-2xl sm:text-3xl font-bold hero-gradient">
+                {item.value}
+              </p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                {item.label}
+              </p>
             </Card>
           ))}
         </div>
@@ -119,7 +144,9 @@ const HowItWorks = () => {
                   <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-2 sm:mb-3">
                     {step.description}
                   </p>
-                  <p className="text-xs sm:text-sm text-accent">{step.details}</p>
+                  <p className="text-xs sm:text-sm text-accent">
+                    {step.details}
+                  </p>
                 </div>
               </div>
             </Card>
@@ -132,7 +159,8 @@ const HowItWorks = () => {
             <span className="text-primary">Try it now — it's free!</span>
           </h2>
           <p className="text-base sm:text-lg lg:text-xl text-muted-foreground mb-6 sm:mb-8">
-            Start saving money today with intelligent price comparison, visual search, and Deal Coins rewards
+            Start saving money today with intelligent price comparison, visual
+            search, and Deal Coins rewards
           </p>
           <div className="flex justify-center gap-4">
             <Link to="/search" className="w-full sm:w-auto">

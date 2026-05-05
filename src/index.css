@@ -46,15 +46,15 @@
     /* Custom gradient colors */
     --gradient-start: 220 27% 8%;
     --gradient-end: 235 50% 15%;
-    
+
     /* Deal card colors */
     --deal-bg: 220 27% 10%;
     --deal-border: 220 27% 18%;
-    
+
     /* Price colors */
     --price-current: 84 81% 58%;
     --price-original: 215 20.2% 65.1%;
-    
+
     /* Discount badge */
     --discount-bg: 213 89% 60%;
     --discount-text: 210 40% 98%;
@@ -91,31 +91,39 @@
 
   body {
     @apply bg-background text-foreground antialiased font-sans;
-    background: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)));
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gradient-start)),
+      hsl(var(--gradient-end))
+    );
     min-height: 100vh;
   }
-  
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background: hsl(var(--background));
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
     border-radius: 4px;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--accent));
   }
 
   /* Hero text gradient */
   .hero-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary)),
+      hsl(var(--accent))
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -146,7 +154,11 @@
 
   /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary)),
+      hsl(var(--accent))
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -159,16 +171,27 @@
     --hue: 245;
     --bg:
       radial-gradient(
-        120% 120% at 126% 126%,
-        hsl(var(--hue) calc(var(--active) * 97%) 98% / calc(var(--active) * 0.9)) 40%,
-        transparent 50%
-      ) calc(100px - (var(--active) * 100px)) 0 / 100% 100% no-repeat, 
+          120% 120% at 126% 126%,
+          hsl(
+              var(--hue) calc(var(--active) * 97%) 98% /
+                calc(var(--active) * 0.9)
+            )
+            40%,
+          transparent 50%
+        )
+        calc(100px - (var(--active) * 100px)) 0 / 100% 100% no-repeat,
       radial-gradient(
-        120% 120% at 120% 120%,
-        hsl(var(--hue) calc(var(--active) * 97%) 70% / calc(var(--active) * 1)) 30%,
-        transparent 70%
-      ) calc(100px - (var(--active) * 100px)) 0 / 100% 100% no-repeat,
-      hsl(var(--hue) calc(var(--active) * 100%) calc(12% - (var(--active) * 8%)));
+          120% 120% at 120% 120%,
+          hsl(
+              var(--hue) calc(var(--active) * 97%) 70% / calc(var(--active) * 1)
+            )
+            30%,
+          transparent 70%
+        )
+        calc(100px - (var(--active) * 100px)) 0 / 100% 100% no-repeat,
+      hsl(
+        var(--hue) calc(var(--active) * 100%) calc(12% - (var(--active) * 8%))
+      );
     background: var(--bg);
     font-size: 1rem;
     font-weight: 500;
@@ -182,10 +205,20 @@
     border-radius: 2rem;
     position: relative;
     box-shadow:
-      0 0 calc(var(--active) * 6em) calc(var(--active) * 3em) hsl(var(--hue) 97% 61% / 0.5),
-      0 0.05em 0 0 hsl(var(--hue) calc(var(--active) * 97%) calc((var(--active) * 50%) + 30%)) inset,
-      0 -0.05em 0 0 hsl(var(--hue) calc(var(--active) * 97%) calc(var(--active) * 10%)) inset;
-    transition: box-shadow 0.25s, scale 0.25s, background 0.25s;
+      0 0 calc(var(--active) * 6em) calc(var(--active) * 3em)
+        hsl(var(--hue) 97% 61% / 0.5),
+      0 0.05em 0 0
+        hsl(
+          var(--hue) calc(var(--active) * 97%) calc((var(--active) * 50%) + 30%)
+        )
+        inset,
+      0 -0.05em 0 0
+        hsl(var(--hue) calc(var(--active) * 97%) calc(var(--active) * 10%))
+        inset;
+    transition:
+      box-shadow 0.25s,
+      scale 0.25s,
+      background 0.25s;
     scale: calc(1 + (var(--active) * 0.1));
     overflow: hidden;
   }
@@ -212,13 +245,16 @@
     opacity: var(--alpha);
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) rotate(10deg) rotate(0deg) translateY(calc(var(--distance) * 1px));
-    animation: galaxy-orbit calc(var(--duration) * 1s) calc(var(--delay) * -1s) infinite linear;
+    transform: translate(-50%, -50%) rotate(10deg) rotate(0deg)
+      translateY(calc(var(--distance) * 1px));
+    animation: galaxy-orbit calc(var(--duration) * 1s) calc(var(--delay) * -1s)
+      infinite linear;
   }
 
   @keyframes galaxy-orbit {
     to {
-      transform: translate(-50%, -50%) rotate(10deg) rotate(360deg) translateY(calc(var(--distance) * 1px));
+      transform: translate(-50%, -50%) rotate(10deg) rotate(360deg)
+        translateY(calc(var(--distance) * 1px));
     }
   }
 
@@ -242,7 +278,8 @@
     top: 50%;
     left: 50%;
     border-radius: 50%;
-    transform: translate(-28%, -40%) rotateX(-24deg) rotateY(-30deg) rotateX(90deg);
+    transform: translate(-28%, -40%) rotateX(-24deg) rotateY(-30deg)
+      rotateX(90deg);
     transform-style: preserve-3d;
   }
 
@@ -296,17 +333,19 @@
     min-width: 233%;
     height: 233%;
     background:
-      radial-gradient(farthest-side, #00DA3C 90%, #0000) top,
-      radial-gradient(farthest-side, #00CBE7 90%, #0000) left,
-      radial-gradient(farthest-side, #FD8603 90%, #0000) bottom,
-      radial-gradient(farthest-side, #F4F328 90%, #0000) right;
+      radial-gradient(farthest-side, #00da3c 90%, #0000) top,
+      radial-gradient(farthest-side, #00cbe7 90%, #0000) left,
+      radial-gradient(farthest-side, #fd8603 90%, #0000) bottom,
+      radial-gradient(farthest-side, #f4f328 90%, #0000) right;
     background-size: 43% 43%;
     background-repeat: no-repeat;
     animation: inherit;
     animation-direction: reverse;
   }
   @keyframes l17 {
-    100% { transform: rotate(360deg); }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   /* 3D Spinning Coin — based on codepen.io/jasonhibbs/pen/DePMBb */
@@ -316,7 +355,12 @@
     position: relative;
     margin: auto;
     perspective: 1000px;
-    -webkit-box-reflect: below 0 linear-gradient(hsla(0,0%,100%,0), hsla(0,0%,100%,0) 45%, hsla(0,0%,100%,0.2));
+    -webkit-box-reflect: below 0
+      linear-gradient(
+        hsla(0, 0%, 100%, 0),
+        hsla(0, 0%, 100%, 0) 45%,
+        hsla(0, 0%, 100%, 0.2)
+      );
     filter: saturate(1.45) hue-rotate(2deg);
   }
 
@@ -341,12 +385,12 @@
 
   .deal-coin-front {
     transform: translateZ(8px);
-    background-image: url('/images/coin-front.jpg');
+    background-image: url("/images/coin-front.jpg");
   }
 
   .deal-coin-back {
     transform: translateZ(-8px) rotateY(180deg);
-    background-image: url('/images/coin-back.jpg');
+    background-image: url("/images/coin-back.jpg");
   }
 
   .deal-coin-side {
@@ -365,7 +409,7 @@
 
   .deal-coin-spoke::before,
   .deal-coin-spoke::after {
-    content: '';
+    content: "";
     display: block;
     height: 15.68274245px;
     width: 16px;
@@ -382,29 +426,70 @@
     background-size: 100% 3.48505388px;
   }
 
-  .deal-coin-spoke::before { transform-origin: top center; }
-  .deal-coin-spoke::after  { bottom: 0; transform-origin: center bottom; }
+  .deal-coin-spoke::before {
+    transform-origin: top center;
+  }
+  .deal-coin-spoke::after {
+    bottom: 0;
+    transform-origin: center bottom;
+  }
 
-  .deal-coin-spoke:nth-child(1)  { transform: rotateY(90deg) rotateX(11.25deg); }
-  .deal-coin-spoke:nth-child(2)  { transform: rotateY(90deg) rotateX(22.5deg); }
-  .deal-coin-spoke:nth-child(3)  { transform: rotateY(90deg) rotateX(33.75deg); }
-  .deal-coin-spoke:nth-child(4)  { transform: rotateY(90deg) rotateX(45deg); }
-  .deal-coin-spoke:nth-child(5)  { transform: rotateY(90deg) rotateX(56.25deg); }
-  .deal-coin-spoke:nth-child(6)  { transform: rotateY(90deg) rotateX(67.5deg); }
-  .deal-coin-spoke:nth-child(7)  { transform: rotateY(90deg) rotateX(78.75deg); }
-  .deal-coin-spoke:nth-child(8)  { transform: rotateY(90deg) rotateX(90deg); }
-  .deal-coin-spoke:nth-child(9)  { transform: rotateY(90deg) rotateX(101.25deg); }
-  .deal-coin-spoke:nth-child(10) { transform: rotateY(90deg) rotateX(112.5deg); }
-  .deal-coin-spoke:nth-child(11) { transform: rotateY(90deg) rotateX(123.75deg); }
-  .deal-coin-spoke:nth-child(12) { transform: rotateY(90deg) rotateX(135deg); }
-  .deal-coin-spoke:nth-child(13) { transform: rotateY(90deg) rotateX(146.25deg); }
-  .deal-coin-spoke:nth-child(14) { transform: rotateY(90deg) rotateX(157.5deg); }
-  .deal-coin-spoke:nth-child(15) { transform: rotateY(90deg) rotateX(168.75deg); }
-  .deal-coin-spoke:nth-child(16) { transform: rotateY(90deg) rotateX(180deg); }
+  .deal-coin-spoke:nth-child(1) {
+    transform: rotateY(90deg) rotateX(11.25deg);
+  }
+  .deal-coin-spoke:nth-child(2) {
+    transform: rotateY(90deg) rotateX(22.5deg);
+  }
+  .deal-coin-spoke:nth-child(3) {
+    transform: rotateY(90deg) rotateX(33.75deg);
+  }
+  .deal-coin-spoke:nth-child(4) {
+    transform: rotateY(90deg) rotateX(45deg);
+  }
+  .deal-coin-spoke:nth-child(5) {
+    transform: rotateY(90deg) rotateX(56.25deg);
+  }
+  .deal-coin-spoke:nth-child(6) {
+    transform: rotateY(90deg) rotateX(67.5deg);
+  }
+  .deal-coin-spoke:nth-child(7) {
+    transform: rotateY(90deg) rotateX(78.75deg);
+  }
+  .deal-coin-spoke:nth-child(8) {
+    transform: rotateY(90deg) rotateX(90deg);
+  }
+  .deal-coin-spoke:nth-child(9) {
+    transform: rotateY(90deg) rotateX(101.25deg);
+  }
+  .deal-coin-spoke:nth-child(10) {
+    transform: rotateY(90deg) rotateX(112.5deg);
+  }
+  .deal-coin-spoke:nth-child(11) {
+    transform: rotateY(90deg) rotateX(123.75deg);
+  }
+  .deal-coin-spoke:nth-child(12) {
+    transform: rotateY(90deg) rotateX(135deg);
+  }
+  .deal-coin-spoke:nth-child(13) {
+    transform: rotateY(90deg) rotateX(146.25deg);
+  }
+  .deal-coin-spoke:nth-child(14) {
+    transform: rotateY(90deg) rotateX(157.5deg);
+  }
+  .deal-coin-spoke:nth-child(15) {
+    transform: rotateY(90deg) rotateX(168.75deg);
+  }
+  .deal-coin-spoke:nth-child(16) {
+    transform: rotateY(90deg) rotateX(180deg);
+  }
 
   @keyframes deal-coin-spin {
-    from { transform: rotateY(0deg); }
-    to { transform: rotateY(360deg); }
+    from {
+      transform: rotateY(0deg);
+    }
+    to {
+      transform: rotateY(360deg);
+    }
   }
 }
 

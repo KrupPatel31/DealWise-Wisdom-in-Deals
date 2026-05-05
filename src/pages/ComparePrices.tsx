@@ -7,12 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { PriceHistoryChart } from "@/components/PriceHistoryChart";
-import { 
-  ArrowLeft, 
-  Star, 
-  ExternalLink, 
-  ShoppingCart, 
-  Truck, 
+import {
+  ArrowLeft,
+  Star,
+  ExternalLink,
+  ShoppingCart,
+  Truck,
   CreditCard,
   Percent,
   Tag,
@@ -23,7 +23,7 @@ import {
   Banknote,
   Plus,
   Minus,
-  TrendingDown
+  TrendingDown,
 } from "lucide-react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -64,20 +64,20 @@ interface CardOffer {
 
 // Store URL mappings for "Visit Store" functionality
 const storeUrls: Record<string, string> = {
-  "Amazon": "https://www.amazon.in",
+  Amazon: "https://www.amazon.in",
   "Amazon India": "https://www.amazon.in",
-  "Flipkart": "https://www.flipkart.com",
-  "Croma": "https://www.croma.com",
+  Flipkart: "https://www.flipkart.com",
+  Croma: "https://www.croma.com",
   "Reliance Digital": "https://www.reliancedigital.in",
   "Tata CLiQ": "https://www.tatacliq.com",
-  "JioMart": "https://www.jiomart.com",
+  JioMart: "https://www.jiomart.com",
   "Apple Store": "https://www.apple.com/in/store",
   "Samsung Store": "https://www.samsung.com/in",
   "Xiaomi Store": "https://www.mi.com/in",
-  "Myntra": "https://www.myntra.com",
-  "Ajio": "https://www.ajio.com",
-  "Nike": "https://www.nike.com/in",
-  "Dyson": "https://www.dyson.in",
+  Myntra: "https://www.myntra.com",
+  Ajio: "https://www.ajio.com",
+  Nike: "https://www.nike.com/in",
+  Dyson: "https://www.dyson.in",
   "Vijay Sales": "https://www.vijaysales.com",
 };
 
@@ -86,53 +86,149 @@ const getStoreUrl = (storeName: string, productName: string): string => {
   const baseUrl = storeUrls[storeName];
   if (!baseUrl) {
     // For unknown stores, try to create a generic search URL
-    const cleanStoreName = storeName.toLowerCase().replace(/\s+/g, '');
-    return `https://www.google.com/search?q=${encodeURIComponent(productName + ' ' + storeName)}`;
+    const cleanStoreName = storeName.toLowerCase().replace(/\s+/g, "");
+    return `https://www.google.com/search?q=${encodeURIComponent(productName + " " + storeName)}`;
   }
-  
+
   // Add search query parameter based on store
   const searchQuery = encodeURIComponent(productName);
   if (storeName.includes("Amazon")) return `${baseUrl}/s?k=${searchQuery}`;
   if (storeName === "Flipkart") return `${baseUrl}/search?q=${searchQuery}`;
   if (storeName === "Croma") return `${baseUrl}/searchB?q=${searchQuery}`;
-  if (storeName === "Reliance Digital") return `${baseUrl}/search?q=${searchQuery}`;
-  if (storeName === "Tata CLiQ") return `${baseUrl}/search/?searchCategory=all&text=${searchQuery}`;
+  if (storeName === "Reliance Digital")
+    return `${baseUrl}/search?q=${searchQuery}`;
+  if (storeName === "Tata CLiQ")
+    return `${baseUrl}/search/?searchCategory=all&text=${searchQuery}`;
   if (storeName === "JioMart") return `${baseUrl}/search/${searchQuery}`;
-  if (storeName === "Myntra") return `${baseUrl}/${searchQuery.replace(/%20/g, '-')}`;
+  if (storeName === "Myntra")
+    return `${baseUrl}/${searchQuery.replace(/%20/g, "-")}`;
   if (storeName === "Ajio") return `${baseUrl}/search/?text=${searchQuery}`;
   if (storeName === "Vijay Sales") return `${baseUrl}/search/?q=${searchQuery}`;
-  
+
   // For brand stores, link to their main page
   return baseUrl;
 };
 
 // Simulated store prices for comparison
-const generateStorePrices = (basePrice: number, productName: string, originalStore: string): StorePrice[] => {
+const generateStorePrices = (
+  basePrice: number,
+  productName: string,
+  originalStore: string,
+): StorePrice[] => {
   // Determine product category based on name/store for relevant store filtering
   const productNameLower = productName.toLowerCase();
   const originalStoreLower = originalStore?.trim().toLowerCase() || "";
-  
+
   // Store configurations with category relevance
   const allStores = [
-    { name: "Amazon", variation: 0, deliveryDays: "1-2 days", baseRating: 4.5, categories: ["all"] },
-    { name: "Flipkart", variation: -5, deliveryDays: "2-3 days", baseRating: 4.3, categories: ["all"] },
-    { name: "Croma", variation: 12, deliveryDays: "2-3 days", baseRating: 4.4, categories: ["electronics", "appliances"] },
-    { name: "Reliance Digital", variation: 5, deliveryDays: "3-5 days", baseRating: 4.1, categories: ["electronics", "appliances"] },
-    { name: "Tata CLiQ", variation: -2, deliveryDays: "2-4 days", baseRating: 4.2, categories: ["all"] },
-    { name: "JioMart", variation: -8, deliveryDays: "1-3 days", baseRating: 4.0, categories: ["all"] },
-    { name: "Apple Store", variation: 2, deliveryDays: "1-2 days", baseRating: 4.9, categories: ["apple"] },
-    { name: "Samsung Store", variation: 3, deliveryDays: "2-3 days", baseRating: 4.8, categories: ["samsung"] },
-    { name: "Xiaomi Store", variation: -6, deliveryDays: "2-3 days", baseRating: 4.6, categories: ["xiaomi", "redmi", "mi"] },
-    { name: "Myntra", variation: 8, deliveryDays: "3-4 days", baseRating: 4.2, categories: ["fashion", "clothing"] },
-    { name: "Ajio", variation: -3, deliveryDays: "4-5 days", baseRating: 4.0, categories: ["fashion", "clothing"] },
-    { name: "Nike", variation: 5, deliveryDays: "3-5 days", baseRating: 4.7, categories: ["nike", "shoes", "sportswear"] },
-    { name: "Dyson", variation: 0, deliveryDays: "2-4 days", baseRating: 4.8, categories: ["dyson", "appliances"] },
-    { name: "Vijay Sales", variation: -4, deliveryDays: "2-3 days", baseRating: 4.3, categories: ["electronics", "appliances"] },
+    {
+      name: "Amazon",
+      variation: 0,
+      deliveryDays: "1-2 days",
+      baseRating: 4.5,
+      categories: ["all"],
+    },
+    {
+      name: "Flipkart",
+      variation: -5,
+      deliveryDays: "2-3 days",
+      baseRating: 4.3,
+      categories: ["all"],
+    },
+    {
+      name: "Croma",
+      variation: 12,
+      deliveryDays: "2-3 days",
+      baseRating: 4.4,
+      categories: ["electronics", "appliances"],
+    },
+    {
+      name: "Reliance Digital",
+      variation: 5,
+      deliveryDays: "3-5 days",
+      baseRating: 4.1,
+      categories: ["electronics", "appliances"],
+    },
+    {
+      name: "Tata CLiQ",
+      variation: -2,
+      deliveryDays: "2-4 days",
+      baseRating: 4.2,
+      categories: ["all"],
+    },
+    {
+      name: "JioMart",
+      variation: -8,
+      deliveryDays: "1-3 days",
+      baseRating: 4.0,
+      categories: ["all"],
+    },
+    {
+      name: "Apple Store",
+      variation: 2,
+      deliveryDays: "1-2 days",
+      baseRating: 4.9,
+      categories: ["apple"],
+    },
+    {
+      name: "Samsung Store",
+      variation: 3,
+      deliveryDays: "2-3 days",
+      baseRating: 4.8,
+      categories: ["samsung"],
+    },
+    {
+      name: "Xiaomi Store",
+      variation: -6,
+      deliveryDays: "2-3 days",
+      baseRating: 4.6,
+      categories: ["xiaomi", "redmi", "mi"],
+    },
+    {
+      name: "Myntra",
+      variation: 8,
+      deliveryDays: "3-4 days",
+      baseRating: 4.2,
+      categories: ["fashion", "clothing"],
+    },
+    {
+      name: "Ajio",
+      variation: -3,
+      deliveryDays: "4-5 days",
+      baseRating: 4.0,
+      categories: ["fashion", "clothing"],
+    },
+    {
+      name: "Nike",
+      variation: 5,
+      deliveryDays: "3-5 days",
+      baseRating: 4.7,
+      categories: ["nike", "shoes", "sportswear"],
+    },
+    {
+      name: "Dyson",
+      variation: 0,
+      deliveryDays: "2-4 days",
+      baseRating: 4.8,
+      categories: ["dyson", "appliances"],
+    },
+    {
+      name: "Vijay Sales",
+      variation: -4,
+      deliveryDays: "2-3 days",
+      baseRating: 4.3,
+      categories: ["electronics", "appliances"],
+    },
   ];
 
   // Detect product category
-  const isElectronics = /iphone|samsung|galaxy|phone|laptop|macbook|tv|headphone|watch|tablet|ipad/i.test(productName);
-  const isFashion = /shoe|sneaker|clothing|shirt|dress|jacket|jeans/i.test(productName);
+  const isElectronics =
+    /iphone|samsung|galaxy|phone|laptop|macbook|tv|headphone|watch|tablet|ipad/i.test(
+      productName,
+    );
+  const isFashion = /shoe|sneaker|clothing|shirt|dress|jacket|jeans/i.test(
+    productName,
+  );
   const isApple = /iphone|ipad|macbook|apple|airpod/i.test(productName);
   const isSamsung = /samsung|galaxy/i.test(productName);
   const isXiaomi = /xiaomi|redmi|poco|mi /i.test(productName);
@@ -140,12 +236,16 @@ const generateStorePrices = (basePrice: number, productName: string, originalSto
   const isDyson = /dyson/i.test(productName);
 
   // Filter stores based on product category
-  let relevantStores = allStores.filter(store => {
+  let relevantStores = allStores.filter((store) => {
     const storeLower = store.name.toLowerCase();
     if (store.categories.includes("all")) return true;
     if (isApple && store.categories.includes("apple")) return true;
     if (isSamsung && store.categories.includes("samsung")) return true;
-    if (isXiaomi && store.categories.some(c => ["xiaomi", "redmi", "mi"].includes(c))) return true;
+    if (
+      isXiaomi &&
+      store.categories.some((c) => ["xiaomi", "redmi", "mi"].includes(c))
+    )
+      return true;
     if (isNike && store.categories.includes("nike")) return true;
     if (isDyson && store.categories.includes("dyson")) return true;
     if (isElectronics && store.categories.includes("electronics")) return true;
@@ -154,25 +254,29 @@ const generateStorePrices = (basePrice: number, productName: string, originalSto
   });
 
   // Ensure original store is included
-  const storeExists = relevantStores.some(s => s.name.toLowerCase() === originalStoreLower);
+  const storeExists = relevantStores.some(
+    (s) => s.name.toLowerCase() === originalStoreLower,
+  );
   if (originalStore && !storeExists) {
     relevantStores.push({
       name: originalStore,
       variation: 0,
       deliveryDays: "1-2 days",
       baseRating: 4.7,
-      categories: ["all"]
+      categories: ["all"],
     });
   }
 
   // Generate prices for each store
-  let storePrices = relevantStores.map(store => {
+  let storePrices = relevantStores.map((store) => {
     const isOriginalStore = store.name.toLowerCase() === originalStoreLower;
     const priceVariation = basePrice * (store.variation / 100);
     const storePrice = Math.round(basePrice + priceVariation);
     const originalPrice = Math.round(storePrice * 1.25);
-    const discount = Math.round(((originalPrice - storePrice) / originalPrice) * 100);
-    
+    const discount = Math.round(
+      ((originalPrice - storePrice) / originalPrice) * 100,
+    );
+
     const offers: string[] = [];
     if (isOriginalStore) {
       offers.push("Official Store - Genuine Product");
@@ -182,7 +286,7 @@ const generateStorePrices = (basePrice: number, productName: string, originalSto
     if (Math.random() > 0.6) offers.push("Extra 5% off with Bank offers");
     if (Math.random() > 0.7) offers.push("Free extended warranty");
     if (discount > 20) offers.push("Limited time deal");
-    
+
     return {
       store: store.name,
       price: storePrice,
@@ -195,13 +299,13 @@ const generateStorePrices = (basePrice: number, productName: string, originalSto
       link: getStoreUrl(store.name, productName),
       offers: offers.length > 0 ? offers : ["Standard delivery"],
       isOriginalStore,
-      isLowestPrice: false
+      isLowestPrice: false,
     };
   });
 
   // Sort by price first to find lowest
   storePrices.sort((a, b) => a.price - b.price);
-  
+
   // Give best rating (5.0) to lowest price store
   if (storePrices.length > 0) {
     storePrices[0].rating = 5.0;
@@ -228,33 +332,87 @@ const generateEMIOptions = (price: number): EMIOption[] => {
     { months: 12, label: "12 Months" },
   ];
 
-  return banks.flatMap(bank => 
+  return banks.flatMap((bank) =>
     tenures.map((tenure, index) => {
-      const interestRate = index === 0 ? 0 : bank.interestRates[Math.min(index, 2)];
+      const interestRate =
+        index === 0 ? 0 : bank.interestRates[Math.min(index, 2)];
       const totalAmount = price * (1 + interestRate / 100);
       const monthlyEMI = Math.round(totalAmount / tenure.months);
-      
+
       return {
         bank: bank.name,
         tenure: tenure.label,
         monthlyEMI,
         interest: interestRate === 0 ? "No Cost EMI" : `${interestRate}% p.a.`,
-        processingFee: interestRate === 0 ? "₹0" : "₹199-499"
+        processingFee: interestRate === 0 ? "₹0" : "₹199-499",
       };
-    })
+    }),
   );
 };
 
 // Bank and card offers
 const cardOffers: CardOffer[] = [
-  { bank: "HDFC Bank", cardType: "Credit Card", discount: "10% Instant", maxDiscount: "₹1,500", minPurchase: "₹5,000", code: "HDFC10" },
-  { bank: "ICICI Bank", cardType: "Debit/Credit", discount: "5% Cashback", maxDiscount: "₹500", minPurchase: "₹3,000" },
-  { bank: "SBI Card", cardType: "Credit Card", discount: "₹750 Off", maxDiscount: "₹750", minPurchase: "₹7,500", code: "SBI750" },
-  { bank: "Axis Bank", cardType: "Credit Card", discount: "7.5% Off", maxDiscount: "₹1,000", minPurchase: "₹4,000", code: "AXIS7" },
-  { bank: "Kotak Bank", cardType: "Debit Card", discount: "5% Instant", maxDiscount: "₹300", minPurchase: "₹2,000" },
-  { bank: "RBL Bank", cardType: "Credit Card", discount: "10% Off", maxDiscount: "₹2,000", minPurchase: "₹10,000", code: "RBL10" },
-  { bank: "Yes Bank", cardType: "Credit Card", discount: "₹500 Off", maxDiscount: "₹500", minPurchase: "₹5,000", code: "YES500" },
-  { bank: "AMEX", cardType: "Credit Card", discount: "15% Off", maxDiscount: "₹3,000", minPurchase: "₹15,000" },
+  {
+    bank: "HDFC Bank",
+    cardType: "Credit Card",
+    discount: "10% Instant",
+    maxDiscount: "₹1,500",
+    minPurchase: "₹5,000",
+    code: "HDFC10",
+  },
+  {
+    bank: "ICICI Bank",
+    cardType: "Debit/Credit",
+    discount: "5% Cashback",
+    maxDiscount: "₹500",
+    minPurchase: "₹3,000",
+  },
+  {
+    bank: "SBI Card",
+    cardType: "Credit Card",
+    discount: "₹750 Off",
+    maxDiscount: "₹750",
+    minPurchase: "₹7,500",
+    code: "SBI750",
+  },
+  {
+    bank: "Axis Bank",
+    cardType: "Credit Card",
+    discount: "7.5% Off",
+    maxDiscount: "₹1,000",
+    minPurchase: "₹4,000",
+    code: "AXIS7",
+  },
+  {
+    bank: "Kotak Bank",
+    cardType: "Debit Card",
+    discount: "5% Instant",
+    maxDiscount: "₹300",
+    minPurchase: "₹2,000",
+  },
+  {
+    bank: "RBL Bank",
+    cardType: "Credit Card",
+    discount: "10% Off",
+    maxDiscount: "₹2,000",
+    minPurchase: "₹10,000",
+    code: "RBL10",
+  },
+  {
+    bank: "Yes Bank",
+    cardType: "Credit Card",
+    discount: "₹500 Off",
+    maxDiscount: "₹500",
+    minPurchase: "₹5,000",
+    code: "YES500",
+  },
+  {
+    bank: "AMEX",
+    cardType: "Credit Card",
+    discount: "15% Off",
+    maxDiscount: "₹3,000",
+    minPurchase: "₹15,000",
+  },
 ];
 
 const ComparePrices = () => {
@@ -262,18 +420,18 @@ const ComparePrices = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToCart, cartItems, updateQuantity } = useCart();
-  
+
   const productName = searchParams.get("name") || "Product";
   const productPrice = parseInt(searchParams.get("price") || "10000");
-  
+
   const getCartItemQuantity = (store: string): number => {
-    const itemId = `${productName}-${store}`.replace(/\s+/g, '-').toLowerCase();
+    const itemId = `${productName}-${store}`.replace(/\s+/g, "-").toLowerCase();
     const item = cartItems.find((i) => i.id === itemId);
     return item?.quantity || 0;
   };
   const productImage = searchParams.get("image") || "";
   const productStore = searchParams.get("store") || "";
-  
+
   const [storePrices, setStorePrices] = useState<StorePrice[]>([]);
   const [emiOptions, setEMIOptions] = useState<EMIOption[]>([]);
   const [selectedEMIBank, setSelectedEMIBank] = useState<string>("all");
@@ -283,22 +441,27 @@ const ComparePrices = () => {
     // Simulate API call to fetch prices from different stores
     setIsLoading(true);
     const timer = setTimeout(() => {
-      setStorePrices(generateStorePrices(productPrice, productName, productStore));
+      setStorePrices(
+        generateStorePrices(productPrice, productName, productStore),
+      );
       setEMIOptions(generateEMIOptions(productPrice));
       setIsLoading(false);
     }, 800);
-    
+
     return () => clearTimeout(timer);
   }, [productPrice, productName, productStore]);
 
   const lowestPrice = storePrices.length > 0 ? storePrices[0] : null;
-  const savings = lowestPrice ? lowestPrice.originalPrice - lowestPrice.price : 0;
+  const savings = lowestPrice
+    ? lowestPrice.originalPrice - lowestPrice.price
+    : 0;
 
-  const filteredEMI = selectedEMIBank === "all" 
-    ? emiOptions.slice(0, 12) 
-    : emiOptions.filter(emi => emi.bank === selectedEMIBank);
+  const filteredEMI =
+    selectedEMIBank === "all"
+      ? emiOptions.slice(0, 12)
+      : emiOptions.filter((emi) => emi.bank === selectedEMIBank);
 
-  const uniqueBanks = [...new Set(emiOptions.map(emi => emi.bank))];
+  const uniqueBanks = [...new Set(emiOptions.map((emi) => emi.bank))];
 
   const handleAddToCart = (storePrice: StorePrice) => {
     if (!user) {
@@ -308,15 +471,17 @@ const ComparePrices = () => {
     }
 
     addToCart({
-      id: `${productName}-${storePrice.store}`.replace(/\s+/g, '-').toLowerCase(),
+      id: `${productName}-${storePrice.store}`
+        .replace(/\s+/g, "-")
+        .toLowerCase(),
       name: productName,
       price: storePrice.price,
       originalPrice: storePrice.originalPrice,
       image: productImage,
       store: storePrice.store,
-      discount: storePrice.discount
+      discount: storePrice.discount,
     });
-    
+
     toast.success(`Added to cart from ${storePrice.store}`);
   };
 
@@ -326,12 +491,14 @@ const ComparePrices = () => {
       navigate("/sign-in");
       return;
     }
-    
+
     const currentQty = getCartItemQuantity(storePrice.store);
     if (currentQty === 0) {
       handleAddToCart(storePrice);
     } else {
-      const itemId = `${productName}-${storePrice.store}`.replace(/\s+/g, '-').toLowerCase();
+      const itemId = `${productName}-${storePrice.store}`
+        .replace(/\s+/g, "-")
+        .toLowerCase();
       updateQuantity(itemId, currentQty + 1);
     }
   };
@@ -339,7 +506,9 @@ const ComparePrices = () => {
   const handleDecrement = (storePrice: StorePrice) => {
     const currentQty = getCartItemQuantity(storePrice.store);
     if (currentQty > 0) {
-      const itemId = `${productName}-${storePrice.store}`.replace(/\s+/g, '-').toLowerCase();
+      const itemId = `${productName}-${storePrice.store}`
+        .replace(/\s+/g, "-")
+        .toLowerCase();
       updateQuantity(itemId, currentQty - 1);
     }
   };
@@ -351,7 +520,10 @@ const ComparePrices = () => {
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Back Button */}
         <div className="mb-6">
-          <Link to="/search" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground">
+          <Link
+            to="/search"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to Search
           </Link>
@@ -361,9 +533,9 @@ const ComparePrices = () => {
         <div className="flex flex-col md:flex-row gap-6 mb-8">
           {productImage && (
             <div className="w-full md:w-48 h-48 flex-shrink-0">
-              <img 
-                src={productImage} 
-                alt={productName} 
+              <img
+                src={productImage}
+                alt={productName}
                 className="w-full h-full object-cover rounded-lg"
               />
             </div>
@@ -381,7 +553,9 @@ const ComparePrices = () => {
                   />
                 ))}
               </div>
-              <span className="text-sm text-muted-foreground">4.2 (2,456 reviews)</span>
+              <span className="text-sm text-muted-foreground">
+                4.2 (2,456 reviews)
+              </span>
             </div>
             {lowestPrice && (
               <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
@@ -423,22 +597,24 @@ const ComparePrices = () => {
                 <CardContent className="space-y-4">
                   {storePrices.map((storePrice, index) => {
                     const quantity = getCartItemQuantity(storePrice.store);
-                    
+
                     return (
-                      <div 
+                      <div
                         key={storePrice.store}
                         className={`p-4 rounded-lg border ${
-                          storePrice.isLowestPrice 
-                            ? "border-green-500 bg-green-500/10 ring-2 ring-green-500/30" 
-                            : storePrice.isOriginalStore 
-                              ? "border-primary bg-primary/10 ring-2 ring-primary/20" 
+                          storePrice.isLowestPrice
+                            ? "border-green-500 bg-green-500/10 ring-2 ring-green-500/30"
+                            : storePrice.isOriginalStore
+                              ? "border-primary bg-primary/10 ring-2 ring-primary/20"
                               : "border-border bg-background/50"
                         }`}
                       >
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2 flex-wrap">
-                              <h3 className="font-semibold text-lg">{storePrice.store}</h3>
+                              <h3 className="font-semibold text-lg">
+                                {storePrice.store}
+                              </h3>
                               {storePrice.isLowestPrice && (
                                 <Badge className="bg-green-500 text-white text-xs">
                                   🏆 Lowest Price
@@ -451,7 +627,10 @@ const ComparePrices = () => {
                                 </Badge>
                               )}
                               {!storePrice.inStock && (
-                                <Badge variant="destructive" className="text-xs">
+                                <Badge
+                                  variant="destructive"
+                                  className="text-xs"
+                                >
                                   Out of Stock
                                 </Badge>
                               )}
@@ -467,20 +646,30 @@ const ComparePrices = () => {
                                 {storePrice.deliveryDays}
                               </div>
                               <span>•</span>
-                              <span className={storePrice.shipping === "Free Shipping" ? "text-green-500" : ""}>
+                              <span
+                                className={
+                                  storePrice.shipping === "Free Shipping"
+                                    ? "text-green-500"
+                                    : ""
+                                }
+                              >
                                 {storePrice.shipping}
                               </span>
                             </div>
                             <div className="flex flex-wrap gap-2 mt-2">
                               {storePrice.offers.map((offer, i) => (
-                                <Badge key={i} variant="outline" className="text-xs">
+                                <Badge
+                                  key={i}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
                                   <Gift className="h-3 w-3 mr-1" />
                                   {offer}
                                 </Badge>
                               ))}
                             </div>
                           </div>
-                          
+
                           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                             <div className="text-left sm:text-right">
                               <div className="text-xl sm:text-2xl font-bold text-foreground">
@@ -493,10 +682,10 @@ const ComparePrices = () => {
                                 {storePrice.discount}% OFF
                               </Badge>
                             </div>
-                            
+
                             <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
                               {quantity === 0 ? (
-                                <GalaxyButton 
+                                <GalaxyButton
                                   disabled={!storePrice.inStock}
                                   onClick={() => handleAddToCart(storePrice)}
                                   className="flex-1 sm:flex-none text-xs sm:text-sm"
@@ -506,8 +695,8 @@ const ComparePrices = () => {
                                 </GalaxyButton>
                               ) : (
                                 <div className="flex items-center gap-1 bg-gradient-to-r from-green-500 to-emerald-600 rounded-md">
-                                  <Button 
-                                    size="sm" 
+                                  <Button
+                                    size="sm"
                                     variant="ghost"
                                     className="h-8 w-8 p-0 text-white hover:bg-white/20"
                                     onClick={() => handleDecrement(storePrice)}
@@ -517,8 +706,8 @@ const ComparePrices = () => {
                                   <span className="text-white font-bold min-w-[24px] text-center">
                                     {quantity}
                                   </span>
-                                  <Button 
-                                    size="sm" 
+                                  <Button
+                                    size="sm"
                                     variant="ghost"
                                     className="h-8 w-8 p-0 text-white hover:bg-white/20"
                                     onClick={() => handleIncrement(storePrice)}
@@ -527,11 +716,17 @@ const ComparePrices = () => {
                                   </Button>
                                 </div>
                               )}
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 variant="outline"
                                 className="text-xs flex-1 sm:flex-none"
-                                onClick={() => window.open(storePrice.link, '_blank', 'noopener,noreferrer')}
+                                onClick={() =>
+                                  window.open(
+                                    storePrice.link,
+                                    "_blank",
+                                    "noopener,noreferrer",
+                                  )
+                                }
                               >
                                 <ExternalLink className="h-3 w-3 mr-1" />
                                 Visit Store
@@ -546,9 +741,9 @@ const ComparePrices = () => {
               </Card>
 
               {/* Price History Chart */}
-              <PriceHistoryChart 
+              <PriceHistoryChart
                 productName={productName}
-                stores={storePrices.map(s => s.store)}
+                stores={storePrices.map((s) => s.store)}
                 currentPrice={lowestPrice?.price || productPrice}
               />
 
@@ -562,16 +757,20 @@ const ComparePrices = () => {
                   <div className="flex flex-wrap gap-2 mt-4">
                     <Button
                       size="sm"
-                      variant={selectedEMIBank === "all" ? "default" : "outline"}
+                      variant={
+                        selectedEMIBank === "all" ? "default" : "outline"
+                      }
                       onClick={() => setSelectedEMIBank("all")}
                     >
                       All Banks
                     </Button>
-                    {uniqueBanks.map(bank => (
+                    {uniqueBanks.map((bank) => (
                       <Button
                         key={bank}
                         size="sm"
-                        variant={selectedEMIBank === bank ? "default" : "outline"}
+                        variant={
+                          selectedEMIBank === bank ? "default" : "outline"
+                        }
                         onClick={() => setSelectedEMIBank(bank)}
                       >
                         {bank}
@@ -582,7 +781,7 @@ const ComparePrices = () => {
                 <CardContent>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filteredEMI.map((emi, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="p-4 rounded-lg border border-border bg-background/50 hover:border-primary/50 transition-colors"
                       >
@@ -630,13 +829,15 @@ const ComparePrices = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {cardOffers.map((offer, index) => (
-                    <div 
+                    <div
                       key={index}
                       className="p-3 rounded-lg border border-border bg-background/50"
                     >
                       <div className="flex items-start justify-between mb-1">
                         <div>
-                          <span className="font-medium text-sm">{offer.bank}</span>
+                          <span className="font-medium text-sm">
+                            {offer.bank}
+                          </span>
                           <Badge variant="outline" className="ml-2 text-xs">
                             {offer.cardType}
                           </Badge>
@@ -651,7 +852,10 @@ const ComparePrices = () => {
                         {offer.code && (
                           <div className="flex items-center gap-1 mt-1">
                             <Tag className="h-3 w-3" />
-                            Code: <span className="font-mono bg-muted px-1 rounded">{offer.code}</span>
+                            Code:{" "}
+                            <span className="font-mono bg-muted px-1 rounded">
+                              {offer.code}
+                            </span>
                           </div>
                         )}
                       </div>

@@ -45,29 +45,39 @@ The platform is built on a modern **Component-based Architecture** utilizing **R
 ## ✨ Key Features
 
 ### 💰 Gamified Savings: DealCoins Ecosystem
+
 Transform your shopping habits into a rewarding game. DealWise introduces a native loyalty currency, **DealCoins**, managed through a sophisticated custom hook (`useDealCoins.tsx`) and backend Edge Functions (`earn-coins`).
+
 - **Earn as You Shop:** Automatically accumulate coins based on a verified `COIN_EARN_RATE`.
 - **Engagement Rewards:** Gain coins for verifying deals, sharing insights, or completing checkouts.
 - **Visual Progress:** Track your balance in real-time with the `DealCoinsDisplay.tsx` component.
 
 ### 📈 Price Transparency: History & Comparison
+
 Never overpay again. DealWise provides the historical context necessary to judge the quality of a discount.
+
 - **Price History Charts:** Visualized via **Recharts**, the `PriceHistoryChart.tsx` component shows fluctuations over time, helping users predict the best time to buy.
 - **Side-by-Side Comparison:** Use the `ComparePrices.tsx` page to evaluate similar products and determine which offers the best "Wisdom-per-Dollar" ratio.
 
 ### 🔍 Advanced Discovery: Visual & Barcode Search
+
 Search the way you live. DealWise leverages specialized Supabase Edge Functions for modern search paradigms.
+
 - **Visual Search:** Upload or snap a photo to find products via the `visual-search` backend function.
 - **Barcode Scanner:** Use the `BarcodeScanner.tsx` interface and the `barcode-lookup` function to instantly pull product details while in physical stores, bridging the gap between offline and online commerce.
 
 ### 🛒 Seamless Commerce Engine
+
 A streamlined path from discovery to ownership.
+
 - **Cart Management:** A persistent, context-aware cart (`CartContext.tsx`) that handles complex interactions and inventory checks.
 - **Secure Checkout:** A multi-step checkout process (`Checkout.tsx`) integrated with bill generation logic (`billGenerator.ts`) to provide instant transaction transparency.
 - **Order Tracking:** Maintain a comprehensive history of all your "wise" purchases via the `Orders.tsx` dashboard.
 
 ### 🛡️ Secure User Environment
+
 Built with security and privacy as core pillars.
+
 - **Advanced Authentication:** Powered by Supabase Auth, supporting everything from standard sign-ups to password recovery (`ForgotPassword.tsx`).
 - **Profile Customization:** Comprehensive user profiles (`useProfile.tsx`) that store preferences and activity history.
 - **Validation Layers:** Robust client-side validation using **Zod** and specialized password validation utilities.
@@ -78,17 +88,17 @@ Built with security and privacy as core pillars.
 
 DealWise utilizes a cutting-edge tech stack selected for performance, type safety, and scalability.
 
-| Technology | Purpose | Why it was Chosen |
-| :--- | :--- | :--- |
-| **React** | Frontend Framework | Enables a reactive, component-based UI that handles complex state updates efficiently. |
-| **TypeScript** | Primary Language | Provides static typing to ensure code reliability and reduce runtime errors across the application. |
-| **Vite** | Build Tool | Offers significantly faster development starts and build times compared to traditional bundlers. |
-| **Supabase** | Backend-as-a-Service | Simplifies Auth, Database management, and Edge Function deployment with a unified API. |
-| **Tailwind CSS** | Styling | Allows for rapid UI development with a utility-first approach, ensuring a consistent design system. |
-| **Framer Motion** | Animations | Delivers high-performance, fluid page transitions and interactive UI elements. |
-| **Lucide React** | Iconography | Provides a lightweight, customizable, and consistent set of icons. |
-| **TanStack Query** | Data Fetching | Optimizes server-state management with built-in caching, synchronizing, and background updating. |
-| **Recharts** | Data Visualization | A composable charting library that perfectly handles the price history visualization. |
+| Technology         | Purpose              | Why it was Chosen                                                                                   |
+| :----------------- | :------------------- | :-------------------------------------------------------------------------------------------------- |
+| **React**          | Frontend Framework   | Enables a reactive, component-based UI that handles complex state updates efficiently.              |
+| **TypeScript**     | Primary Language     | Provides static typing to ensure code reliability and reduce runtime errors across the application. |
+| **Vite**           | Build Tool           | Offers significantly faster development starts and build times compared to traditional bundlers.    |
+| **Supabase**       | Backend-as-a-Service | Simplifies Auth, Database management, and Edge Function deployment with a unified API.              |
+| **Tailwind CSS**   | Styling              | Allows for rapid UI development with a utility-first approach, ensuring a consistent design system. |
+| **Framer Motion**  | Animations           | Delivers high-performance, fluid page transitions and interactive UI elements.                      |
+| **Lucide React**   | Iconography          | Provides a lightweight, customizable, and consistent set of icons.                                  |
+| **TanStack Query** | Data Fetching        | Optimizes server-state management with built-in caching, synchronizing, and background updating.    |
+| **Recharts**       | Data Visualization   | A composable charting library that perfectly handles the price history visualization.               |
 
 ---
 
@@ -137,13 +147,13 @@ DealWise/
 
 To run DealWise, you need to configure the following environment variables in a `.env` file at the root of your project:
 
-| Variable | Description |
-| :--- | :--- |
-| `SUPABASE_URL` | Your Supabase project URL for database and auth access. |
-| `SUPABASE_PUBLISHABLE_KEY` | Public API key for making client-side requests to Supabase. |
-| `VITE_SUPABASE_URL` | Vite-prefixed URL for frontend environment availability. |
+| Variable                        | Description                                                     |
+| :------------------------------ | :-------------------------------------------------------------- |
+| `SUPABASE_URL`                  | Your Supabase project URL for database and auth access.         |
+| `SUPABASE_PUBLISHABLE_KEY`      | Public API key for making client-side requests to Supabase.     |
+| `VITE_SUPABASE_URL`             | Vite-prefixed URL for frontend environment availability.        |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Vite-prefixed key for secure frontend-to-backend communication. |
-| `VITE_SUPABASE_PROJECT_ID` | The unique identifier for your Supabase project instance. |
+| `VITE_SUPABASE_PROJECT_ID`      | The unique identifier for your Supabase project instance.       |
 
 ---
 
@@ -201,15 +211,18 @@ This will start the application, and you can access it in your browser, typicall
 ## 🔧 Usage
 
 ### Discovering Deals
+
 Navigate to the **Featured Deals** section on the homepage to see curated items. Click on any `DealCard` to view detailed insights, including price history and similar item comparisons.
 
 ### Using Visual Search
+
 1. Click on the Search icon in the `Header.tsx`.
 2. Select the "Visual Search" option.
 3. Upload an image of a product.
 4. The system triggers the `visual-search` Edge Function to return the most accurate product matches.
 
 ### Earning DealCoins
+
 As you interact with the platform, your coin balance will update. You can view your current status via the `DealCoinsDisplay` in your profile navigation. These coins are automatically calculated and applied during the `Checkout` process if applicable.
 
 ---
@@ -221,7 +234,7 @@ We welcome contributions to improve DealWise! Your input helps make this project
 ### How to Contribute
 
 1. **Fork the repository** - Click the 'Fork' button at the top right of this page.
-2. **Create a feature branch** 
+2. **Create a feature branch**
    ```bash
    git checkout -b feature/amazing-feature
    ```
@@ -255,6 +268,7 @@ We welcome contributions to improve DealWise! Your input helps make this project
 [https://www.dealwise.in/](https://www.dealwise.in/)
 
 ---
+
 ## 📝 License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for complete details.

@@ -19,13 +19,12 @@ const Cart = () => {
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
   const totalSavings = cartItems.reduce(
     (sum, item) => sum + (item.originalPrice - item.price) * item.quantity,
-    0
+    0,
   );
-
 
   if (!user) {
     return (

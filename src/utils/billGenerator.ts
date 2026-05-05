@@ -36,7 +36,7 @@ interface OrderData {
 
 // HTML escape function to prevent XSS attacks
 const escapeHtml = (unsafe: string): string => {
-  if (!unsafe) return '';
+  if (!unsafe) return "";
   return unsafe
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -47,29 +47,31 @@ const escapeHtml = (unsafe: string): string => {
 
 const getPaymentMethodLabel = (method: string): string => {
   switch (method) {
-    case 'cod':
-      return 'Cash on Delivery';
-    case 'upi':
-      return 'UPI Payment';
-    case 'card':
-      return 'Credit/Debit Card';
+    case "cod":
+      return "Cash on Delivery";
+    case "upi":
+      return "UPI Payment";
+    case "card":
+      return "Credit/Debit Card";
     default:
       return escapeHtml(method);
   }
 };
 
 const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  return new Date(dateString).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
 export const generateBillHTML = (order: OrderData): string => {
-  const itemsHTML = order.items.map((item, index) => `
+  const itemsHTML = order.items
+    .map(
+      (item, index) => `
     <tr>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">${index + 1}</td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">
@@ -77,14 +79,16 @@ export const generateBillHTML = (order: OrderData): string => {
         <span style="color: #6b7280; font-size: 12px;">Store: ${escapeHtml(item.store)}</span>
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${item.price.toLocaleString('en-IN')}</td>
-      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${(item.price * item.quantity).toLocaleString('en-IN')}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${item.price.toLocaleString("en-IN")}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹${(item.price * item.quantity).toLocaleString("en-IN")}</td>
     </tr>
-  `).join('');
+  `,
+    )
+    .join("");
 
   const totalSavings = order.items.reduce(
     (sum, item) => sum + (item.originalPrice - item.price) * item.quantity,
-    0
+    0,
   );
 
   return `
@@ -160,10 +164,10 @@ export const generateBillHTML = (order: OrderData): string => {
           <p>
             <strong>${escapeHtml(order.shipping_address.fullName)}</strong><br>
             ${escapeHtml(order.shipping_address.addressLine1)}<br>
-            ${order.shipping_address.addressLine2 ? escapeHtml(order.shipping_address.addressLine2) + '<br>' : ''}
+            ${order.shipping_address.addressLine2 ? escapeHtml(order.shipping_address.addressLine2) + "<br>" : ""}
             ${escapeHtml(order.shipping_address.city)}, ${escapeHtml(order.shipping_address.state)} - ${escapeHtml(order.shipping_address.pincode)}<br>
             Phone: ${escapeHtml(order.shipping_address.phone)}
-            ${order.shipping_address.landmark ? '<br>Landmark: ' + escapeHtml(order.shipping_address.landmark) : ''}
+            ${order.shipping_address.landmark ? "<br>Landmark: " + escapeHtml(order.shipping_address.landmark) : ""}
           </p>
         </div>
       </div>
@@ -186,38 +190,50 @@ export const generateBillHTML = (order: OrderData): string => {
       <div class="summary">
         <div class="summary-row">
           <span>Subtotal (${order.items.reduce((sum, i) => sum + i.quantity, 0)} items)</span>
-          <span>₹${order.subtotal.toLocaleString('en-IN')}</span>
+          <span>₹${order.subtotal.toLocaleString("en-IN")}</span>
         </div>
-        ${totalSavings > 0 ? `
+        ${
+          totalSavings > 0
+            ? `
         <div class="summary-row savings">
           <span>Total Savings</span>
-          <span>-₹${totalSavings.toLocaleString('en-IN')}</span>
+          <span>-₹${totalSavings.toLocaleString("en-IN")}</span>
         </div>
-        ` : ''}
-        ${order.discount && order.discount > 0 ? `
+        `
+            : ""
+        }
+        ${
+          order.discount && order.discount > 0
+            ? `
         <div class="summary-row savings">
           <span>Discount Applied</span>
-          <span>-₹${order.discount.toLocaleString('en-IN')}</span>
+          <span>-₹${order.discount.toLocaleString("en-IN")}</span>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
         <div class="summary-row">
           <span>Shipping</span>
-          <span style="color: ${order.shipping === 0 ? '#10b981' : 'inherit'}">
-            ${order.shipping === 0 ? 'FREE' : '₹' + order.shipping.toLocaleString('en-IN')}
+          <span style="color: ${order.shipping === 0 ? "#10b981" : "inherit"}">
+            ${order.shipping === 0 ? "FREE" : "₹" + order.shipping.toLocaleString("en-IN")}
           </span>
         </div>
         <div class="summary-row total">
           <span>Grand Total</span>
-          <span>₹${order.total.toLocaleString('en-IN')}</span>
+          <span>₹${order.total.toLocaleString("en-IN")}</span>
         </div>
       </div>
       
-      ${order.notes ? `
+      ${
+        order.notes
+          ? `
       <div style="margin-top: 20px; padding: 15px; background: #fef3c7; border-radius: 8px;">
         <strong style="color: #d97706;">Delivery Instructions:</strong>
         <p style="color: #92400e; margin-top: 5px;">${escapeHtml(order.notes)}</p>
       </div>
-      ` : ''}
+      `
+          : ""
+      }
       
       <button class="download-btn no-print" onclick="window.print()">
         🖨️ Print / Download as PDF
@@ -239,8 +255,8 @@ export const generateBillHTML = (order: OrderData): string => {
 
 export const downloadBill = (order: OrderData): void => {
   const billHTML = generateBillHTML(order);
-  const newWindow = window.open('', '_blank');
-  
+  const newWindow = window.open("", "_blank");
+
   if (newWindow) {
     newWindow.document.write(billHTML);
     newWindow.document.close();

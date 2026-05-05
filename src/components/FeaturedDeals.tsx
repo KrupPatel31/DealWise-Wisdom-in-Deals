@@ -111,7 +111,9 @@ export const FeaturedDeals = () => {
       <div className="text-center space-y-4 sm:space-y-6 mb-10 sm:mb-16 animate-fade-up">
         <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-accent/10 rounded-full border border-accent/20">
           <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
-          <span className="text-accent font-medium text-sm sm:text-base">Hot Deals</span>
+          <span className="text-accent font-medium text-sm sm:text-base">
+            Hot Deals
+          </span>
         </div>
 
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display">

@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, ShoppingCart, User, LogOut, Menu, Mail, Package, Lock } from "lucide-react";
+import {
+  TrendingUp,
+  ShoppingCart,
+  User,
+  LogOut,
+  Menu,
+  Mail,
+  Package,
+  Lock,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
@@ -34,8 +43,9 @@ export const Header = () => {
     { name: "Contact", href: "/contact" },
   ];
 
-  const displayName = profile?.full_name || user?.email?.split('@')[0] || 'User';
-  const displayEmail = profile?.email || user?.email || '';
+  const displayName =
+    profile?.full_name || user?.email?.split("@")[0] || "User";
+  const displayEmail = profile?.email || user?.email || "";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -43,7 +53,9 @@ export const Header = () => {
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-1.5 sm:gap-2">
             <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            <span className="text-lg sm:text-xl font-bold text-primary">DEALWISE</span>
+            <span className="text-lg sm:text-xl font-bold text-primary">
+              DEALWISE
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -63,14 +75,16 @@ export const Header = () => {
           <div className="hidden lg:flex items-center gap-3 min-w-[200px] justify-end">
             {user ? (
               <>
-                <Link to="/deal-coins"><DealCoinsDisplay /></Link>
-                
+                <Link to="/deal-coins">
+                  <DealCoinsDisplay />
+                </Link>
+
                 <Link to="/cart">
                   <Button variant="ghost" size="sm" className="relative">
                     <ShoppingCart className="h-4 w-4" />
                     {cartCount > 0 && (
                       <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                        {cartCount > 99 ? '99+' : cartCount}
+                        {cartCount > 99 ? "99+" : cartCount}
                       </span>
                     )}
                     <span className="sr-only">Cart</span>
@@ -97,7 +111,9 @@ export const Header = () => {
                   >
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{displayName}</p>
+                        <p className="text-sm font-medium leading-none">
+                          {displayName}
+                        </p>
                         <p className="text-xs leading-none text-muted-foreground flex items-center gap-1">
                           <Mail className="h-3 w-3" />
                           {displayEmail}
@@ -142,13 +158,19 @@ export const Header = () => {
           <div className="lg:hidden flex items-center gap-1">
             {user && (
               <>
-                <Link to="/deal-coins"><DealCoinsDisplay /></Link>
+                <Link to="/deal-coins">
+                  <DealCoinsDisplay />
+                </Link>
                 <Link to="/cart">
-                  <Button variant="ghost" size="icon" className="relative h-8 w-8">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative h-8 w-8"
+                  >
                     <ShoppingCart className="h-4 w-4" />
                     {cartCount > 0 && (
                       <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                        {cartCount > 99 ? '99+' : cartCount}
+                        {cartCount > 99 ? "99+" : cartCount}
                       </span>
                     )}
                     <span className="sr-only">Cart</span>
@@ -164,7 +186,10 @@ export const Header = () => {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[400px] overflow-y-auto">
+              <SheetContent
+                side="right"
+                className="w-[280px] sm:w-[400px] overflow-y-auto"
+              >
                 <div className="flex flex-col gap-3 mt-6 pb-8">
                   <div className="flex items-center gap-2 mb-4">
                     <TrendingUp className="h-6 w-6 text-primary" />
@@ -191,7 +216,9 @@ export const Header = () => {
                       <div className="space-y-3">
                         <div className="px-3 py-2 bg-muted/50 rounded-lg">
                           <p className="text-sm font-medium">{displayName}</p>
-                          <p className="text-xs text-muted-foreground">{displayEmail}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {displayEmail}
+                          </p>
                         </div>
                         <Link to="/orders" onClick={() => setIsOpen(false)}>
                           <Button
@@ -202,7 +229,10 @@ export const Header = () => {
                             My Orders
                           </Button>
                         </Link>
-                        <Link to="/change-password" onClick={() => setIsOpen(false)}>
+                        <Link
+                          to="/change-password"
+                          onClick={() => setIsOpen(false)}
+                        >
                           <Button
                             variant="outline"
                             className="w-full justify-start mb-2"
