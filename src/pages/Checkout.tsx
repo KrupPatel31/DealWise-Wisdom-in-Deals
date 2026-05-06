@@ -176,7 +176,7 @@ const Checkout = () => {
         .select("*")
         .eq("is_active", true)
         .filter("expires_at", "gt", new Date().toISOString())
-        .ilike("code", code)
+        .eq("code", code)
         .maybeSingle();
 
       if (error || !data) {

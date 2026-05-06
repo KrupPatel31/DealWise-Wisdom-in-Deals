@@ -174,11 +174,14 @@ async function handleClaimReferralCode(adminClient: any, userId: string) {
     );
   }
 
-  // Generate unique code
-  const code =
-    "DW" +
-    userId.substring(0, 4).toUpperCase() +
-    Math.random().toString(36).substring(2, 6).toUpperCase();
+  // Generate unique code using CSPRNG
+  const bytes = crypto.getRandomValues(new Uint8Array(12));
+  const suffix = Array.from(bytes)
+    .map((b) => b.toString(36))
+    .join("")
+    .substring(0, 6)
+    .toUpperCase();
+  const code = "DW" + userId.substring(0, 4).toUpperCase() + suffix;
 
   const { error } = await adminClient.from("referral_codes").insert({
     user_id: userId,
