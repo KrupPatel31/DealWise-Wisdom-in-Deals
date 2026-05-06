@@ -137,7 +137,7 @@ Deno.serve(async (req) => {
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("user_id")
-      .ilike("email", normalizedEmail)
+      .eq("email", normalizedEmail)
       .maybeSingle();
 
     if (profileError) {
