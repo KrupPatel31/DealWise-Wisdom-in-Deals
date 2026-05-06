@@ -310,7 +310,7 @@ serve(async (req) => {
         .select("*")
         .eq("is_active", true)
         .gt("expires_at", new Date().toISOString())
-        .ilike("code", code)
+        .eq("code", code)
         .maybeSingle();
 
       if (couponRow) {
