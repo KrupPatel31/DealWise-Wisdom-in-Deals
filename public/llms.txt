@@ -1,0 +1,20 @@
+# DealWise
+
+> Smart price comparison and deal discovery platform for Indian shoppers. Compare prices across Amazon, Flipkart, Myntra and more, scan barcodes, search visually, and earn Deal Coins rewards.
+
+## Pages
+
+- [Home](/): Overview of DealWise, daily deals, and featured products.
+- [Features](/features): Multi-platform comparison, price tracking, smart analysis, and notifications.
+- [Search](/search): Search products and compare prices across stores.
+- [Visual Search](/visual-search): Upload a product image to find matches and best prices.
+- [Barcode Scan](/scan): Scan product barcodes for instant price comparison.
+- [Coupons](/coupons): Verified discount codes across categories.
+- [How It Works](/how-it-works): Step-by-step guide to using DealWise.
+- [About](/about): Mission, story, and team behind DealWise.
+- [Contact](/contact): Get in touch with the DealWise team.
+
+## Optional
+
+- [Sign In](/sign-in): Existing user login.
+- [Sign Up](/sign-up): Create a new DealWise account.

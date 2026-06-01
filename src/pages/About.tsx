@@ -6,6 +6,7 @@ import { TrendingUp, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Zap } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 const team = [
   {
@@ -28,6 +29,11 @@ const team = [
 const About = () => {
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title="About DealWise — Empowering Smart Shopping in India"
+        description="DealWise is on a mission to democratize smart shopping. Meet the team building India's most accurate price comparison platform."
+        path="/about"
+      />
       <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">

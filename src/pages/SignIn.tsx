@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { TrendingUp, Eye, EyeOff, WifiOff, Loader2 } from "lucide-react";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
 import { friendlyAuthError } from "@/utils/authRetry";
+import { SEO } from "@/components/SEO";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -93,6 +94,11 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title="Sign In — DealWise"
+        description="Sign in to your DealWise account to track deals, save favorites, manage orders, and redeem Deal Coins rewards."
+        path="/sign-in"
+      />
       <Header />
 
       <main className="flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">

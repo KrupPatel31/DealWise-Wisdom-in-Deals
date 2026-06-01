@@ -100,9 +100,10 @@ export const Header = () => {
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" aria-label="Account menu">
                       <User className="h-4 w-4 mr-2" />
                       <span className="hidden sm:inline">Account</span>
+                      <span className="sr-only sm:hidden">Account</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent

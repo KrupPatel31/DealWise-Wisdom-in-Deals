@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { SEO } from "@/components/SEO";
 
 interface Coupon {
   id: string;
@@ -141,6 +142,11 @@ const Coupons = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Coupons & Promo Codes — Verified Discounts | DealWise"
+        description="Browse hundreds of verified coupon codes and promo offers across top Indian stores. Copy, apply at checkout, and save instantly."
+        path="/coupons"
+      />
       <Header />
       <main className="container mx-auto px-4 py-6 sm:py-8">
         <div className="text-center space-y-2 mb-6 sm:mb-8">
