@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://dealwisewisdomindeals.lovable.app/sitemap.xml
