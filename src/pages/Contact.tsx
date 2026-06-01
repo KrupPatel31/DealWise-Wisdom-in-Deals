@@ -8,8 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Zap } from "lucide-react";
 import { Mail, Phone, MapPin, Clock, MessageCircle, Users } from "lucide-react";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { SEO } from "@/components/SEO";
 
 const contactInfo = [
