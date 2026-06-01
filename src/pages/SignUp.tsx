@@ -128,6 +128,11 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title="Sign Up — Start Saving with DealWise"
+        description="Create your free DealWise account to unlock price tracking, exclusive coupons, and Deal Coins cashback on every purchase."
+        path="/sign-up"
+      />
       <Header />
 
       <main className="flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">

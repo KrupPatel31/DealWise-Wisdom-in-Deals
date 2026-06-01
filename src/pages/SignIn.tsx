@@ -94,6 +94,11 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title="Sign In — DealWise"
+        description="Sign in to your DealWise account to track deals, save favorites, manage orders, and redeem Deal Coins rewards."
+        path="/sign-in"
+      />
       <Header />
 
       <main className="flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">

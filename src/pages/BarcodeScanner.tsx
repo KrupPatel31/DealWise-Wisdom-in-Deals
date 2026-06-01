@@ -209,6 +209,11 @@ const BarcodeScanner = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Barcode Scanner — Instant Price Lookup | DealWise"
+        description="Scan any product barcode with your phone camera to instantly compare prices across stores and find the best deal."
+        path="/scan"
+      />
       <Header />
       <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl">
         {/* Title */}

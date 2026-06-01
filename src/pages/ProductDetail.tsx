@@ -121,6 +121,29 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={`${product.title} — Compare Prices | DealWise`}
+        description={
+          (product.description || `${product.title} — compare prices across stores and find the best deal on DealWise.`).slice(0, 155)
+        }
+        path={`/product/${product.id}`}
+        type="product"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.title,
+          image: product.image,
+          description: product.description || product.title,
+          brand: product.store,
+          offers: {
+            "@type": "Offer",
+            price: parsePrice(product.price),
+            priceCurrency: "INR",
+            availability: "https://schema.org/InStock",
+            seller: { "@type": "Organization", name: product.store },
+          },
+        }}
+      />
       <Header />
       <main className="container mx-auto px-4 py-8 max-w-5xl">
         <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6">
