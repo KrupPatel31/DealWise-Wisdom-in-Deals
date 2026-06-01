@@ -55,6 +55,11 @@ const departments = [
 const Contact = () => {
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title="Contact DealWise — Support, Partnerships & Feedback"
+        description="Get in touch with the DealWise team for support, partnerships, or feedback. Reach us by email, phone, or our contact form."
+        path="/contact"
+      />
       <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
