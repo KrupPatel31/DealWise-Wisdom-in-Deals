@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
 import { friendlyAuthError } from "@/utils/authRetry";
+import { SEO } from "@/components/SEO";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);

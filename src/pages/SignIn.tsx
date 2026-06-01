@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { TrendingUp, Eye, EyeOff, WifiOff, Loader2 } from "lucide-react";
 import { SuccessOverlay } from "@/components/SuccessOverlay";
 import { friendlyAuthError } from "@/utils/authRetry";
+import { SEO } from "@/components/SEO";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);

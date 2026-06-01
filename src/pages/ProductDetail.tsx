@@ -25,6 +25,7 @@ import { useFakeStoreProducts } from "@/hooks/useFakeStoreProducts";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
+import { SEO } from "@/components/SEO";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();

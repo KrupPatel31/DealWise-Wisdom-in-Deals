@@ -158,6 +158,11 @@ const VisualSearch = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Visual Search — Find Products by Image | DealWise"
+        description="Upload a photo of any product and instantly compare prices across Amazon, Flipkart, Myntra, and more with AI-powered visual search."
+        path="/visual-search"
+      />
       <Header />
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Hero */}
