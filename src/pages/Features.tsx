@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Globe, TrendingUp, Brain, Bell, Shield, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { SEO } from "@/components/SEO";
 
 const features = [
   {
@@ -66,6 +67,11 @@ const features = [
 const Features = () => {
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title="Features — Price Tracking, Smart Analysis & Alerts | DealWise"
+        description="Explore DealWise features: multi-platform price comparison, alerts, AI-powered analysis, verified deals, and lightning-fast product search."
+        path="/features"
+      />
       <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-10 sm:py-16 lg:py-20">
@@ -83,6 +89,7 @@ const Features = () => {
           </p>
         </div>
 
+        <h2 className="sr-only">Feature highlights</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-10 sm:mb-16 lg:mb-20">
           {features.map((feature, index) => (
             <Card

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { SEO } from "@/components/SEO";
 
 const steps = [
   {
@@ -86,6 +87,11 @@ const highlights = [
 const HowItWorks = () => {
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title="How It Works — Search, Compare, Save | DealWise"
+        description="Learn how DealWise helps you search, compare prices, scan barcodes, apply coupons, and earn Deal Coins rewards in 7 simple steps."
+        path="/how-it-works"
+      />
       <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-10 sm:py-16 lg:py-20">
@@ -120,6 +126,7 @@ const HowItWorks = () => {
         </div>
 
         {/* Steps */}
+        <h2 className="sr-only">Steps to save with DealWise</h2>
         <div className="space-y-4 sm:space-y-6 lg:space-y-8 mb-10 sm:mb-16 lg:mb-20">
           {steps.map((step, index) => (
             <Card
