@@ -59,6 +59,11 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title="Your Cart — DealWise"
+        description="Review items in your DealWise cart, adjust quantities, and proceed to checkout for the best prices across stores."
+        path="/cart"
+      />
       <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
