@@ -15,10 +15,12 @@ const Index = () => {
         path="/"
       />
       <Header />
-      <HeroSection />
-      <DealOfTheDay />
-      <FeaturedDeals />
-      <Features />
+      <main>
+        <HeroSection />
+        <DealOfTheDay />
+        <FeaturedDeals />
+        <Features />
+      </main>
       <Footer />
     </div>
   );
