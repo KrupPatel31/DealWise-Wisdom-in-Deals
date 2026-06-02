@@ -8,6 +8,7 @@ import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 
 const Cart = () => {
   const { user } = useAuth();
@@ -29,6 +30,11 @@ const Cart = () => {
   if (!user) {
     return (
       <div className="min-h-screen dark">
+        <SEO
+          title="Your Cart — DealWise"
+          description="Review items in your DealWise cart, adjust quantities, and proceed to checkout for the best prices across stores."
+          path="/cart"
+        />
         <Header />
         <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="text-center">
