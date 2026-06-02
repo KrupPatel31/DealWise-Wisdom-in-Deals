@@ -77,8 +77,10 @@ export const ShareDeal = ({
         className="h-8 w-8 p-0"
         onClick={handleNativeShare}
         title="Share deal"
+        aria-label="Share deal"
       >
         <Share2 className="h-4 w-4" />
+        <span className="sr-only">Share deal</span>
       </Button>
     );
   }
@@ -92,8 +94,10 @@ export const ShareDeal = ({
             size={size}
             className="h-8 w-8 p-0"
             title="Share deal"
+            aria-label="Share deal"
           >
             <Share2 className="h-4 w-4" />
+            <span className="sr-only">Share deal</span>
           </Button>
         ) : (
           <Button variant="outline" size={size}>

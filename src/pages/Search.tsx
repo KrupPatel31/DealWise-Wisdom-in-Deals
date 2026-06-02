@@ -13,6 +13,7 @@ const Search = () => {
       />
       <Header />
       <main className="container mx-auto px-4 py-8">
+        <h1 className="sr-only">Search Products & Compare Prices</h1>
         <ProductSearchBar />
       </main>
       <Footer />
