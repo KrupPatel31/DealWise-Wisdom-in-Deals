@@ -44,6 +44,7 @@ import { toast } from "sonner";
 import { downloadBill } from "@/utils/billGenerator";
 import { runAuthWithRetry, friendlyAuthError } from "@/utils/authRetry";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { SEO } from "@/components/SEO";
 
 // Text field validation: allow alphanumeric, spaces, and common punctuation
 const validateTextField = (value: string, maxLength: number): boolean => {
@@ -399,6 +400,11 @@ const Checkout = () => {
   if (!user) {
     return (
       <div className="min-h-screen dark">
+        <SEO
+          title="Checkout — Complete Your Purchase | DealWise"
+          description="Secure checkout on DealWise. Choose UPI, cards, net banking, EMI, wallets or COD, apply coupons and redeem Deal Coins."
+          path="/checkout"
+        />
         <Header />
         <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="text-center">
@@ -425,6 +431,11 @@ const Checkout = () => {
   if (orderSuccess && completedOrder) {
     return (
       <div className="min-h-screen dark">
+        <SEO
+          title="Order Confirmed — DealWise"
+          description="Your DealWise order has been placed successfully. Download your invoice and track delivery from the orders page."
+          path="/checkout"
+        />
         <Header />
         <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-16">
           <div className="max-w-lg mx-auto text-center">
@@ -554,6 +565,11 @@ const Checkout = () => {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen dark">
+        <SEO
+          title="Checkout — Complete Your Purchase | DealWise"
+          description="Secure checkout on DealWise. Choose UPI, cards, net banking, EMI, wallets or COD, apply coupons and redeem Deal Coins."
+          path="/checkout"
+        />
         <Header />
         <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="text-center">
@@ -578,6 +594,11 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title="Checkout — Complete Your Purchase | DealWise"
+        description="Secure checkout on DealWise. Choose UPI, cards, net banking, EMI, wallets or COD, apply coupons and redeem Deal Coins."
+        path="/checkout"
+      />
       <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">

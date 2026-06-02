@@ -91,6 +91,19 @@ const HowItWorks = () => {
         title="How It Works — Search, Compare, Save | DealWise"
         description="Learn how DealWise helps you search, compare prices, scan barcodes, apply coupons, and earn Deal Coins rewards in 7 simple steps."
         path="/how-it-works"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          name: "How to save money shopping with DealWise",
+          description:
+            "Search, compare prices, scan barcodes, apply coupons and earn Deal Coins to maximize savings on every purchase.",
+          step: steps.map((s, i) => ({
+            "@type": "HowToStep",
+            position: i + 1,
+            name: s.title,
+            text: `${s.description}. ${s.details}`,
+          })),
+        }}
       />
       <Header />
 
