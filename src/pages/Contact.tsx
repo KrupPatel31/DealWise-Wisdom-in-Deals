@@ -59,6 +59,92 @@ const Contact = () => {
         title="Contact DealWise — Support, Partnerships & Feedback"
         description="Get in touch with the DealWise team for support, partnerships, or feedback. Reach us by email, phone, or our contact form."
         path="/contact"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "DealWise",
+            telephone: "+91-87564-72198",
+            email: "support@dealwise.in",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "NLJIET",
+              addressLocality: "Ahmedabad",
+              addressRegion: "Gujarat",
+              postalCode: "380059",
+              addressCountry: "IN",
+            },
+            openingHoursSpecification: [
+              {
+                "@type": "OpeningHoursSpecification",
+                dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                opens: "09:00",
+                closes: "18:00",
+              },
+              {
+                "@type": "OpeningHoursSpecification",
+                dayOfWeek: ["Saturday", "Sunday"],
+                opens: "10:00",
+                closes: "16:00",
+              },
+            ],
+            url: "https://dealwisewisdomindeals.lovable.app/contact",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "How accurate are your price comparisons?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Our prices are updated in real-time and are 99.9% accurate. We verify all prices directly with retailer APIs.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Is DealWise free to use?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes! DealWise is completely free for consumers. We make money through affiliate partnerships with retailers.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "How do I set up price alerts?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Simply search for a product, click the alert icon, and set your target price. We'll notify you when it drops!",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Which stores do you compare?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "We compare prices across 50+ major retailers including Amazon, Flipkart, Myntra, and many more.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Can I suggest a store to add?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Absolutely! Send us an email with the store details and we'll evaluate adding it to our platform.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Do you have a mobile app?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Our mobile app is coming soon! For now, our website is fully optimized for mobile devices.",
+                },
+              },
+            ],
+          },
+        ]}
       />
       <Header />
 

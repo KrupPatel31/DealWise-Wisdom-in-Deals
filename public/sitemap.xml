@@ -11,4 +11,9 @@
   <url><loc>https://dealwisewisdomindeals.lovable.app/contact</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://dealwisewisdomindeals.lovable.app/sign-in</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://dealwisewisdomindeals.lovable.app/sign-up</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://dealwisewisdomindeals.lovable.app/forgot-password</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://dealwisewisdomindeals.lovable.app/change-password</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://dealwisewisdomindeals.lovable.app/cart</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://dealwisewisdomindeals.lovable.app/checkout</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://dealwisewisdomindeals.lovable.app/orders</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
 </urlset>
