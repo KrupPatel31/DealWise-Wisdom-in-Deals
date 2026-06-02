@@ -2540,7 +2540,7 @@ dealwise/
 
 **URLs:**
 
-- Published: [https://dealwise.in/](https://dealwise.in/)
+- Published: [https://dealwise.in](https://dealwise.in)
 
 ---
 
