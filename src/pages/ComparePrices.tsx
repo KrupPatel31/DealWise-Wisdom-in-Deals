@@ -540,6 +540,13 @@ const ComparePrices = () => {
 
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        path="/compare-prices"
+        type="product"
+        jsonLd={productJsonLd}
+      />
       <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
