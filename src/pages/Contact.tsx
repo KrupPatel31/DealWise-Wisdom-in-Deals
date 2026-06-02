@@ -94,7 +94,7 @@ const Contact = () => {
                 closes: "16:00",
               },
             ],
-            url: "https://www.dealwise.in/contact",
+            url: "https://dealwise.in/contact",
           },
           {
             "@context": "https://schema.org",

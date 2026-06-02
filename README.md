@@ -265,7 +265,7 @@ We welcome contributions to improve DealWise! Your input helps make this project
 
 ## 🌐 Live Demo
 
-[https://www.dealwise.in/](https://www.dealwise.in/)
+[https://dealwise.in/](https://dealwise.in/)
 
 ---
 

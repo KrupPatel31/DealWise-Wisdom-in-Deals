@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://www.dealwise.in/sitemap.xml
+Sitemap: https://dealwise.in/sitemap.xml
