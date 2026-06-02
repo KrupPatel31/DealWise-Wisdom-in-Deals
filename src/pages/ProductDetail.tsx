@@ -123,9 +123,10 @@ const ProductDetail = () => {
     <div className="min-h-screen bg-background">
       <SEO
         title={`${product.title} — Compare Prices | DealWise`}
-        description={
-          (product.description || `${product.title} — compare prices across stores and find the best deal on DealWise.`).slice(0, 155)
-        }
+        description={(
+          product.description ||
+          `${product.title} — compare prices across stores and find the best deal on DealWise.`
+        ).slice(0, 155)}
         path={`/product/${product.id}`}
         type="product"
         jsonLd={{

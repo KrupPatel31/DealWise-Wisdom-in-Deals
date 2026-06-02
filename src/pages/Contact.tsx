@@ -77,7 +77,13 @@ const Contact = () => {
             openingHoursSpecification: [
               {
                 "@type": "OpeningHoursSpecification",
-                dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                dayOfWeek: [
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                ],
                 opens: "09:00",
                 closes: "18:00",
               },
@@ -88,7 +94,7 @@ const Contact = () => {
                 closes: "16:00",
               },
             ],
-            url: "https://dealwisewisdomindeals.lovable.app/contact",
+            url: "https://www.dealwise.in/contact",
           },
           {
             "@context": "https://schema.org",

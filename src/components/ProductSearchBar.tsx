@@ -407,14 +407,18 @@ export const ProductSearchBar = () => {
               onClick={toggleVoiceSearch}
               className="h-10 sm:h-12 px-3"
               title={isListening ? "Stop listening" : "Voice search"}
-              aria-label={isListening ? "Stop voice search" : "Start voice search"}
+              aria-label={
+                isListening ? "Stop voice search" : "Start voice search"
+              }
             >
               {isListening ? (
                 <MicOff className="h-4 w-4 sm:h-5 sm:w-5 animate-pulse" />
               ) : (
                 <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
-              <span className="sr-only">{isListening ? "Stop voice search" : "Start voice search"}</span>
+              <span className="sr-only">
+                {isListening ? "Stop voice search" : "Start voice search"}
+              </span>
             </Button>
             <GalaxyButton
               onClick={handleSearch}
