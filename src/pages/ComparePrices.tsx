@@ -29,6 +29,7 @@ import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
+import { SEO } from "@/components/SEO";
 
 interface StorePrice {
   store: string;
@@ -462,6 +463,30 @@ const ComparePrices = () => {
       : emiOptions.filter((emi) => emi.bank === selectedEMIBank);
 
   const uniqueBanks = [...new Set(emiOptions.map((emi) => emi.bank))];
+
+  const seoTitle = `Compare Prices for ${productName} — DealWise`.slice(0, 60);
+  const seoDescription =
+    `Compare ${productName} prices across Amazon, Flipkart, Croma and more on DealWise. Find the lowest price, EMI options and bank offers.`.slice(
+      0,
+      160,
+    );
+  const inStockOffers = storePrices.filter((s) => s.inStock);
+  const productJsonLd = inStockOffers.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: productName,
+        image: productImage || undefined,
+        offers: {
+          "@type": "AggregateOffer",
+          priceCurrency: "INR",
+          lowPrice: Math.min(...inStockOffers.map((s) => s.price)),
+          highPrice: Math.max(...inStockOffers.map((s) => s.price)),
+          offerCount: inStockOffers.length,
+          availability: "https://schema.org/InStock",
+        },
+      }
+    : undefined;
 
   const handleAddToCart = (storePrice: StorePrice) => {
     if (!user) {
