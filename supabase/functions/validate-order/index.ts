@@ -176,7 +176,7 @@ serve(async (req) => {
 
     // Validate items have sane values
     for (const item of items) {
-      if (item.price < 0 || item.quantity < 1) {
+      if (item.price < 0 || item.quantity < 1 || item.quantity > 100) {
         return new Response(
           JSON.stringify({ error: "Invalid price or quantity in cart" }),
           {
