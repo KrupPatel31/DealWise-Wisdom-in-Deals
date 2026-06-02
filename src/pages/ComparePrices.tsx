@@ -29,6 +29,7 @@ import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { toast } from "sonner";
+import { SEO } from "@/components/SEO";
 
 interface StorePrice {
   store: string;
@@ -463,6 +464,30 @@ const ComparePrices = () => {
 
   const uniqueBanks = [...new Set(emiOptions.map((emi) => emi.bank))];
 
+  const seoTitle = `Compare Prices for ${productName} — DealWise`.slice(0, 60);
+  const seoDescription =
+    `Compare ${productName} prices across Amazon, Flipkart, Croma and more on DealWise. Find the lowest price, EMI options and bank offers.`.slice(
+      0,
+      160,
+    );
+  const inStockOffers = storePrices.filter((s) => s.inStock);
+  const productJsonLd = inStockOffers.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: productName,
+        image: productImage || undefined,
+        offers: {
+          "@type": "AggregateOffer",
+          priceCurrency: "INR",
+          lowPrice: Math.min(...inStockOffers.map((s) => s.price)),
+          highPrice: Math.max(...inStockOffers.map((s) => s.price)),
+          offerCount: inStockOffers.length,
+          availability: "https://schema.org/InStock",
+        },
+      }
+    : undefined;
+
   const handleAddToCart = (storePrice: StorePrice) => {
     if (!user) {
       toast.error("Please sign in to add items to cart");
@@ -515,6 +540,13 @@ const ComparePrices = () => {
 
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title={seoTitle}
+        description={seoDescription}
+        path="/compare-prices"
+        type="product"
+        jsonLd={productJsonLd}
+      />
       <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">

@@ -8,6 +8,7 @@ import { useDealCoins } from "@/hooks/useDealCoins";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { SEO } from "@/components/SEO";
 import {
   ShoppingBag,
   CalendarCheck,
@@ -258,6 +259,11 @@ const DealCoins = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Deal Coins — Earn & Redeem Rewards | DealWise"
+        description="Earn Deal Coins on every purchase, daily login, and referral. Redeem 1 coin = ₹1 off at checkout for instant savings on DealWise."
+        path="/deal-coins"
+      />
       <Header />
 
       {/* Hero / Balance */}

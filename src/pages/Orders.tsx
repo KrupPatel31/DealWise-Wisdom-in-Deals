@@ -21,6 +21,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadBill } from "@/utils/billGenerator";
+import { SEO } from "@/components/SEO";
 
 interface OrderItem {
   id: string;
@@ -159,6 +160,11 @@ const Orders = () => {
   if (!user) {
     return (
       <div className="min-h-screen dark">
+        <SEO
+          title="My Orders — Track Purchases | DealWise"
+          description="View your DealWise order history, track delivery status, and download invoices for every purchase you've made."
+          path="/orders"
+        />
         <Header />
         <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
           <div className="text-center">
@@ -183,6 +189,11 @@ const Orders = () => {
 
   return (
     <div className="min-h-screen dark">
+      <SEO
+        title="My Orders — Track Purchases | DealWise"
+        description="View your DealWise order history, track delivery status, and download invoices for every purchase you've made."
+        path="/orders"
+      />
       <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
