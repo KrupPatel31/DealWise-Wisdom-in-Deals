@@ -31,7 +31,10 @@ export const SEO = ({
       <meta name="twitter:description" content={description} />
       {jsonLd && (
         <script type="application/ld+json">
-          {JSON.stringify(jsonLd).replace(/</g, "\\u003C")}
+          {JSON.stringify(jsonLd)
+            .replace(/</g, "\\u003C")
+            .replace(/>/g, "\\u003E")
+            .replace(/&/g, "\\u0026")}
         </script>
       )}
     </Helmet>
