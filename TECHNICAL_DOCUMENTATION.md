@@ -954,9 +954,7 @@ const { data, error } = await supabase
 
 // Edge Function call
 const { data, error } = await supabase.functions.invoke("validate-order", {
-  body: {
-    /* payload */
-  },
+  body: {/* payload */},
 });
 ```
 
