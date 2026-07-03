@@ -25,6 +25,9 @@ const features = [
 export const Features = () => {
   return (
     <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+      <h2 className="text-2xl sm:text-4xl font-bold font-display text-center mb-8 sm:mb-12">
+        Core Features for <span className="gradient-text">Smart Shopping</span>
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {features.map((feature, index) => (
           <Card

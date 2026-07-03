@@ -12,13 +12,18 @@ export const HeroSection = () => {
 
         <div className="space-y-4 sm:space-y-6">
           <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-display leading-tight">
-            <span className="text-primary animate-glow-pulse">SMART</span>
-            <br />
-            <span className="gradient-text animate-float">DEALS</span>
+            <span className="sr-only">
+              DealWise — Smart Deals &amp; Price Comparison in India
+            </span>
+            <span aria-hidden="true">
+              <span className="text-primary animate-glow-pulse">SMART</span>
+              <br />
+              <span className="gradient-text animate-float">DEALS</span>
+            </span>
           </h1>
-          <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-primary font-display">
+          <p className="text-xl sm:text-3xl lg:text-4xl font-bold text-primary font-display">
             DEALWISE
-          </h2>
+          </p>
         </div>
 
         <p className="text-base sm:text-xl text-muted-foreground leading-relaxed max-w-lg font-medium">
