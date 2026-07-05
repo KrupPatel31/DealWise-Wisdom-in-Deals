@@ -66,7 +66,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       }));
 
       setCartItems(items);
-    } catch {
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsLoading(false);
     }

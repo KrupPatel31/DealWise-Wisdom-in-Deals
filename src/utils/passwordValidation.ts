@@ -59,7 +59,7 @@ export const validatePassword = (password: string): PasswordValidation => {
   }
 
   // Must include at least one special character
-  const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
   criteria.push({
     label: "One special character (!@#$%^&*)",
     met: hasSpecialChar,

@@ -42,7 +42,9 @@ const ProductDetail = () => {
     try {
       const saved = sessionStorage.getItem("search_products");
       if (saved) sessionProducts = JSON.parse(saved);
-    } catch {}
+    } catch (err) {
+      console.error(err);
+    }
     const allProducts = [
       ...mockProducts,
       ...fakeStoreProducts,

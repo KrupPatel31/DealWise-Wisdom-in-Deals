@@ -183,7 +183,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       window.removeEventListener("online", goOnline);
       window.removeEventListener("offline", goOffline);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const doSignUp = async (

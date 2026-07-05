@@ -237,7 +237,7 @@ const generateStorePrices = (
   const isDyson = /dyson/i.test(productName);
 
   // Filter stores based on product category
-  let relevantStores = allStores.filter((store) => {
+  const relevantStores = allStores.filter((store) => {
     const storeLower = store.name.toLowerCase();
     if (store.categories.includes("all")) return true;
     if (isApple && store.categories.includes("apple")) return true;
@@ -269,7 +269,7 @@ const generateStorePrices = (
   }
 
   // Generate prices for each store
-  let storePrices = relevantStores.map((store) => {
+  const storePrices = relevantStores.map((store) => {
     const isOriginalStore = store.name.toLowerCase() === originalStoreLower;
     const priceVariation = basePrice * (store.variation / 100);
     const storePrice = Math.round(basePrice + priceVariation);

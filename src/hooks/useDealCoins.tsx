@@ -55,7 +55,8 @@ export const useDealCoins = () => {
           totalSpent: data.total_spent,
         });
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +81,9 @@ export const useDealCoins = () => {
       }
 
       setTransactions(data as CoinTransaction[]);
-    } catch {}
+    } catch (err) {
+      console.error(err);
+    }
   }, [user]);
 
   useEffect(() => {
